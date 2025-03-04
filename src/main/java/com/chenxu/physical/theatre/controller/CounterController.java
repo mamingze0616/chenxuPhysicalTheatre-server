@@ -1,20 +1,18 @@
-package com.tencent.wxcloudrun.controller;
+package com.chenxu.physical.theatre.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.tencent.wxcloudrun.config.ApiResponse;
-import com.tencent.wxcloudrun.dto.CounterRequest;
-import com.tencent.wxcloudrun.model.Counter;
-import com.tencent.wxcloudrun.service.CounterService;
+import com.chenxu.physical.theatre.config.ApiResponse;
+import com.chenxu.physical.theatre.dto.CounterRequest;
+import com.chenxu.physical.theatre.model.Counter;
+import com.chenxu.physical.theatre.service.CounterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.List;
 
 /**
  * counter控制器
@@ -79,5 +77,5 @@ public class CounterController {
       return ApiResponse.error("参数action错误");
     }
   }
-  
+
 }

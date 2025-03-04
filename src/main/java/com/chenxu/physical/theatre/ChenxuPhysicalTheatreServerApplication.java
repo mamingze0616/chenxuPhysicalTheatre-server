@@ -1,14 +1,14 @@
-package com.tencent.wxcloudrun;
+package com.chenxu.physical.theatre;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan(basePackages = {"com.tencent.wxcloudrun.dao"})
-public class WxCloudRunApplication {  
+@MapperScan(basePackages = {"com.chenxu.physical.theatre.dao"})
+public class ChenxuPhysicalTheatreServerApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(WxCloudRunApplication.class, args);
+    SpringApplication.run(ChenxuPhysicalTheatreServerApplication.class, args);
   }
 }

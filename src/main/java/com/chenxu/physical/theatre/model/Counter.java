@@ -1,4 +1,4 @@
-package com.tencent.wxcloudrun.model;
+package com.chenxu.physical.theatre.model;
 
 import lombok.Data;
 

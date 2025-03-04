@@ -1,9 +1,8 @@
-package com.tencent.wxcloudrun.service;
+package com.chenxu.physical.theatre.service;
 
-import com.tencent.wxcloudrun.model.Counter;
+import com.chenxu.physical.theatre.model.Counter;
 
 import java.util.Optional;
-import java.util.List;
 
 public interface CounterService {
 
