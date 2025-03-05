@@ -4,16 +4,18 @@
 [versions]
 mysql-mysql-connector-java = "8.0.26"
 org-mybatis-spring-boot-mybatis-spring-boot-starter = "3.0.3"
+com-baomidou-mybatis-plus-boot-starter = "3.5.10.1"
 org-projectlombok-lombok = "1.18.32"
-org-springframework-boot-spring-boot-configuration-processor = "3.2.0"
-org-springframework-boot-spring-boot-starter-logging = "3.2.0"
-org-springframework-boot-spring-boot-starter-test = "3.2.0"
-org-springframework-boot-spring-boot-starter-web = "3.2.0"
-org-springframework-boot-spring-boot-gradle-plugin = "3.2.0"
+org-springframework-boot-spring-boot-configuration-processor = "3.4.3"
+org-springframework-boot-spring-boot-starter-logging = "3.4.3"
+org-springframework-boot-spring-boot-starter-test = "3.4.3"
+org-springframework-boot-spring-boot-starter-web = "3.4.3"
+org-springframework-boot-spring-boot-gradle-plugin = "3.4.3"
 
 [libraries]
 mysql-mysql-connector-java = { module = "mysql:mysql-connector-java", version.ref = "mysql-mysql-connector-java" }
 org-mybatis-spring-boot-mybatis-spring-boot-starter = { module = "org.mybatis.spring.boot:mybatis-spring-boot-starter", version.ref = "org-mybatis-spring-boot-mybatis-spring-boot-starter" }
+com-baomidou-mybatis-plus-boot-starter = { module = "com.baomidou:mybatis-plus-spring-boot3-starter", version.ref = "com-baomidou-mybatis-plus-boot-starter" }
 org-projectlombok-lombok = { module = "org.projectlombok:lombok", version.ref = "org-projectlombok-lombok" }
 org-springframework-boot-spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "org-springframework-boot-spring-boot-configuration-processor" }
 org-springframework-boot-spring-boot-starter-logging = { module = "org.springframework.boot:spring-boot-starter-logging", version.ref = "org-springframework-boot-spring-boot-starter-logging" }

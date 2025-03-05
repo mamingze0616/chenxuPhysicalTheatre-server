@@ -22,7 +22,8 @@ configurations {
 
 dependencies {
     api libs.org.springframework.boot.spring.boot.starter.web
-    api libs.org.mybatis.spring.boot.mybatis.spring.boot.starter
+//    api libs.org.mybatis.spring.boot.mybatis.spring.boot.starter
+    api libs.com.baomidou.mybatis.plus.boot.starter
     api libs.org.springframework.boot.spring.boot.configuration.processor
     compileOnly libs.org.projectlombok.lombok
     annotationProcessor libs.org.projectlombok.lombok
