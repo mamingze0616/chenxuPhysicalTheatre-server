@@ -11,7 +11,8 @@ public enum TUserStatus {
     LOGOFF(0, "注销"),
     NORMAL(1, "正常"),
     LOCKED(2, "锁定"),
-    DELETED(3, "删除");
+    DELETED(3, "删除"),
+    NEW_ADDED(4, "新注册");
 
     private final Integer code;
     private final String desc;

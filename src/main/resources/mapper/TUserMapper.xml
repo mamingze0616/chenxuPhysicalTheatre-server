@@ -12,8 +12,8 @@
             <result property="phone" column="phone" jdbcType="INTEGER"/>
             <result property="type" column="type" jdbcType="INTEGER"/>
             <result property="status" column="status" jdbcType="INTEGER"/>
-            <result property="createdat" column="createdAt" jdbcType="TIMESTAMP"/>
-            <result property="loginat" column="loginAt" jdbcType="TIMESTAMP"/>
+            <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+            <result property="loginAt" column="login_at" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
