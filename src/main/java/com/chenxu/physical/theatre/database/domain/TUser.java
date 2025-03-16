@@ -37,7 +37,7 @@ public class TUser {
     /**
      *
      */
-    private Integer phone;
+    private String phone;
 
     /**
      * 1:admin;2:user;
