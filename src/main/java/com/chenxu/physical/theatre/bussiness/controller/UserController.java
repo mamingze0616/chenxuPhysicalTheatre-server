@@ -89,9 +89,10 @@ public class UserController {
                 queryUser = tUserService.getOne(new LambdaQueryWrapper<>(TUser.class)
                         .eq(TUser::getOpenid, openid));
             }
-            //更新制定字段
+            //更新指定字段
             queryUser.setNickname(user.getNickname());
             queryUser.setAvatar(user.getAvatar());
+            queryUser.setPhone(user.getPhone());
             if (tUserService.updateById(queryUser)) {
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setErrorMsg("更新成功");
