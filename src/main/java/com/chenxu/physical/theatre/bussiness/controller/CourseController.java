@@ -74,6 +74,7 @@ public class CourseController {
 
     /**
      * 获取从date日期开始的两周内的课程信息
+     * 如果某一天没课程就先新增课程
      *
      * @param openid
      * @param date
@@ -84,6 +85,7 @@ public class CourseController {
     public ApiResponse getTwoWeekCourses(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
                                          @RequestBody ApiDateRequest date) {
         logger.info("getTwoWeekCourses::openid = [{}], date = [{}]", openid, date);
+        //查询权限先不做
         ApiResponse apiResponse = new ApiResponse();
         //先按照日期查询课程
         try {
@@ -97,6 +99,26 @@ public class CourseController {
             apiResponse.setErrorMsg(e.getMessage());
         }
 
+        return apiResponse;
+    }
+
+    @PostMapping("/getCoursesByID")
+    public ApiResponse getCoursesByID(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
+                                      @RequestBody int id) {
+        logger.info("getCoursesByID::openid = [{}], date = [{}]", openid, id);
+        ApiResponse apiResponse = new ApiResponse();
+        try {
+            Optional.ofNullable(id).ifPresentOrElse(idInteger -> {
+                Optional.ofNullable(courseService.getById(idInteger)).ifPresentOrElse(tCourse -> {
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                    apiResponse.setData(tCourse);
+                }, () -> new RuntimeException("此id的数据为空"));
+            }, () -> new RuntimeException("id为空"));
+
+        } catch (Exception e) {
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
         return apiResponse;
     }
 
@@ -118,7 +140,7 @@ public class CourseController {
                     .collect(Collectors.toList());
             if (tempList.size() == 0) {
                 tempList = initEverdayCourse(plusDaysdate);
-            }else{
+            } else {
                 //暂时不处理其他情况
             }
             tempList.sort((o1, o2) -> o2.getLesson().compareTo(o1.getLesson()));
