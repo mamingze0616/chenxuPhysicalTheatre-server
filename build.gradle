@@ -30,6 +30,8 @@ dependencies {
     api libs.org.springframework.boot.spring.boot.starter.logging
     runtimeOnly libs.mysql.mysql.connector.java
     testImplementation libs.org.springframework.boot.spring.boot.starter.test
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 }
 
 group = 'com.chenxu.physical.theatre'
@@ -44,4 +46,7 @@ tasks.withType(JavaCompile) {
 
 tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
+}
+test {
+    useJUnitPlatform()
 }
