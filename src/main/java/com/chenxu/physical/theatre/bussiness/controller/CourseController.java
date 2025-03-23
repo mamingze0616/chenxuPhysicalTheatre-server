@@ -104,7 +104,7 @@ public class CourseController {
 
     @PostMapping("/getCoursesByID")
     public ApiResponse getCoursesByID(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                      @RequestBody int id) {
+                                      @RequestParam int id) {
         logger.info("getCoursesByID::openid = [{}], date = [{}]", openid, id);
         ApiResponse apiResponse = new ApiResponse();
         try {
