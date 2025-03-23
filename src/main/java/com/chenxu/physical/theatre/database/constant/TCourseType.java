@@ -10,7 +10,8 @@ package com.chenxu.physical.theatre.database.constant;
 public enum TCourseType {
     NOT_START(1, "未上"),
     FINISHED(2, "已上"),
-    DELETED(3, "删除");
+    DELETED(3, "删除"),
+    NOT_REGISTER(4, "未注册");
 
     private final Integer code;
     private final String desc;
@@ -22,5 +23,5 @@ public enum TCourseType {
 
     public Integer getCode() {
         return code;
-   }
+    }
 }
