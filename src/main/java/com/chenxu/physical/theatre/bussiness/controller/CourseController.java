@@ -3,6 +3,7 @@ package com.chenxu.physical.theatre.bussiness.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiDateRequest;
+import com.chenxu.physical.theatre.bussiness.dto.ApiIDRequest;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
@@ -104,11 +105,11 @@ public class CourseController {
 
     @PostMapping("/getCoursesByID")
     public ApiResponse getCoursesByID(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                      @RequestParam int id) {
-        logger.info("getCoursesByID::openid = [{}], date = [{}]", openid, id);
+                                      @RequestBody ApiIDRequest apiIDRequest) {
+        logger.info("getCoursesByID::openid = [{}], date = [{}]", openid, apiIDRequest.getId());
         ApiResponse apiResponse = new ApiResponse();
         try {
-            Optional.ofNullable(id).ifPresentOrElse(idInteger -> {
+            Optional.ofNullable(apiIDRequest.getId()).ifPresentOrElse(idInteger -> {
                 Optional.ofNullable(courseService.getById(idInteger)).ifPresentOrElse(tCourse -> {
                     apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                     apiResponse.setData(tCourse);
