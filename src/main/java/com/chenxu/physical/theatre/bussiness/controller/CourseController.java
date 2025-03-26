@@ -115,13 +115,13 @@ public class CourseController {
                     apiResponse.setData(tCourse);
                 }, () -> new RuntimeException("此id的数据为空"));
             }, () -> new RuntimeException("id为空"));
-
         } catch (Exception e) {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
         }
         return apiResponse;
     }
+
 
     private List<ApiWeekCourseModel> checkTwoWeekCourses(LocalDate date) {
         List<ApiWeekCourseModel> apiWeekCourseModels = new ArrayList<>(14);
@@ -144,7 +144,7 @@ public class CourseController {
             } else {
                 //暂时不处理其他情况
             }
-            tempList.sort((o1, o2) -> o2.getLesson().compareTo(o1.getLesson()));
+            tempList.sort((o1, o2) -> o1.getLesson().compareTo(o2.getLesson()));
             apiWeekCourseModel.setList(tempList);
             apiWeekCourseModels.add(apiWeekCourseModel);
         }
@@ -170,4 +170,38 @@ public class CourseController {
 
     }
 
+    //修改课程信息
+    @PostMapping("/updateCourse")
+    public ApiResponse updateCourse(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
+                                    @RequestBody TCourse course) {
+        logger.info("updateCourse::openid = [{}], course = [{}]", openid, course);
+        ApiResponse apiResponse = new ApiResponse();
+        try {
+            Optional.ofNullable(course).ifPresentOrElse(idInteger -> {
+                Optional.ofNullable(courseService.getById(course.getId())).ifPresentOrElse(tCourse -> {
+                    tCourse.setCourseName(course.getCourseName());
+                    //如果原状态是未注册状态，则修改为未上状态
+                    if (tCourse.getType().equals(TCourseType.NOT_REGISTER.getCode())) {
+                        tCourse.setType(TCourseType.NOT_START.getCode());
+                    } else {
+                        tCourse.setType(course.getType());
+                    }
+                    tCourse.setMaximum(course.getMaximum());
+                    if (courseService.updateById(tCourse)) {
+                        apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                        apiResponse.setData(tCourse);
+                    } else {
+                        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+                        apiResponse.setErrorMsg("更新失败");
+                    }
+
+
+                }, () -> new RuntimeException("此id的数据为空"));
+            }, () -> new RuntimeException("此id的数据为空"));
+        } catch (Exception e) {
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
 }
