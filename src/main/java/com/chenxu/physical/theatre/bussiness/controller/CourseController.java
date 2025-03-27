@@ -189,6 +189,8 @@ public class CourseController {
                         tCourse.setType(course.getType());
                     }
                     tCourse.setMaximum(course.getMaximum());
+                    tCourse.setStartTime(course.getStartTime());
+                    tCourse.setEndTime(course.getEndTime());
                     if (courseService.updateById(tCourse)) {
                         apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                         apiResponse.setData(tCourse);
