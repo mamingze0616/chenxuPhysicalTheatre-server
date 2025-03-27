@@ -6,10 +6,7 @@ import com.chenxu.physical.theatre.bussiness.dto.ApiDateRequest;
 import com.chenxu.physical.theatre.bussiness.dto.ApiIDRequest;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
-import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
-import com.chenxu.physical.theatre.database.constant.TCourseConstans;
-import com.chenxu.physical.theatre.database.constant.TCourseType;
-import com.chenxu.physical.theatre.database.constant.TUserType;
+import com.chenxu.physical.theatre.database.constant.*;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.service.TCourseService;
@@ -20,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -163,6 +161,9 @@ public class CourseController {
             course.setLesson(i);
             course.setMaximum(TCourseConstans.MAXIMUM);
             course.setType(TCourseType.NOT_REGISTER.getCode());
+            LocalDateTime startTime = date.atTime(TcourseStartTime.getStartTimeByCode(i));
+            course.setStartTime(startTime);
+            course.setEndTime(startTime.plusHours(1));
             courseService.save(course);
             list.add(course);
         }

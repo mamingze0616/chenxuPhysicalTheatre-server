@@ -11,10 +11,13 @@
             <result property="lesson" column="LESSON" jdbcType="INTEGER"/>
             <result property="date" column="DATE" jdbcType="DATE"/>
             <result property="maximum" column="MAXIMUM" jdbcType="INTEGER"/>
+            <result property="startTime" column="START_TIME" jdbcType="TIMESTAMP"/>
+            <result property="endTime" column="END_TIME" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         ID,COURSE_NAME,TYPE,
-        LESSON,DATE,MAXIMUM
+        LESSON,DATE,MAXIMUM,
+        START_TIME,END_TIME
     </sql>
 </mapper>
