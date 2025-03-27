@@ -1,5 +1,6 @@
 package com.chenxu.physical.theatre.database.service.impl;
 
+import com.chenxu.physical.theatre.bussiness.controller.AppointmentController;
 import com.chenxu.physical.theatre.bussiness.controller.CourseController;
 import com.chenxu.physical.theatre.bussiness.dto.ApiDateRequest;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,8 @@ class TCourseServiceImplTest {
     private static final Logger logger = LoggerFactory.getLogger(TCourseServiceImplTest.class);
     @Autowired
     private CourseController courseController;
+    @Autowired
+    AppointmentController appointmentController;
 
 
     @Test
@@ -28,6 +31,11 @@ class TCourseServiceImplTest {
         ApiDateRequest apiDateRequest = new ApiDateRequest();
 
         logger.info("testGetTwoWeekCourses::{}", courseController.getTwoWeekCourses("dddd", apiDateRequest));
+    }
+
+    @Test
+    void getAllAppointment() {
+        logger.info("getAllAppointment::{}", appointmentController.getAllAppointment());
     }
 
 

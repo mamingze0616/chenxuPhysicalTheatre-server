@@ -7,6 +7,7 @@ import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.service.TCourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +29,7 @@ public class AppointmentController {
     private TCourseService courseService;
 
     //获取全部可预约课程
-    @RequestMapping("/getAllAppointment")
+    @PostMapping("/getAllAppointment")
     public ApiResponse getAllAppointment() {
         ApiResponse apiResponse = new ApiResponse();
         try {
@@ -37,7 +38,7 @@ public class AppointmentController {
                     //课程类型为未上
                     .eq("type", TCourseType.NOT_START.getCode())
                     //开始时间为当前时间之后
-                    .ge("startTime", LocalDateTime.now())
+                    .ge("start_time", LocalDateTime.now())
                     //按照日期和课时升序
                     .orderByAsc("date", "lesson"));
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
