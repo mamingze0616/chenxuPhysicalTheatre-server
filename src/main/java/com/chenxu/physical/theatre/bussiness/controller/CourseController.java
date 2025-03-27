@@ -146,6 +146,7 @@ public class CourseController {
             apiWeekCourseModel.setList(tempList);
             apiWeekCourseModels.add(apiWeekCourseModel);
         }
+        logger.info("checkTwoWeekCourses::apiWeekCourseModels = [{}]", apiWeekCourseModels);
         return apiWeekCourseModels;
 
     }
