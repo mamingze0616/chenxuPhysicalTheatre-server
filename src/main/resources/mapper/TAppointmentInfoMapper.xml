@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chenxu.physical.theatre.database.mapper.TAppointmentInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="courseId" column="course_id" jdbcType="INTEGER"/>
+            <result property="type" column="type" jdbcType="TINYINT"/>
+    </resultMap>
+    <select id="getAppointmentInfoByCourseId"
+            resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
+        select T.*, T2.nickname, T2.avatar
+        from T_APPOINTMENT_INFO T
+                 left join springboot_demo.T_USER T2 on T.user_id = T2.id
+        where course_id = #{courseId}
+    </select>
+</mapper>

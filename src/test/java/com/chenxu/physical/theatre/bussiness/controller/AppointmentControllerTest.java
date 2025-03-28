@@ -1,9 +1,11 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -30,6 +32,9 @@ class AppointmentControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(new AppointmentController()).build();
     }
 
+    @Autowired
+    AppointmentController appointmentController;
+
     @Test
     void getAllAppointment() throws Exception {
         // 发送post请求
@@ -38,5 +43,16 @@ class AppointmentControllerTest {
                                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
                 .andReturn().getResponse();
         logger.info("responseEntity: {}", responseEntity.getContentAsString());
+    }
+
+    @Test
+    void getAppointmentInfoByCourseId() {
+        try {
+            TAppointmentInfo appointmentInfo = new TAppointmentInfo();
+            appointmentInfo.setCourseId(841);
+            logger.info(appointmentController.getAppointmentInfoByCourseId("111", appointmentInfo).toString());
+        } catch (Exception e) {
+            logger.error("error: {}", e.getMessage());
+        }
     }
 }

@@ -78,7 +78,7 @@ public class UserController {
     updateNicknameAndAvatar(@RequestBody TUser user,
                             @RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
                             String openid) {
-        logger.info("updateNicknameAndAvatar::user = [{}], openid = [{}]",user, openid);
+        logger.info("updateNicknameAndAvatar::user = [{}], openid = [{}]", user, openid);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         apiResponse.setErrorMsg("更新失败");
@@ -100,6 +100,49 @@ public class UserController {
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
+        }
+        return apiResponse;
+    }
+
+    /**
+     * 查询所有type=2是user的用户
+     *
+     * @return
+     */
+    @PostMapping("/getAllUser")
+    public ApiResponse getAllUser() {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        apiResponse.setErrorMsg("获取失败");
+        try {
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(tUserService.list(new QueryWrapper<TUser>().eq("type", 2)));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg("获取失败");
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+
+        }
+        return apiResponse;
+    }
+
+    @PostMapping("/getUserById")
+    public ApiResponse getUserById(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
+                                   String openid, @RequestBody TUser user) {
+        logger.info("getUserById::user = [{}], openid = [{}]", user, openid);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            Optional.ofNullable(user.getId()).ifPresentOrElse(id -> {
+                Optional.ofNullable(tUserService.getById(id)).ifPresentOrElse(tUser -> {
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                    apiResponse.setData(tUser);
+                }, () -> new RuntimeException("此id的数据为空"));
+            }, () -> new RuntimeException("id为空"));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         }
         return apiResponse;
     }

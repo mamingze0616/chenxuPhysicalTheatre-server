@@ -1,0 +1,13 @@
+package com.chenxu.physical.theatre.database.service;
+
+import com.chenxu.physical.theatre.database.domain.TCourseOrder;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+* @author mamingze
+* @description 针对表【T_COURSE_ORDER(课程订单信息)】的数据库操作Service
+* @createDate 2025-03-28 11:46:21
+*/
+public interface TCourseOrderService extends IService<TCourseOrder> {
+
+}
