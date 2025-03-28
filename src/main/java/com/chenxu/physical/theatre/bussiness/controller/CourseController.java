@@ -2,8 +2,6 @@ package com.chenxu.physical.theatre.bussiness.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
-import com.chenxu.physical.theatre.bussiness.dto.ApiDateRequest;
-import com.chenxu.physical.theatre.bussiness.dto.ApiIDRequest;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import com.chenxu.physical.theatre.database.constant.*;
@@ -41,7 +39,9 @@ public class CourseController {
 
 
     @PostMapping("/add")
-    public ApiResponse addCourse(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, TCourse course) {
+    public ApiResponse addCourse(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
+                                 String openid,
+                                 @RequestBody TCourse course) {
         logger.info("addCourse::openid = [{}], course = [{}]", openid, course);
         ApiResponse apiResponse = new ApiResponse();
         //先查询此用户是否有权限操作
@@ -49,7 +49,7 @@ public class CourseController {
             Optional<TUser> tUserOptions = Optional.ofNullable(tUserService
                     .getOne(new QueryWrapper<TUser>().eq("openid", openid), false));
             tUserOptions.ifPresentOrElse(tUser -> {
-                if (TUserType.ADMIN.getCode().compareTo(tUser.getType()) == 0) {
+                if (TUserType.ADMIN.compareTo(tUser.getType()) == 0) {
                     //是管理员
                     course.setType(TCourseType.NOT_START.getCode());
                     courseService.save(course);
@@ -59,8 +59,7 @@ public class CourseController {
                     apiResponse.setErrorMsg("用户无权限操作");
                 }
             }, () -> {
-                apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-                apiResponse.setErrorMsg("用户不存在");
+                throw new RuntimeException("用户不存在");
             });
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -76,20 +75,20 @@ public class CourseController {
      * 如果某一天没课程就先新增课程
      *
      * @param openid
-     * @param date
+     * @param apiWeekCourseModel
      * @return
      */
 
     @PostMapping("/getTwoWeekCourses")
     public ApiResponse getTwoWeekCourses(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                         @RequestBody ApiDateRequest date) {
-        logger.info("getTwoWeekCourses::openid = [{}], date = [{}]", openid, date);
+                                         @RequestBody ApiWeekCourseModel apiWeekCourseModel) {
+        logger.info("getTwoWeekCourses::openid = [{}], date = [{}]", openid, apiWeekCourseModel);
         //查询权限先不做
         ApiResponse apiResponse = new ApiResponse();
         //先按照日期查询课程
         try {
             //没有日期的话默认当前日期
-            LocalDate tempDate = Optional.ofNullable(date.getDate()).orElse(LocalDate.now());
+            LocalDate tempDate = Optional.ofNullable(apiWeekCourseModel.getDate()).orElse(LocalDate.now());
             //先查询两个星期
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
             apiResponse.setData(checkTwoWeekCourses(tempDate));
@@ -103,16 +102,20 @@ public class CourseController {
 
     @PostMapping("/getCoursesByID")
     public ApiResponse getCoursesByID(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                      @RequestBody ApiIDRequest apiIDRequest) {
-        logger.info("getCoursesByID::openid = [{}], date = [{}]", openid, apiIDRequest.getId());
+                                      @RequestBody TCourse course) {
+        logger.info("getCoursesByID::openid = [{}], id = [{}]", openid, course.getId());
         ApiResponse apiResponse = new ApiResponse();
         try {
-            Optional.ofNullable(apiIDRequest.getId()).ifPresentOrElse(idInteger -> {
+            Optional.ofNullable(course.getId()).ifPresentOrElse(idInteger -> {
                 Optional.ofNullable(courseService.getById(idInteger)).ifPresentOrElse(tCourse -> {
                     apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                     apiResponse.setData(tCourse);
-                }, () -> new RuntimeException("此id的数据为空"));
-            }, () -> new RuntimeException("id为空"));
+                }, () -> {
+                    throw new RuntimeException("此id的数据为空");
+                });
+            }, () -> {
+                throw new RuntimeException("id为空");
+            });
         } catch (Exception e) {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
@@ -132,7 +135,7 @@ public class CourseController {
             LocalDate plusDaysdate = date.plusDays(i);
 
             ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
-            apiWeekCourseModel.setDate(plusDaysdate.toString());
+            apiWeekCourseModel.setDate(plusDaysdate);
             apiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(plusDaysdate.getDayOfWeek().getValue()).getDesc());
             //当天临时课程
             List<TCourse> tempList = list.stream().filter(c -> c.getDate().equals(plusDaysdate))
@@ -161,7 +164,7 @@ public class CourseController {
             course.setLesson(i);
             course.setMaximum(TCourseConstans.MAXIMUM);
             course.setType(TCourseType.NOT_REGISTER.getCode());
-            LocalDateTime startTime = date.atTime(TcourseStartTime.getStartTimeByCode(i));
+            LocalDateTime startTime = date.atTime(TCourseStartTime.getStartTimeByCode(i));
             course.setStartTime(startTime);
             course.setEndTime(startTime.plusHours(1));
             courseService.save(course);
@@ -199,12 +202,17 @@ public class CourseController {
                     }
 
 
-                }, () -> new RuntimeException("此id的数据为空"));
-            }, () -> new RuntimeException("此id的数据为空"));
+                }, () -> {
+                    throw new RuntimeException("此id的数据为空");
+                });
+            }, () -> {
+                throw new RuntimeException("此id的数据为空");
+            });
         } catch (Exception e) {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
         }
         return apiResponse;
     }
+
 }

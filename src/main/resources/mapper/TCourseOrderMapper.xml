@@ -7,14 +7,16 @@
     <resultMap id="BaseResultMap" type="com.chenxu.physical.theatre.database.domain.TCourseOrder">
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="userId" column="user_id" jdbcType="INTEGER"/>
-            <result property="coursrNumber" column="coursr_number" jdbcType="INTEGER"/>
+            <result property="courseNumber" column="course_number" jdbcType="INTEGER"/>
             <result property="type" column="type" jdbcType="TINYINT"/>
             <result property="status" column="status" jdbcType="TINYINT"/>
             <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
+            <result property="operatorId" column="operator_id" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,coursr_number,
-        type,status,create_at
+        id,user_id,course_number,
+        type,status,create_at,
+        operator_id
     </sql>
 </mapper>

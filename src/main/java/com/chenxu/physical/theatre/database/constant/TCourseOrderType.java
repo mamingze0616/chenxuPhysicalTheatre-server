@@ -7,20 +7,22 @@ import lombok.Getter;
 /**
  * @author mamingze
  * @version 1.0
- * @title TCourseOrderStatus
+ * @title TCourseOrderType
  * @description
- * @create 2025/3/28 11:48
+ * @create 2025/3/28 16:08
  */
 @Getter
-public enum TCourseOrderStatus {
-    NORMAL(1, "正常"),
-    DELETED(2, "作废");
+public enum TCourseOrderType {
+    //1:赠送;2:支付
+    GIVE_AWAY(1, "赠送"),
+    PAY(2, "支付");
+
     @EnumValue
     @JsonValue
     private final Integer code;
     private final String desc;
 
-    TCourseOrderStatus(Integer code, String desc) {
+    TCourseOrderType(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
     }
@@ -29,5 +31,4 @@ public enum TCourseOrderStatus {
     public String toString() {
         return this.code.toString();
     }
-
 }

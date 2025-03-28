@@ -73,7 +73,9 @@ public class AppointmentController {
                 List<TAppointmentInfo> list = appointmentInfoService.getAppointmentInfoByCourseId(CourseIdInteger);
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(list);
-            }, () -> new RuntimeException("courseId为空"));
+            }, () -> {
+                throw new RuntimeException("courseId为空");
+            });
         } catch (Exception e) {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());

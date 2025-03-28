@@ -2,7 +2,7 @@ package com.chenxu.physical.theatre.database.service.impl;
 
 import com.chenxu.physical.theatre.bussiness.controller.AppointmentController;
 import com.chenxu.physical.theatre.bussiness.controller.CourseController;
-import com.chenxu.physical.theatre.bussiness.dto.ApiDateRequest;
+import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +28,7 @@ class TCourseServiceImplTest {
 
     @Test
     void testGetTwoWeekCourses() {
-        ApiDateRequest apiDateRequest = new ApiDateRequest();
-
+        ApiWeekCourseModel apiDateRequest = new ApiWeekCourseModel();
         logger.info("testGetTwoWeekCourses::{}", courseController.getTwoWeekCourses("dddd", apiDateRequest));
     }
 

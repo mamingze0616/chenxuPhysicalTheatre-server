@@ -1,6 +1,7 @@
 package com.chenxu.physical.theatre.database.constant;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 /**
@@ -15,6 +16,8 @@ public enum TUserType {
     ADMIN(1, "管理员"), USER(2, "普通用户");
     @EnumValue
     private final Integer code;
+
+    @JsonValue
     private final String desc;
 
     TUserType(Integer code, String desc) {
@@ -22,11 +25,8 @@ public enum TUserType {
         this.desc = desc;
     }
 
-    public Integer getCode() {
-        return code;
-    }
-
-    public String getDesc() {
-        return desc;
+    @Override
+    public String toString() {
+        return this.desc;
     }
 }

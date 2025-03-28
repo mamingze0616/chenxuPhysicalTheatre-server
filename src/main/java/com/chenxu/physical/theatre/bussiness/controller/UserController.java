@@ -45,6 +45,13 @@ public class UserController {
                     getOne(new QueryWrapper<TUser>().eq("openid", openid), false));
             tUserOptions.ifPresentOrElse(tUser -> {
                 //更新登陆时间
+                tUser.setLoginAt(LocalDateTime.now());
+                try {
+                    tUserService.updateById(tUser);
+                } catch (Exception e) {
+                    e.getMessage();
+                    logger.error("更新用户登录时间失败,忽略本次错误");
+                }
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(tUser);
                 apiResponse.setErrorMsg("登陆成功");
@@ -91,8 +98,12 @@ public class UserController {
                         apiResponse.setErrorMsg("更新成功");
                         apiResponse.setData(tUser);
                     }
-                }, () -> new RuntimeException("此id的数据为空"));
-            }, () -> new RuntimeException("id为空"));
+                }, () -> {
+                    throw new RuntimeException("此id的数据为空");
+                });
+            }, () -> {
+                throw new RuntimeException("id为空");
+            });
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -131,8 +142,51 @@ public class UserController {
                 Optional.ofNullable(tUserService.getById(id)).ifPresentOrElse(tUser -> {
                     apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                     apiResponse.setData(tUser);
-                }, () -> new RuntimeException("此id的数据为空"));
-            }, () -> new RuntimeException("id为空"));
+                }, () -> {
+                    throw new RuntimeException("此id的数据为空");
+                });
+            }, () -> {
+                throw new RuntimeException("id为空");
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+    }
+
+    @PostMapping("/changeTypeToAdmin")
+    public ApiResponse changeTypeToAdmin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
+                                         String openid, @RequestBody TUser user) {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            Optional.ofNullable(user.getId()).ifPresentOrElse(id -> {
+                Optional.ofNullable(tUserService.getById(id)).ifPresentOrElse(tUser -> {
+                    //判断权限
+                    if (tUserService.getOne(new QueryWrapper<TUser>().eq("openid", openid)).getType()
+                            .compareTo(TUserType.ADMIN) == 0) {
+                        tUser.setType(TUserType.ADMIN);
+                        if (tUserService.updateById(tUser)) {
+                            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                            apiResponse.setErrorMsg("更新成功");
+                        } else {
+                            apiResponse.setErrorMsg("更新失败");
+                            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+                        }
+
+                    } else {
+                        apiResponse.setErrorMsg("更新失败:无权操作");
+                        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+                    }
+
+                }, () -> {
+                    throw new RuntimeException("此id的数据为空");
+                });
+            }, () -> {
+                throw new RuntimeException("id为空");
+            });
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setErrorMsg(e.getMessage());

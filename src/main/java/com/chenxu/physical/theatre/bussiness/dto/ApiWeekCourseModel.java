@@ -4,6 +4,7 @@ import com.chenxu.physical.theatre.database.domain.TCourse;
 import lombok.Data;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -17,6 +18,6 @@ import java.util.List;
 @ToString
 public class ApiWeekCourseModel {
     private String weekday;
-    private String date;
+    private LocalDate date;
     private List<TCourse> list;
 }

@@ -5,11 +5,11 @@ import java.time.LocalTime;
 /**
  * @author mamingze
  * @version 1.0
- * @title TcourseStartTime
+ * @title TCourseStartTime
  * @description
  * @create 2025/3/27 10:28
  */
-public enum TcourseStartTime {
+public enum TCourseStartTime {
     LESSON_1(1, LocalTime.of(9, 30, 0)),
     LESSON_2(2, LocalTime.of(10, 45, 0)),
     LESSON_3(3, LocalTime.of(13, 0, 0)),
@@ -23,7 +23,7 @@ public enum TcourseStartTime {
     private final Integer code;
     private final LocalTime startTime;
 
-    TcourseStartTime(Integer code, LocalTime startTime) {
+    TCourseStartTime(Integer code, LocalTime startTime) {
         this.code = code;
         this.startTime = startTime;
     }
@@ -37,7 +37,7 @@ public enum TcourseStartTime {
     }
 
     public static LocalTime getStartTimeByCode(Integer code) {
-        for (TcourseStartTime tcourseStartTime : TcourseStartTime.values()) {
+        for (TCourseStartTime tcourseStartTime : TCourseStartTime.values()) {
             if (tcourseStartTime.getCode().equals(code)) {
                 return tcourseStartTime.getStartTime();
             }
