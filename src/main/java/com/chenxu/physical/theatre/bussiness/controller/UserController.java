@@ -1,6 +1,5 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
@@ -13,9 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.TimeZone;
 
 /**
  * @author mamingze
@@ -57,9 +55,7 @@ public class UserController {
                 tUser.setType(TUserType.USER.getCode());
                 tUser.setNickname(openid.substring(0, 6));
                 tUser.setAvatar("https://tdesign.gtimg.com/mobile/demos/avatar1.png");
-                //时区有问题暂时不修复
-                TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
-                tUser.setCreatedAt(new Date());
+                tUser.setCreatedAt(LocalDateTime.now());
                 tUserService.save(tUser);
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(tUser);
@@ -84,20 +80,19 @@ public class UserController {
         apiResponse.setErrorMsg("更新失败");
         try {
             //查询出原先的数据
-            TUser queryUser = tUserService.getById(user.getId());
-            if (queryUser == null) {
-                queryUser = tUserService.getOne(new LambdaQueryWrapper<>(TUser.class)
-                        .eq(TUser::getOpenid, openid));
-            }
-            //更新指定字段
-            queryUser.setNickname(user.getNickname());
-            queryUser.setAvatar(user.getAvatar());
-            queryUser.setPhone(user.getPhone());
-            if (tUserService.updateById(queryUser)) {
-                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setErrorMsg("更新成功");
-                apiResponse.setData(queryUser);
-            }
+            Optional.ofNullable(user.getId()).ifPresentOrElse(id -> {
+                Optional.ofNullable(tUserService.getById(id)).ifPresentOrElse(tUser -> {
+                    tUser.setNickname(user.getNickname());
+                    tUser.setAvatar(user.getAvatar());
+                    tUser.setPhone(user.getPhone());
+                    tUser.setStatus(TUserStatus.NORMAL.getCode());
+                    if (tUserService.updateById(tUser)) {
+                        apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                        apiResponse.setErrorMsg("更新成功");
+                        apiResponse.setData(tUser);
+                    }
+                }, () -> new RuntimeException("此id的数据为空"));
+            }, () -> new RuntimeException("id为空"));
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -113,7 +108,6 @@ public class UserController {
     public ApiResponse getAllUser() {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-        apiResponse.setErrorMsg("获取失败");
         try {
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
             apiResponse.setData(tUserService.list(new QueryWrapper<TUser>().eq("type", 2)));
