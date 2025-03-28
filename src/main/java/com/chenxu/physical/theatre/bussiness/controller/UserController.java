@@ -52,7 +52,7 @@ public class UserController {
                 TUser tUser = new TUser();
                 tUser.setOpenid(openid);
                 tUser.setStatus(TUserStatus.NEW_ADDED.getCode());
-                tUser.setType(TUserType.USER.getCode());
+                tUser.setType(TUserType.USER);
                 tUser.setNickname(openid.substring(0, 6));
                 tUser.setAvatar("https://tdesign.gtimg.com/mobile/demos/avatar1.png");
                 tUser.setCreatedAt(LocalDateTime.now());
@@ -100,7 +100,7 @@ public class UserController {
     }
 
     /**
-     * 查询所有type=2是user的用户
+     * 查询所有user的用户
      *
      * @return
      */
@@ -110,7 +110,7 @@ public class UserController {
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-            apiResponse.setData(tUserService.list(new QueryWrapper<TUser>().eq("type", 2)));
+            apiResponse.setData(tUserService.list());
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setErrorMsg("获取失败");

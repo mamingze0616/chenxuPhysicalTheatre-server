@@ -3,6 +3,7 @@ package com.chenxu.physical.theatre.database.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chenxu.physical.theatre.database.constant.TUserType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -44,7 +45,7 @@ public class TUser {
     /**
      * 1:admin;2:user;
      */
-    private Integer type;
+    private TUserType type;
 
     /**
      * 0:注销;1在线
