@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 
 /**
@@ -181,7 +182,7 @@ public class AppointmentController {
     }
 
     /**
-     * 预约某个课程
+     * 预约某个课程,或者取消预约某个课程,不论怎样都是新增数据
      *
      * @param openid
      * @return
@@ -195,7 +196,20 @@ public class AppointmentController {
         try {
             Optional.ofNullable(appointmentInfo.getCourseId()).ifPresentOrElse(courseId -> {
                 Optional.ofNullable(courseService.getById(courseId)).ifPresentOrElse(tCourse -> {
-                    appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
+                    //先查询是否已经预约过,有取消预约状态的会把状态改为已预约
+                    Optional.ofNullable(appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>()
+                            .eq("course_id", courseId)
+                            .eq("user_id", appointmentInfo.getUserId()))).ifPresent(
+                            appointmentInfoList -> {
+                                //删掉旧的预约信息
+                                appointmentInfoService.removeByIds(appointmentInfoList.stream()
+                                        .map(TAppointmentInfo::getId).collect(Collectors.toList()));
+                            });
+                    //新增预约信息
+                    if (appointmentInfo.getType() == null) {
+                        appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
+                    }
+                    appointmentInfo.setCreateAt(LocalDateTime.now());
                     if (appointmentInfoService.save(appointmentInfo)) {
                         apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                         apiResponse.setData(appointmentInfo);
@@ -216,5 +230,6 @@ public class AppointmentController {
         }
         return apiResponse;
     }
+
 
 }

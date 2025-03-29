@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * 课程预约表
  *
@@ -45,6 +47,10 @@ public class TAppointmentInfo {
      * 1:已预约;2:取消预约;3:已学;4:已签到
      */
     private TAppointmentInfoTypeEnum type;
+    /**
+     *
+     */
+    private LocalDateTime createAt;
 
     @Override
     public boolean equals(Object that) {
@@ -61,7 +67,8 @@ public class TAppointmentInfo {
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
                 && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
                 && (this.getCourseId() == null ? other.getCourseId() == null : this.getCourseId().equals(other.getCourseId()))
-                && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()));
+                && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
+                && (this.getCreateAt() == null ? other.getCreateAt() == null : this.getCreateAt().equals(other.getCreateAt()));
     }
 
     @Override
@@ -72,6 +79,7 @@ public class TAppointmentInfo {
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
         result = prime * result + ((getCourseId() == null) ? 0 : getCourseId().hashCode());
         result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
+        result = prime * result + ((getCreateAt() == null) ? 0 : getCreateAt().hashCode());
         return result;
     }
 
@@ -85,6 +93,7 @@ public class TAppointmentInfo {
         sb.append(", userId=").append(userId);
         sb.append(", courserId=").append(courseId);
         sb.append(", type=").append(type);
+        sb.append(", createAt=").append(createAt);
         sb.append("]");
         return sb.toString();
     }
