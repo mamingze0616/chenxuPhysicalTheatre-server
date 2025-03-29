@@ -1,6 +1,7 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
+import com.chenxu.physical.theatre.database.domain.TCourseOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -51,6 +52,17 @@ class AppointmentControllerTest {
             TAppointmentInfo appointmentInfo = new TAppointmentInfo();
             appointmentInfo.setCourseId(841);
             logger.info(appointmentController.getAppointmentInfoByCourseId("111", appointmentInfo).toString());
+        } catch (Exception e) {
+            logger.error("error: {}", e.getMessage());
+        }
+    }
+
+    @Test
+    void getOverviewOfCourseNumberInfoAndAppointmentInfo() {
+        try {
+            TCourseOrder courseOrder = new TCourseOrder();
+            courseOrder.setUserId(2);
+            logger.info(appointmentController.getOverviewOfCourseNumberInfoAndAppointmentInfo("111", courseOrder).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }

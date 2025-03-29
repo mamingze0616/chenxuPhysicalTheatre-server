@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import lombok.Data;
 
 /**
@@ -43,7 +44,7 @@ public class TAppointmentInfo {
     /**
      * 1:已预约;2:取消预约;3:已学;4:已签到
      */
-    private Integer type;
+    private TAppointmentInfoTypeEnum type;
 
     @Override
     public boolean equals(Object that) {
