@@ -65,6 +65,41 @@ public class AppointmentController {
         return apiResponse;
     }
 
+    /**
+     * 根据日期查询课程 ,从date开始查询
+     *
+     * @param openid
+     * @param course
+     * @return
+     */
+    @PostMapping("/getAppointmentByDate")
+    public ApiResponse getAppointmentByDate(
+            @RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
+            String openid,
+            @RequestBody TCourse course) {
+        ApiResponse apiResponse = new ApiResponse();
+        try {
+            Optional.ofNullable(course.getDate()).ifPresentOrElse(date -> {
+                //查询可预约课程
+                List<TCourse> courses = courseService.list(new QueryWrapper<TCourse>()
+                        //课程类型为未上
+                        .eq("type", TCourseType.NOT_START.getCode())
+                        //开始时间为当前时间之后
+                        .ge("date", date)
+                        //按照日期和课时升序
+                        .orderByAsc("date", "lesson"));
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(courses);
+            }, () -> {
+                throw new RuntimeException("date为空");
+            });
+        } catch (Exception e) {
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
     @PostMapping("/getAppointmentInfoByCourseId")
     public ApiResponse getAppointmentInfoByCourseId(@RequestHeader(value = "X-WX-OPENID",
                                                             required = false,
