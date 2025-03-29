@@ -74,7 +74,8 @@ public class AppointmentController {
      * @return
      */
     @PostMapping("/getAppointmentByDate")
-    public ApiResponse getAppointmentByDate(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourse course) {
+    public ApiResponse getAppointmentByDate(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
+                                            @RequestBody TCourse course) {
         ApiResponse apiResponse = new ApiResponse();
         try {
             Optional.ofNullable(course.getDate()).ifPresentOrElse(date -> {
@@ -98,8 +99,39 @@ public class AppointmentController {
         return apiResponse;
     }
 
+    /**
+     * 根据日期查询课程 ,从date开始查询
+     *
+     * @param openid
+     * @param appointmentInfo
+     * @return
+     */
+    @PostMapping("/getAppointmentByUserId")
+    public ApiResponse getAppointmentByUserId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
+                                              String openid, @RequestBody TAppointmentInfo appointmentInfo) {
+        ApiResponse apiResponse = new ApiResponse();
+        try {
+            Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(date -> {
+                //查询该用户的预约表所有状态的的信息
+                appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>()
+                        //用户id
+                        .eq("user_id", appointmentInfo.getUserId()));
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(appointmentInfo);
+            }, () -> {
+                throw new RuntimeException("userId为空");
+            });
+        } catch (Exception e) {
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
+
     @PostMapping("/getAppointmentInfoByCourseId")
-    public ApiResponse getAppointmentInfoByCourseId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, TAppointmentInfo appointmentInfo) {
+    public ApiResponse getAppointmentInfoByCourseId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
+                                                    @RequestBody TAppointmentInfo appointmentInfo) {
         logger.info("getAppointmentInfoByCoursrId::openid = [{}], appointmentInfo = [{}]", openid, appointmentInfo);
         ApiResponse apiResponse = new ApiResponse();
         try {
@@ -126,7 +158,8 @@ public class AppointmentController {
      * @return
      */
     @PostMapping("getOverviewOfCourseNumberInfoAndAppointmentInfo")
-    public ApiResponse getOverviewOfCourseNumberInfoAndAppointmentInfo(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourseOrder courseOrder) {
+    public ApiResponse getOverviewOfCourseNumberInfoAndAppointmentInfo(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
+                                                                       @RequestBody TCourseOrder courseOrder) {
         logger.info("getOverviewOfCourseNumberInfo::openid = [{}], courseOrder = [{}]", openid, courseOrder);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
