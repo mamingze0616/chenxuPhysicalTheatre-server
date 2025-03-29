@@ -61,8 +61,21 @@ class AppointmentControllerTest {
     void getOverviewOfCourseNumberInfoAndAppointmentInfo() {
         try {
             TCourseOrder courseOrder = new TCourseOrder();
-            courseOrder.setUserId(2);
+            courseOrder.setUserId(1);
             logger.info(appointmentController.getOverviewOfCourseNumberInfoAndAppointmentInfo("111", courseOrder).toString());
+        } catch (Exception e) {
+            logger.error("error: {}", e.getMessage());
+        }
+    }
+
+    @Test
+    void appointmentByCourseId() {
+        try {
+            TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
+            tAppointmentInfo.setCourseId(841);
+            tAppointmentInfo.setUserId(1);
+
+            logger.info(appointmentController.appointmentByCourseId("111", tAppointmentInfo).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }
