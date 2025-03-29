@@ -8,13 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
  * @author mamingze
@@ -39,11 +34,8 @@ class AppointmentControllerTest {
     @Test
     void getAllAppointment() throws Exception {
         // 发送post请求
-        MockHttpServletResponse responseEntity = this.mockMvc.perform(
-                        post("/appointment/getAllAppointment")
-                                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-                .andReturn().getResponse();
-        logger.info("responseEntity: {}", responseEntity.getContentAsString());
+
+        logger.info("responseEntity: {}", appointmentController.getAllAppointment());
     }
 
     @Test
@@ -69,13 +61,13 @@ class AppointmentControllerTest {
     }
 
     @Test
-    void appointmentByCourseId() {
+    void doAppointmentByCourseId() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
             tAppointmentInfo.setCourseId(841);
             tAppointmentInfo.setUserId(1);
 
-            logger.info(appointmentController.appointmentByCourseId("111", tAppointmentInfo).toString());
+            logger.info(appointmentController.doAppointmentByCourseId("111", tAppointmentInfo).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }

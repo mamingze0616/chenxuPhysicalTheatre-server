@@ -14,6 +14,8 @@ import java.util.List;
 public interface TAppointmentInfoMapper extends BaseMapper<TAppointmentInfo> {
     List<TAppointmentInfo> getAppointmentInfoByCourseId(Integer courseId);
 
+    List<TAppointmentInfo> getAppointmentInfosByUserId(Integer userId);
+
 }
 
 

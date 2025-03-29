@@ -114,9 +114,8 @@ public class AppointmentController {
             Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(date -> {
                 //查询该用户的预约表所有状态的的信息
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setData(appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>()
-                        //用户id
-                        .eq("user_id", appointmentInfo.getUserId())));
+                apiResponse.setData(appointmentInfoService
+                        .getAppointmentInfosByUserId(appointmentInfo.getUserId()));
             }, () -> {
                 throw new RuntimeException("userId为空");
             });
@@ -210,9 +209,9 @@ public class AppointmentController {
      * @param openid
      * @return
      */
-    @PostMapping("/appointmentByCourseId")
-    public ApiResponse appointmentByCourseId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TAppointmentInfo appointmentInfo) {
-        logger.info("appointmentByCourseId::openid = [{}], appointmentInfo = [{}]", openid, appointmentInfo);
+    @PostMapping("/doAppointmentByCourseId")
+    public ApiResponse doAppointmentByCourseId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TAppointmentInfo appointmentInfo) {
+        logger.info("doAppointmentByCourseId::openid = [{}], appointmentInfo = [{}]", openid, appointmentInfo);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {

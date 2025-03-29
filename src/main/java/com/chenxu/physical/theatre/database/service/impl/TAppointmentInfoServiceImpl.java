@@ -21,6 +21,11 @@ public class TAppointmentInfoServiceImpl extends ServiceImpl<TAppointmentInfoMap
     public List<TAppointmentInfo> getAppointmentInfoByCourseId(Integer courseId) {
         return baseMapper.getAppointmentInfoByCourseId(courseId);
     }
+
+    @Override
+    public List<TAppointmentInfo> getAppointmentInfosByUserId(Integer userId) {
+        return baseMapper.getAppointmentInfosByUserId(userId);
+    }
 }
 
 
