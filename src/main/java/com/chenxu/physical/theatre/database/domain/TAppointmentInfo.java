@@ -1,13 +1,12 @@
 package com.chenxu.physical.theatre.database.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 课程预约表
@@ -27,16 +26,6 @@ public class TAppointmentInfo {
      *
      */
     private Integer userId;
-    /**
-     *
-     */
-    @TableField(exist = false)
-    private String nickname;
-    /**
-     *
-     */
-    @TableField(exist = false)
-    private String avatar;
 
     /**
      *
@@ -47,10 +36,11 @@ public class TAppointmentInfo {
      * 1:已预约;2:取消预约;3:已学;4:已签到
      */
     private TAppointmentInfoTypeEnum type;
+
     /**
-     *
+     * 预约时间
      */
-    private LocalDateTime createAt;
+    private Date createAt;
 
     @Override
     public boolean equals(Object that) {
@@ -91,7 +81,7 @@ public class TAppointmentInfo {
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
         sb.append(", userId=").append(userId);
-        sb.append(", courserId=").append(courseId);
+        sb.append(", courseId=").append(courseId);
         sb.append(", type=").append(type);
         sb.append(", createAt=").append(createAt);
         sb.append("]");

@@ -9,7 +9,13 @@
             <result property="userId" column="user_id" jdbcType="INTEGER"/>
             <result property="courseId" column="course_id" jdbcType="INTEGER"/>
             <result property="type" column="type" jdbcType="TINYINT"/>
+            <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
     </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,course_id,
+        type,create_at
+    </sql>
     <select id="getAppointmentInfoByCourseId"
             resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
         select T.*, T2.nickname, T2.avatar

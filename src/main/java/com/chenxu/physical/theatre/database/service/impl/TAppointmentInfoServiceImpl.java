@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author mamingze
  * @description 针对表【T_APPOINTMENT_INFO(课程预约表)】的数据库操作Service实现
- * @createDate 2025-03-27 15:12:23
+ * @createDate 2025-03-29 22:36:52
  */
 @Service
 public class TAppointmentInfoServiceImpl extends ServiceImpl<TAppointmentInfoMapper, TAppointmentInfo>

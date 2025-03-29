@@ -80,4 +80,21 @@ class AppointmentControllerTest {
             logger.error("error: {}", e.getMessage());
         }
     }
+
+    @Test
+    void getAppointmentByUserId() {
+
+
+        try {
+            TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
+            tAppointmentInfo.setCourseId(841);
+            tAppointmentInfo.setUserId(1);
+
+            logger.info(appointmentController.getAppointmentByUserId("111", tAppointmentInfo).toString());
+        } catch (Exception e) {
+            logger.error("error: {}", e.getMessage());
+        }
+
+
+    }
 }

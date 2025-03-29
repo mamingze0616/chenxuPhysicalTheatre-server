@@ -113,11 +113,10 @@ public class AppointmentController {
         try {
             Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(date -> {
                 //查询该用户的预约表所有状态的的信息
-                appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>()
-                        //用户id
-                        .eq("user_id", appointmentInfo.getUserId()));
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setData(appointmentInfo);
+                apiResponse.setData(appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>()
+                        //用户id
+                        .eq("user_id", appointmentInfo.getUserId())));
             }, () -> {
                 throw new RuntimeException("userId为空");
             });
