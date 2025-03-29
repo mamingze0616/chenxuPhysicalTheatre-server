@@ -75,8 +75,7 @@ public class AppointmentController {
     @PostMapping("/getAppointmentByDate")
     public ApiResponse getAppointmentByDate(
             @RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
-            String openid,
-            @RequestBody TCourse course) {
+            String openid, @RequestBody TCourse course) {
         ApiResponse apiResponse = new ApiResponse();
         try {
             Optional.ofNullable(course.getDate()).ifPresentOrElse(date -> {
@@ -101,9 +100,7 @@ public class AppointmentController {
     }
 
     @PostMapping("/getAppointmentInfoByCourseId")
-    public ApiResponse getAppointmentInfoByCourseId(@RequestHeader(value = "X-WX-OPENID",
-                                                            required = false,
-                                                            defaultValue = "none")
+    public ApiResponse getAppointmentInfoByCourseId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
                                                     String openid,
                                                     TAppointmentInfo appointmentInfo) {
         logger.info("getAppointmentInfoByCoursrId::openid = [{}], appointmentInfo = [{}]", openid, appointmentInfo);
@@ -183,5 +180,41 @@ public class AppointmentController {
         return apiResponse;
     }
 
+    /**
+     * 预约某个课程
+     *
+     * @param openid
+     * @return
+     */
+    @PostMapping("/appointmentByCourseId")
+    public ApiResponse appointmentByCourseId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
+                                             String openid,
+                                             @RequestBody TAppointmentInfo appointmentInfo) {
+        logger.info("appointmentByCourseId::openid = [{}], appointmentInfo = [{}]", openid, appointmentInfo);
+        ApiResponse apiResponse = new ApiResponse();
+        try {
+            Optional.ofNullable(appointmentInfo.getCourseId()).ifPresentOrElse(courseId -> {
+                Optional.ofNullable(courseService.getById(courseId)).ifPresentOrElse(tCourse -> {
+                    appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
+                    if (appointmentInfoService.save(appointmentInfo)) {
+                        apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                        apiResponse.setData(appointmentInfo);
+                    } else {
+                        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+                        apiResponse.setErrorMsg("预约失败");
+                    }
+                }, () -> {
+                    throw new RuntimeException("课程不存在");
+                });
+            }, () -> {
+                throw new RuntimeException("courseId为空");
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
 
 }
