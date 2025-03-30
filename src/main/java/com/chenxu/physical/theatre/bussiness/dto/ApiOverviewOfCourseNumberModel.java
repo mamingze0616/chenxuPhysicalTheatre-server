@@ -1,6 +1,9 @@
 package com.chenxu.physical.theatre.bussiness.dto;
 
+import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author mamingze
@@ -17,5 +20,9 @@ public class ApiOverviewOfCourseNumberModel {
     private Integer learnedNumber;
     //已预约的课程数量
     private Integer appointedNumber;
+    private List<TAppointmentInfo> totalCourseList;
+    private List<TAppointmentInfo> learnedCourseList;
+    private List<TAppointmentInfo> appointedCourseList;
+
 
 }

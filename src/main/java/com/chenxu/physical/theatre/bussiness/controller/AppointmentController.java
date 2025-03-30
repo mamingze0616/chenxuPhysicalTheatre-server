@@ -173,9 +173,19 @@ public class AppointmentController {
                     //查询该用户的所有预约信息
                     List<TAppointmentInfo> tAppointmentInfoList = appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().eq("user_id", userId));
                     //过滤所有已学的预约信息
-                    apiOverviewOfCourseNumberModel.setLearnedNumber((int) tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.LEARNED) || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.SIGNED)).count());
+                    List<TAppointmentInfo> learnedAppointmentInfoList = tAppointmentInfoList.stream().filter(tAppointmentInfo ->
+                                    tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.LEARNED) || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.SIGNED))
+                            .collect(Collectors.toList());
+                    apiOverviewOfCourseNumberModel.setLearnedNumber(learnedAppointmentInfoList.size());
+                    apiOverviewOfCourseNumberModel.setLearnedCourseList(learnedAppointmentInfoList);
                     //过滤所有已预约的预约信息
-                    apiOverviewOfCourseNumberModel.setAppointedNumber((int) tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.APPOINTED)).count());
+                    List<TAppointmentInfo> appointedCourseList = tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.APPOINTED))
+                            .collect(Collectors.toList());
+                    apiOverviewOfCourseNumberModel.setAppointedCourseList(appointedCourseList);
+                    apiOverviewOfCourseNumberModel.setAppointedNumber(appointedCourseList.size());
+                    //合并已学和已预约的预约信息
+                    tAppointmentInfoList.addAll(learnedAppointmentInfoList);
+                    apiOverviewOfCourseNumberModel.setTotalCourseList(tAppointmentInfoList);
 
                     apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                     apiResponse.setData(apiOverviewOfCourseNumberModel);
