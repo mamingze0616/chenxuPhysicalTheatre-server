@@ -63,9 +63,11 @@ public class AppointmentController {
                         .ge("date", querydate)
                         //按照日期和课时升序
                         .orderByAsc("date", "lesson"));
-                if (courses.size() == 0) {
-                    throw new RuntimeException("没有可预约课程");
-                }
+//                if (courses.size() == 0) {
+//                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+//                    apiResponse.setErrorMsg("没有可预约课程");
+//                    apiResponse.setData(courses);
+//                }
                 //查找1:已预约;3:已学;4:已签到的预约信息
                 List<TAppointmentInfo> appointmentInfos = appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>()
                         .eq("user_id", userId)
