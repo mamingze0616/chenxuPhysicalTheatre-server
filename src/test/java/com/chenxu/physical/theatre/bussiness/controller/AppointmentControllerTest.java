@@ -100,4 +100,18 @@ class AppointmentControllerTest {
         }
 
     }
+
+    @Test
+    void cancelCourseAppointment() {
+        try {
+            TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
+            tAppointmentInfo.setCourseId(871);
+            tAppointmentInfo.setUserId(1);
+
+            logger.info(appointmentController.cancelCourseAppointment("111", tAppointmentInfo).toString());
+        } catch (Exception e) {
+            logger.error("error: {}", e.getMessage());
+        }
+    }
+
 }
