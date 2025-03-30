@@ -60,7 +60,7 @@ public class UserController {
                 tUser.setOpenid(openid);
                 tUser.setStatus(TUserStatus.NEW_ADDED.getCode());
                 tUser.setType(TUserType.USER);
-                tUser.setNickname(openid.substring(0, 6));
+                tUser.setNickname(openid.substring(22));
                 tUser.setAvatar("https://tdesign.gtimg.com/mobile/demos/avatar1.png");
                 tUserService.save(tUser);
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
