@@ -6,6 +6,7 @@ import com.chenxu.physical.theatre.database.mapper.TAppointmentInfoMapper;
 import com.chenxu.physical.theatre.database.service.TAppointmentInfoService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -25,6 +26,11 @@ public class TAppointmentInfoServiceImpl extends ServiceImpl<TAppointmentInfoMap
     @Override
     public List<TAppointmentInfo> getAppointmentInfosByUserId(Integer userId) {
         return baseMapper.getAppointmentInfosByUserId(userId);
+    }
+
+    @Override
+    public List<TAppointmentInfo> getAppointmentInfosByUserIdAndDate(Integer userId, LocalDate date) {
+        return baseMapper.getAppointmentInfosByUserIdAndDate(userId, date);
     }
 }
 

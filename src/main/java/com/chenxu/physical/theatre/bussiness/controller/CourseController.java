@@ -51,7 +51,7 @@ public class CourseController {
             tUserOptions.ifPresentOrElse(tUser -> {
                 if (TUserType.ADMIN.compareTo(tUser.getType()) == 0) {
                     //是管理员
-                    course.setType(TCourseType.NOT_START.getCode());
+                    course.setType(TCourseType.NOT_START);
                     courseService.save(course);
                 } else {
                     //没有权限
@@ -163,7 +163,7 @@ public class CourseController {
             course.setDate(date);
             course.setLesson(i);
             course.setMaximum(TCourseConstans.MAXIMUM);
-            course.setType(TCourseType.NOT_REGISTER.getCode());
+            course.setType(TCourseType.NOT_REGISTER);
             LocalDateTime startTime = date.atTime(TCourseStartTime.getStartTimeByCode(i));
             course.setStartTime(startTime);
             course.setEndTime(startTime.plusHours(1));
@@ -186,7 +186,7 @@ public class CourseController {
                     tCourse.setCourseName(course.getCourseName());
                     //如果原状态是未注册状态，则修改为未上状态
                     if (tCourse.getType().equals(TCourseType.NOT_REGISTER.getCode())) {
-                        tCourse.setType(TCourseType.NOT_START.getCode());
+                        tCourse.setType(TCourseType.NOT_START);
                     } else {
                         tCourse.setType(course.getType());
                     }

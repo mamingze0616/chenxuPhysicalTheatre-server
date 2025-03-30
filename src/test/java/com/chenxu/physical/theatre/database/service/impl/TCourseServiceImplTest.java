@@ -32,10 +32,5 @@ class TCourseServiceImplTest {
         logger.info("testGetTwoWeekCourses::{}", courseController.getTwoWeekCourses("dddd", apiDateRequest));
     }
 
-    @Test
-    void getAllAppointment() {
-        logger.info("getAllAppointment::{}", appointmentController.getAllAppointment());
-    }
-
 
 }

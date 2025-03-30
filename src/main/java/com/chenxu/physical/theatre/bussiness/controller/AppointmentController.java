@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -43,61 +44,49 @@ public class AppointmentController {
     @Autowired
     TCourseOrderService courseOrderService;
 
-    //获取全部可预约课程
-    @PostMapping("/getAllAppointment")
-    public ApiResponse getAllAppointment() {
+    //获取全部可预约课程,去除已经预约过的课程,日期不传默认今天,
+    @PostMapping("/getBookableCoursesByUseridAndDate")
+    public ApiResponse getBookableCoursesByUseridAndDate(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
+                                                         String openid, @RequestBody TAppointmentInfo appointmentInfo) {
         ApiResponse apiResponse = new ApiResponse();
         try {
-            //查询可预约课程
-            List<TCourse> courses = courseService.list(new QueryWrapper<TCourse>()
-                    //课程类型为未上
-                    .eq("type", TCourseType.NOT_START.getCode())
-                    //开始时间为当前时间之后
-                    .ge("start_time", LocalDateTime.now())
-                    //按照日期和课时升序
-                    .orderByAsc("date", "lesson"));
-            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-            apiResponse.setData(courses);
-        } catch (Exception e) {
-            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-            apiResponse.setErrorMsg(e.getMessage());
-        }
-
-        return apiResponse;
-    }
-
-    /**
-     * 根据日期查询课程 ,从date开始查询
-     *
-     * @param openid
-     * @param course
-     * @return
-     */
-    @PostMapping("/getAppointmentByDate")
-    public ApiResponse getAppointmentByDate(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                            @RequestBody TCourse course) {
-        ApiResponse apiResponse = new ApiResponse();
-        try {
-            Optional.ofNullable(course.getDate()).ifPresentOrElse(date -> {
-                //查询可预约课程
+            Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(userId -> {
+                LocalDate querydate = Optional.ofNullable(appointmentInfo.getDate()).orElse(LocalDate.now());
                 List<TCourse> courses = courseService.list(new QueryWrapper<TCourse>()
                         //课程类型为未上
                         .eq("type", TCourseType.NOT_START.getCode())
                         //开始时间为当前时间之后
-                        .ge("date", date)
+                        .ge("start_time", LocalDateTime.now())
+                        //时间在querydate之前
+                        .ge("date", querydate)
                         //按照日期和课时升序
                         .orderByAsc("date", "lesson"));
+                if (courses.size() == 0) {
+                    throw new RuntimeException("没有可预约课程");
+                }
+                //查找1:已预约;3:已学;4:已签到的预约信息
+                List<TAppointmentInfo> appointmentInfos = appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>()
+                        .eq("user_id", userId)
+                        .in("type", TAppointmentInfoTypeEnum.APPOINTED.getCode(),
+                                TAppointmentInfoTypeEnum.LEARNED.getCode(),
+                                TAppointmentInfoTypeEnum.SIGNED.getCode()));
+                logger.info("是否有可预约课程被删除:{}", courses.removeIf(course ->
+                        appointmentInfos.stream().anyMatch(appointmentInfo1 ->
+                                appointmentInfo1.getCourseId().equals(course.getId()))));
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(courses);
+
             }, () -> {
-                throw new RuntimeException("date为空");
+                throw new RuntimeException("userId为空");
             });
         } catch (Exception e) {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
         }
+
         return apiResponse;
     }
+
 
     /**
      * 根据日期查询课程 ,从date开始查询
@@ -106,16 +95,17 @@ public class AppointmentController {
      * @param appointmentInfo
      * @return
      */
-    @PostMapping("/getAppointmentByUserId")
-    public ApiResponse getAppointmentByUserId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
-                                              String openid, @RequestBody TAppointmentInfo appointmentInfo) {
+    @PostMapping("/getAppointmentInfosByUserIdAndDate")
+    public ApiResponse getAppointmentInfosByUserIdAndDate(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
+                                                          String openid, @RequestBody TAppointmentInfo appointmentInfo) {
         ApiResponse apiResponse = new ApiResponse();
         try {
-            Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(date -> {
+            Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(userID -> {
+                LocalDate querydate = Optional.ofNullable(appointmentInfo.getDate()).orElse(LocalDate.now());
                 //查询该用户的预约表所有状态的的信息
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(appointmentInfoService
-                        .getAppointmentInfosByUserId(appointmentInfo.getUserId()));
+                        .getAppointmentInfosByUserIdAndDate(appointmentInfo.getUserId(), querydate));
             }, () -> {
                 throw new RuntimeException("userId为空");
             });

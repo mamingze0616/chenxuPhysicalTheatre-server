@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDate;
+
 /**
  * @author mamingze
  * @version 1.0
@@ -30,13 +32,6 @@ class AppointmentControllerTest {
 
     @Autowired
     AppointmentController appointmentController;
-
-    @Test
-    void getAllAppointment() throws Exception {
-        // 发送post请求
-
-        logger.info("responseEntity: {}", appointmentController.getAllAppointment());
-    }
 
     @Test
     void getAppointmentInfoByCourseId() {
@@ -74,19 +69,35 @@ class AppointmentControllerTest {
     }
 
     @Test
-    void getAppointmentByUserId() {
+    void getAppointmentInfosByUserIdAndDate() {
 
 
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
             tAppointmentInfo.setCourseId(841);
             tAppointmentInfo.setUserId(1);
+            tAppointmentInfo.setDate(LocalDate.now().plusDays(1));
 
-            logger.info(appointmentController.getAppointmentByUserId("111", tAppointmentInfo).toString());
+            logger.info(appointmentController.getAppointmentInfosByUserIdAndDate("111", tAppointmentInfo).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }
 
+
+    }
+
+    @Test
+    void getBookableCoursesByUseridAndDate() {
+        try {
+            TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
+            tAppointmentInfo.setCourseId(841);
+            tAppointmentInfo.setUserId(1);
+            tAppointmentInfo.setDate(LocalDate.now().plusDays(1));
+
+            logger.info(appointmentController.getBookableCoursesByUseridAndDate("111", tAppointmentInfo).toString());
+        } catch (Exception e) {
+            logger.error("error: {}", e.getMessage());
+        }
 
     }
 }

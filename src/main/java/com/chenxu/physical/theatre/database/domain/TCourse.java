@@ -3,6 +3,7 @@ package com.chenxu.physical.theatre.database.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chenxu.physical.theatre.database.constant.TCourseType;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -30,7 +31,7 @@ public class TCourse {
     /**
      * 1:未上;2:已上;3:已删除;
      */
-    private Integer type;
+    private TCourseType type;
 
     /**
      * 课程在某一天的具体第几节
@@ -70,13 +71,13 @@ public class TCourse {
         }
         TCourse other = (TCourse) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getCourseName() == null ? other.getCourseName() == null : this.getCourseName().equals(other.getCourseName()))
-            && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
-            && (this.getLesson() == null ? other.getLesson() == null : this.getLesson().equals(other.getLesson()))
-            && (this.getDate() == null ? other.getDate() == null : this.getDate().equals(other.getDate()))
-            && (this.getMaximum() == null ? other.getMaximum() == null : this.getMaximum().equals(other.getMaximum()))
-            && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
-            && (this.getEndTime() == null ? other.getEndTime() == null : this.getEndTime().equals(other.getEndTime()));
+                && (this.getCourseName() == null ? other.getCourseName() == null : this.getCourseName().equals(other.getCourseName()))
+                && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
+                && (this.getLesson() == null ? other.getLesson() == null : this.getLesson().equals(other.getLesson()))
+                && (this.getDate() == null ? other.getDate() == null : this.getDate().equals(other.getDate()))
+                && (this.getMaximum() == null ? other.getMaximum() == null : this.getMaximum().equals(other.getMaximum()))
+                && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
+                && (this.getEndTime() == null ? other.getEndTime() == null : this.getEndTime().equals(other.getEndTime()));
     }
 
     @Override

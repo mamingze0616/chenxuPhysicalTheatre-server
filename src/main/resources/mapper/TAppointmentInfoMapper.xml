@@ -30,4 +30,11 @@
                  left join springboot_demo.T_COURSE T2 on T.course_id = T2.id
         where user_id = #{userId}
     </select>
+    <select id="getAppointmentInfosByUserIdAndDate"
+            resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
+        select T.*, T2.COURSE_NAME, T2.DATE, T2.START_TIME, T2.END_TIME
+        from  T_APPOINTMENT_INFO T
+                 left join springboot_demo.T_COURSE T2 on T.course_id = T2.id
+        where user_id = #{userId} and T2.DATE >= #{date} and T.type in (1,4) order by T2.START_TIME asc
+    </select>
 </mapper>

@@ -3,6 +3,7 @@ package com.chenxu.physical.theatre.database.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -15,6 +16,8 @@ public interface TAppointmentInfoMapper extends BaseMapper<TAppointmentInfo> {
     List<TAppointmentInfo> getAppointmentInfoByCourseId(Integer courseId);
 
     List<TAppointmentInfo> getAppointmentInfosByUserId(Integer userId);
+
+    List<TAppointmentInfo> getAppointmentInfosByUserIdAndDate(Integer userId, LocalDate date);
 
 }
 

@@ -1,5 +1,8 @@
 package com.chenxu.physical.theatre.database.constant;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * @author mamingze
  * @version 1.0
@@ -12,7 +15,8 @@ public enum TCourseType {
     FINISHED(2, "已上"),
     DELETED(3, "删除"),
     NOT_REGISTER(4, "未注册");
-
+    @EnumValue
+    @JsonValue
     private final Integer code;
     private final String desc;
 
@@ -23,5 +27,10 @@ public enum TCourseType {
 
     public Integer getCode() {
         return code;
+    }
+
+    @Override
+    public String toString() {
+        return code.toString();
     }
 }
