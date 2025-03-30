@@ -23,14 +23,15 @@ public class TAppointmentInfoServiceImpl extends ServiceImpl<TAppointmentInfoMap
         return baseMapper.getAppointmentInfoByCourseId(courseId);
     }
 
-    @Override
-    public List<TAppointmentInfo> getAppointmentInfosByUserId(Integer userId) {
-        return baseMapper.getAppointmentInfosByUserId(userId);
-    }
 
     @Override
     public List<TAppointmentInfo> getAppointmentInfosByUserIdAndDate(Integer userId, LocalDate date) {
         return baseMapper.getAppointmentInfosByUserIdAndDate(userId, date);
+    }
+
+    @Override
+    public List<TAppointmentInfo> getAllAppointmentInfosByUserId(Integer userId) {
+        return baseMapper.getAllAppointmentInfosByUserId(userId);
     }
 }
 

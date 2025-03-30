@@ -171,7 +171,7 @@ public class AppointmentController {
                     });
                     apiOverviewOfCourseNumberModel.setTotalCourseNumber(totalCourseNumber.get());
                     //查询该用户的所有预约信息
-                    List<TAppointmentInfo> tAppointmentInfoList = appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().eq("user_id", userId));
+                    List<TAppointmentInfo> tAppointmentInfoList = appointmentInfoService.getAllAppointmentInfosByUserId(userId);
                     //过滤所有已学的预约信息
                     List<TAppointmentInfo> learnedAppointmentInfoList = tAppointmentInfoList.stream().filter(tAppointmentInfo ->
                                     tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.LEARNED) || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.SIGNED))
