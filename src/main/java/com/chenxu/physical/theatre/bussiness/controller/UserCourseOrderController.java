@@ -34,7 +34,7 @@ public class UserCourseOrderController {
     TUserService tUserService;
 
     /**
-     * 获取个人全部订单
+     * 获取个人全部订单,判断权限如果是管理员则可以查询出带有作废状态的数据,是普通用户则无法查询出作废状态的数据
      *
      * @param openid
      * @param tUser
@@ -46,19 +46,36 @@ public class UserCourseOrderController {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
+
             Optional.ofNullable(tUser.getId()).ifPresentOrElse(userId -> {
-                Optional.ofNullable(courseOrderService.list(new QueryWrapper<TCourseOrder>().eq("user_id", userId))).ifPresentOrElse(tCourseOrder -> {
+                QueryWrapper<TCourseOrder> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("user_id", userId);
+                Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("openid", openid)))
+                        .ifPresentOrElse(temptUser -> {
+                            if (!TUserType.ADMIN.equals(temptUser.getType())) {
+                                //不是管理员,则增加一个查询条件
+                                queryWrapper.ne("status", TCourseOrderStatus.DELETED);
+                            }
+                        }, () -> {
+                            //不存在该用户,则增加一个查询条件
+                            queryWrapper.ne("status", TCourseOrderStatus.DELETED);
+//                            throw new RuntimeException("此id的数据为空");
+                        });
+                Optional.ofNullable(courseOrderService.list(queryWrapper)).ifPresentOrElse(tCourseOrder -> {
+                    if (tCourseOrder.size() == 0) {
+                        throw new RuntimeException("此userId的数据为空");
+                    }
                     apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                     apiResponse.setData(tCourseOrder);
                 }, () -> {
-                    throw new RuntimeException("此userId的数据为空");
+                    throw new RuntimeException("查询出错");
                 });
             }, () -> {
                 throw new RuntimeException("userId为空");
             });
         } catch (Exception e) {
             logger.error(e.getMessage());
-            apiResponse.setErrorMsg("获取失败");
+            apiResponse.setErrorMsg(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         }
 
@@ -107,7 +124,7 @@ public class UserCourseOrderController {
             });
         } catch (Exception e) {
             logger.error(e.getMessage());
-            apiResponse.setErrorMsg("添加失败");
+            apiResponse.setErrorMsg(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         }
         return apiResponse;
@@ -141,7 +158,7 @@ public class UserCourseOrderController {
             });
         } catch (Exception e) {
             logger.error(e.getMessage());
-            apiResponse.setErrorMsg("修改失败");
+            apiResponse.setErrorMsg(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         }
         return apiResponse;

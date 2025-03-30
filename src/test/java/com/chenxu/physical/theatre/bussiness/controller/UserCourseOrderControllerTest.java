@@ -1,16 +1,19 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.chenxu.physical.theatre.database.domain.TUser;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.chenxu.physical.theatre.TestConstant.ADMIN_OPENID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -26,6 +29,9 @@ class UserCourseOrderControllerTest {
     private static final Logger logger = LoggerFactory.getLogger(UserCourseOrderControllerTest.class);
 
     MockMvc mockMvc;
+
+    @Autowired
+    UserCourseOrderController userCourseOrderController;
 
     @BeforeEach
     void setup() {
@@ -45,5 +51,12 @@ class UserCourseOrderControllerTest {
         mockMvc.perform(post("/order/course/update")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonObject.toString())).andDo(print());
+    }
+
+    @Test
+    void queryALLByUserId() throws Exception {
+        TUser tUser = new TUser();
+        tUser.setId(2);
+        userCourseOrderController.queryALLByUserId(ADMIN_OPENID, tUser);
     }
 }

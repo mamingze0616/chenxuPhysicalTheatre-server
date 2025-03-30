@@ -185,7 +185,7 @@ public class CourseController {
                 Optional.ofNullable(courseService.getById(course.getId())).ifPresentOrElse(tCourse -> {
                     tCourse.setCourseName(course.getCourseName());
                     //如果原状态是未注册状态，则修改为未上状态
-                    if (tCourse.getType().equals(TCourseType.NOT_REGISTER.getCode())) {
+                    if (tCourse.getType().equals(TCourseType.NOT_REGISTER)) {
                         tCourse.setType(TCourseType.NOT_START);
                     } else {
                         tCourse.setType(course.getType());
