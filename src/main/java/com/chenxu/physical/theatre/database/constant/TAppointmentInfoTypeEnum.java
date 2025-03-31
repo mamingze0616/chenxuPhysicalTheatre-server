@@ -31,9 +31,5 @@ public enum TAppointmentInfoTypeEnum {
         this.desc = desc;
     }
 
-    @Override
-    public String toString() {
-        return this.code.toString();
-    }
 
 }

@@ -1,0 +1,17 @@
+plugins {
+    id 'java-platform'
+}
+
+javaPlatform {
+    allowDependencies()
+}
+
+dependencies {
+    api(platform(libs.com.baomidou.mybatis.plus.bom))
+    api platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    constraints {
+        //处理冲突依赖
+
+    }
+}
+

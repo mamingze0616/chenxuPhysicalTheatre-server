@@ -42,12 +42,11 @@ class UserCourseOrderControllerTest {
     @Test
     void updateCourseOrder() throws Exception {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("status", "0");
+        jsonObject.put("status", 1);
         jsonObject.put("userId", 22);
         jsonObject.put("courseNumber", 1);
         jsonObject.put("type", 1);
         jsonObject.put("operatorId", 1);
-        logger.info(jsonObject.toString());
         mockMvc.perform(post("/order/course/update")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .content(jsonObject.toString())).andDo(print());

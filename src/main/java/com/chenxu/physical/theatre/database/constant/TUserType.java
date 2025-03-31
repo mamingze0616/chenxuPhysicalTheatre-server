@@ -25,8 +25,4 @@ public enum TUserType {
         this.desc = desc;
     }
 
-    @Override
-    public String toString() {
-        return this.code.toString();
-    }
 }

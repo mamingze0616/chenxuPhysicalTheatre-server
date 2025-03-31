@@ -1,5 +1,7 @@
 package com.chenxu.physical.theatre.database.constant;
 
+import lombok.Getter;
+
 /**
  * @author mamingze
  * @version 1.0
@@ -7,6 +9,7 @@ package com.chenxu.physical.theatre.database.constant;
  * @description
  * @create 2025/3/4 17:25
  */
+@Getter
 public enum TUserStatus {
     LOGOFF(0, "注销"),
     NORMAL(1, "正常"),
@@ -20,13 +23,5 @@ public enum TUserStatus {
     TUserStatus(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
-    }
-
-    public Integer getCode() {
-        return code;
-    }
-
-    public String getDesc() {
-        return desc;
     }
 }

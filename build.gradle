@@ -21,16 +21,19 @@ configurations {
 }
 
 dependencies {
+    // Platform
+    implementation platform(project(":platform"))
     api libs.org.springframework.boot.spring.boot.starter.web
-//    api libs.org.mybatis.spring.boot.mybatis.spring.boot.starter
     api libs.com.baomidou.mybatis.plus.boot.starter
+    api libs.com.baomidou.mybatis.plus.jsqlparser
     api libs.org.springframework.boot.spring.boot.configuration.processor
+    api  libs.org.springframework.boot.spring.boot.starter.actuator
     compileOnly libs.org.projectlombok.lombok
     annotationProcessor libs.org.projectlombok.lombok
     api libs.org.springframework.boot.spring.boot.starter.logging
     runtimeOnly libs.mysql.mysql.connector.java
     testImplementation libs.org.springframework.boot.spring.boot.starter.test
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly libs.junit.jupiter.launcher
 
 }
 

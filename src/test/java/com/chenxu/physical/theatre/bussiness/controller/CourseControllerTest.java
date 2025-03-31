@@ -1,9 +1,12 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.chenxu.physical.theatre.database.constant.TCourseType;
+import com.chenxu.physical.theatre.database.domain.TCourse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -30,6 +33,9 @@ class CourseControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(new CourseController()).build();
     }
 
+    @Autowired
+    CourseController courseController;
+
     @Test
     void getCoursesByID() throws Exception {
         // 发送GET请求
@@ -37,9 +43,19 @@ class CourseControllerTest {
                         post("/course/getCoursesByID")
                                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                                 // 通过content()存放Body的Json
-                                .content("{\"id\": \"813\"}"))
+                                .content("{\"type\": \"1\"}"))
                 .andReturn().getResponse();
         logger.info("responseEntity: {}", responseEntity.getContentAsString());
+
+    }
+
+    @Test
+    void getCoursesByID2() throws Exception {
+        // 发送GET请求
+        TCourse course = new TCourse();
+        course.setId(813);
+        course.setType(TCourseType.NOT_START);
+        logger.info("responseEntity: {}", courseController.getCoursesByID("www", course));
 
     }
 }

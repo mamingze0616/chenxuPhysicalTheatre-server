@@ -29,8 +29,4 @@ public enum TCourseType {
         return code;
     }
 
-    @Override
-    public String toString() {
-        return code.toString();
-    }
 }
