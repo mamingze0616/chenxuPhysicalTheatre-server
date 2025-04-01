@@ -8,6 +8,7 @@ WORKDIR /app
 # 将src目录下所有文件，拷贝到工作目录中src目录下（.gitignore/.dockerignore中文件除外）
 COPY src /app/src
 COPY gradle/libs.versions.toml /app/gradle/libs.versions.toml
+COPY platform /app/platform
 
 
 # 将gradle配置文件文件，拷贝到工作目录下
