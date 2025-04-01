@@ -1,6 +1,7 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiOverviewOfCourseNumberModel;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
@@ -10,9 +11,11 @@ import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.domain.TCourseOrder;
+import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.service.TAppointmentInfoService;
 import com.chenxu.physical.theatre.database.service.TCourseOrderService;
 import com.chenxu.physical.theatre.database.service.TCourseService;
+import com.chenxu.physical.theatre.database.service.TUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +43,9 @@ import static com.chenxu.physical.theatre.bussiness.constant.Constant.APIRESPONS
 public class AppointmentController {
     private static final Logger logger = LoggerFactory.getLogger(AppointmentController.class);
     @Autowired
-    private TCourseService courseService;
+    TCourseService courseService;
+    @Autowired
+    TUserService userService;
     @Autowired
     TAppointmentInfoService appointmentInfoService;
     @Autowired
@@ -48,8 +53,7 @@ public class AppointmentController {
 
     //获取全部可预约课程,去除已经预约过的课程,日期不传默认今天,
     @PostMapping("/getBookableCoursesByUseridAndDate")
-    public ApiResponse getBookableCoursesByUseridAndDate(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
-                                                         String openid, @RequestBody TAppointmentInfo appointmentInfo) {
+    public ApiResponse getBookableCoursesByUseridAndDate(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TAppointmentInfo appointmentInfo) {
         ApiResponse apiResponse = new ApiResponse();
         try {
             Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(userId -> {
@@ -341,13 +345,15 @@ public class AppointmentController {
      * @return
      */
     @PostMapping("/getCourseInfoWithAppointmentInfoList")
-    private ApiResponse getCourseInfoWithAppointmentInfoList(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                                             @RequestBody TCourse course) {
+    public ApiResponse getCourseInfoWithAppointmentInfoList(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourse course) {
         logger.info("getAppointmentInfoListWithCourse::openid = [{}], course = [{}]", openid, course);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
-
+            PageDTO<TCourse> quertPage = new PageDTO<TCourse>(Optional.ofNullable(course.getCurrent()).orElse(1), Optional.ofNullable(course.getSize()).orElse(10));
+            apiResponse.setData(courseService.selectPageTCourseList(quertPage, course));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setErrorMsg(APIRESPONSE_SUCCESS_MSG);
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
@@ -357,5 +363,31 @@ public class AppointmentController {
 
     }
 
+    /**
+     * 获取人员表和课程预约表联合查询的预约信息,查询条件为人员ID,不传日期则传全部人员的信息
+     *
+     * @param openid
+     * @param user   人员信息
+     * @return
+     */
+    @PostMapping("/getUserInfoWithAppointmentInfoList")
+    public ApiResponse getUserInfoWithAppointmentInfoList(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
+                                                          @RequestBody TUser user) {
+        logger.info("getUserInfoWithAppointmentInfoList::openid = [{}], course = [{}]", openid, user);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            PageDTO<TUser> quertPage = new PageDTO<>(Optional.ofNullable(user.getCurrent()).orElse(1), Optional.ofNullable(user.getSize()).orElse(10));
+            apiResponse.setData(userService.selectPageTUserWithAppointmentInfoList(quertPage, user));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setErrorMsg(APIRESPONSE_SUCCESS_MSG);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+
+    }
 
 }

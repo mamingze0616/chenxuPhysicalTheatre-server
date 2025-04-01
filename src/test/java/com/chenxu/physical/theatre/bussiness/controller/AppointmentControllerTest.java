@@ -1,7 +1,10 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
+import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.domain.TCourseOrder;
+import com.chenxu.physical.theatre.database.domain.TUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -59,7 +62,7 @@ class AppointmentControllerTest {
     void doAppointmentByCourseId() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
-            tAppointmentInfo.setCourseId(841);
+            tAppointmentInfo.setCourseId(883);
             tAppointmentInfo.setUserId(1);
 
             logger.info(appointmentController.doAppointmentByCourseId("111", tAppointmentInfo).toString());
@@ -105,10 +108,39 @@ class AppointmentControllerTest {
     void cancelCourseAppointment() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
-            tAppointmentInfo.setCourseId(871);
+            tAppointmentInfo.setCourseId(883);
             tAppointmentInfo.setUserId(1);
 
             logger.info(appointmentController.cancelCourseAppointment("111", tAppointmentInfo).toString());
+        } catch (Exception e) {
+            logger.error("error: {}", e.getMessage());
+        }
+    }
+
+    @Test
+    void getCourseInfoWithAppointmentInfoList() {
+        try {
+            TCourse tCourse = new TCourse();
+            tCourse.setCourseName("第");
+            tCourse.setCurrent(1);
+            tCourse.setSize(10);
+            tCourse.setType(TCourseType.NOT_START);
+            tCourse.setDate(LocalDate.now());
+
+            logger.info(appointmentController.getCourseInfoWithAppointmentInfoList("111", tCourse).toString());
+        } catch (Exception e) {
+            logger.error("error: {}", e.getMessage());
+        }
+    }
+
+    @Test
+    void getUserInfoWithAppointmentInfoList() {
+        try {
+            TUser tUser = new TUser();
+            tUser.setCurrent(1);
+            tUser.setSize(10);
+//            tUser.setType(TUser.TUserType.ADMIN);
+            logger.info(appointmentController.getUserInfoWithAppointmentInfoList("111", tUser).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }

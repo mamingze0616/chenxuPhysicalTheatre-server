@@ -5,19 +5,36 @@
 <mapper namespace="com.chenxu.physical.theatre.database.mapper.TCourseMapper">
 
     <resultMap id="BaseResultMap" type="com.chenxu.physical.theatre.database.domain.TCourse">
-            <id property="id" column="ID" jdbcType="INTEGER"/>
-            <result property="courseName" column="COURSE_NAME" jdbcType="VARCHAR"/>
-            <result property="type" column="TYPE" jdbcType="TINYINT"/>
-            <result property="lesson" column="LESSON" jdbcType="INTEGER"/>
-            <result property="date" column="DATE" jdbcType="DATE"/>
-            <result property="maximum" column="MAXIMUM" jdbcType="INTEGER"/>
-            <result property="startTime" column="START_TIME" jdbcType="TIMESTAMP"/>
-            <result property="endTime" column="END_TIME" jdbcType="TIMESTAMP"/>
+        <id property="id" column="ID" jdbcType="INTEGER"/>
+        <result property="courseName" column="COURSE_NAME" jdbcType="VARCHAR"/>
+        <result property="type" column="TYPE" jdbcType="TINYINT"/>
+        <result property="lesson" column="LESSON" jdbcType="INTEGER"/>
+        <result property="date" column="DATE" jdbcType="DATE"/>
+        <result property="maximum" column="MAXIMUM" jdbcType="INTEGER"/>
+        <result property="startTime" column="START_TIME" jdbcType="TIMESTAMP"/>
+        <result property="endTime" column="END_TIME" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         ID,COURSE_NAME,TYPE,
-        LESSON,DATE,MAXIMUM,
+        LESSON,DATE,MAXIMUM,MINIMUM,
         START_TIME,END_TIME
     </sql>
+
+    <resultMap id="selectPageTCourseListWithAppointmentInfoListMap" type="com.chenxu.physical.theatre.database.domain.TCourse">
+        <id property="id" column="ID" jdbcType="INTEGER"/>
+        <result property="courseName" column="COURSE_NAME" jdbcType="VARCHAR"/>
+        <result property="type" column="TYPE" jdbcType="TINYINT"/>
+        <result property="lesson" column="LESSON" jdbcType="INTEGER"/>
+        <result property="date" column="DATE" jdbcType="DATE"/>
+        <result property="maximum" column="MAXIMUM" jdbcType="INTEGER"/>
+        <result property="minimum" column="MAXIMUM" jdbcType="INTEGER"/>
+        <result property="startTime" column="START_TIME" jdbcType="TIMESTAMP"/>
+        <result property="endTime" column="END_TIME" jdbcType="TIMESTAMP"/>
+        <collection property="appointmentInfos" ofType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
+            <id property="id" column="APPOINTMENT_INFO_id"/>
+            <result property="userId" column="user_id"/>
+            <result property="courseId" column="course_id"/>
+        </collection>
+    </resultMap>
 </mapper>

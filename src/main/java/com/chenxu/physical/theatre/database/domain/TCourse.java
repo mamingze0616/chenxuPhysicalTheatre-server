@@ -1,13 +1,16 @@
 package com.chenxu.physical.theatre.database.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chenxu.physical.theatre.bussiness.dto.ApiRequestPageDto;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 课程信息表
@@ -16,7 +19,7 @@ import java.time.LocalDateTime;
  */
 @TableName(value = "T_COURSE")
 @Data
-public class TCourse {
+public class TCourse extends ApiRequestPageDto {
     /**
      *
      */
@@ -49,6 +52,11 @@ public class TCourse {
     private Integer maximum;
 
     /**
+     * 课程最大人数
+     */
+    private Integer minimum;
+
+    /**
      * 开始时间
      */
     private LocalDateTime startTime;
@@ -57,6 +65,8 @@ public class TCourse {
      * 结束时间
      */
     private LocalDateTime endTime;
+    @TableField(exist = false)
+    private List<TAppointmentInfo> appointmentInfos;
 
     @Override
     public boolean equals(Object that) {
@@ -77,7 +87,8 @@ public class TCourse {
                 && (this.getDate() == null ? other.getDate() == null : this.getDate().equals(other.getDate()))
                 && (this.getMaximum() == null ? other.getMaximum() == null : this.getMaximum().equals(other.getMaximum()))
                 && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
-                && (this.getEndTime() == null ? other.getEndTime() == null : this.getEndTime().equals(other.getEndTime()));
+                && (this.getEndTime() == null ? other.getEndTime() == null : this.getEndTime().equals(other.getEndTime()))
+                && (this.getMinimum() == null ? other.getMinimum() == null : this.getMinimum().equals(other.getMinimum()));
     }
 
     @Override
@@ -92,6 +103,7 @@ public class TCourse {
         result = prime * result + ((getMaximum() == null) ? 0 : getMaximum().hashCode());
         result = prime * result + ((getStartTime() == null) ? 0 : getStartTime().hashCode());
         result = prime * result + ((getEndTime() == null) ? 0 : getEndTime().hashCode());
+        result = prime * result + ((getMinimum() == null) ? 0 : getMinimum().hashCode());
         return result;
     }
 
@@ -107,8 +119,13 @@ public class TCourse {
         sb.append(", lesson=").append(lesson);
         sb.append(", date=").append(date);
         sb.append(", maximum=").append(maximum);
+        sb.append(", minimum=").append(minimum);
         sb.append(", startTime=").append(startTime);
         sb.append(", endTime=").append(endTime);
+        sb.append(", appointmentInfos=").append(appointmentInfos);
+        sb.append(",current=").append(getCurrent());
+        sb.append(",size=").append(getSize());
+        sb.append(",total=").append(getTotal());
         sb.append("]");
         return sb.toString();
     }

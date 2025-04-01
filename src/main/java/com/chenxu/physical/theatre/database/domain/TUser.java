@@ -1,12 +1,15 @@
 package com.chenxu.physical.theatre.database.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chenxu.physical.theatre.bussiness.dto.ApiRequestPageDto;
 import com.chenxu.physical.theatre.database.constant.TUserType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * user info
@@ -15,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @TableName(value = "T_USER")
 @Data
-public class TUser {
+public class TUser extends ApiRequestPageDto {
     /**
      *
      */
@@ -61,6 +64,9 @@ public class TUser {
      *
      */
     private LocalDateTime loginAt;
+
+    @TableField(exist = false)
+    private List<TAppointmentInfo> appointmentInfos;
 
     @Override
     public boolean equals(Object that) {
@@ -116,6 +122,7 @@ public class TUser {
         sb.append(", status=").append(status);
         sb.append(", createdat=").append(createdAt);
         sb.append(", loginat=").append(loginAt);
+        sb.append(", appointmentInfos=").append(appointmentInfos);
         sb.append("]");
         return sb.toString();
     }
