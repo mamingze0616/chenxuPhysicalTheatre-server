@@ -1,6 +1,5 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
-import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.domain.TCourseOrder;
@@ -121,12 +120,9 @@ class AppointmentControllerTest {
     void getCourseInfoWithAppointmentInfoList() {
         try {
             TCourse tCourse = new TCourse();
-            tCourse.setCourseName("第");
-            tCourse.setCurrent(1);
+            tCourse.setCurrent(3);
             tCourse.setSize(10);
-            tCourse.setType(TCourseType.NOT_START);
             tCourse.setDate(LocalDate.now());
-
             logger.info(appointmentController.getCourseInfoWithAppointmentInfoList("111", tCourse).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());

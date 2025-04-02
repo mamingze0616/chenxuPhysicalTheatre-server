@@ -33,12 +33,15 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
         QueryWrapper<TCourse> queryWrapper = new QueryWrapper<>();
         Optional.ofNullable(course.getCourseName()).ifPresent(name -> queryWrapper.like("course_name", name));
         Optional.ofNullable(course.getType()).ifPresent(type -> queryWrapper.eq("type", type));
-        Optional.ofNullable(course.getDate()).ifPresent(date -> queryWrapper.eq("date", date));
+        Optional.ofNullable(course.getDate()).ifPresent(date -> queryWrapper.ge("date", date));
         PageDTO<TCourse> pageDTO = page(page, queryWrapper);
         //分页结果
         List<TCourse> tCourseList = Optional.ofNullable(pageDTO.getRecords()).orElse(new ArrayList<TCourse>());
         //使用子查询做数据填充
         List<Integer> integerList = tCourseList.stream().map(TCourse::getId).collect(Collectors.toList());
+        if (integerList.isEmpty()) {
+            return pageDTO;
+        }
         Map<Integer, List<TAppointmentInfo>> subAppointmentInfoMap = tAppointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().in("course_id", integerList))
                 .stream().collect(Collectors.groupingBy(TAppointmentInfo::getCourseId));
         tCourseList.forEach(tCourse -> {

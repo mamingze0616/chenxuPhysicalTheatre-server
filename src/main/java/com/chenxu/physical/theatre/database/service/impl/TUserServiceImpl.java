@@ -35,8 +35,12 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser>
         Optional.ofNullable(user.getNickname()).ifPresent(nickname -> queryWrapper.like("nickname", nickname));
         // 分页查询
         PageDTO<TUser> tUserPageDTODTO = page(page, queryWrapper);
-        List<TUser> tUserList = Optional.ofNullable(tUserPageDTODTO.getRecords()).orElse(new ArrayList<TUser>());
+        List<TUser> tUserList = Optional.ofNullable(tUserPageDTODTO.getRecords()).orElse(new ArrayList<>());
+
         List<Integer> idList = tUserList.stream().map(TUser::getId).collect(Collectors.toList());
+        if (idList.isEmpty()) {
+            return tUserPageDTODTO;
+        }
         Map<Integer, List<TAppointmentInfo>> tAppointmentInfoMap = tAppointmentInfoService
                 .list(new QueryWrapper<TAppointmentInfo>().in("user_id", idList)).stream()
                 .collect(Collectors.groupingBy(TAppointmentInfo::getUserId));
