@@ -5,11 +5,11 @@
 <mapper namespace="com.chenxu.physical.theatre.database.mapper.TAppointmentInfoMapper">
 
     <resultMap id="BaseResultMap" type="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="userId" column="user_id" jdbcType="INTEGER"/>
-            <result property="courseId" column="course_id" jdbcType="INTEGER"/>
-            <result property="type" column="type" jdbcType="TINYINT"/>
-            <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="courseId" column="course_id" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="TINYINT"/>
+        <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -26,15 +26,31 @@
     <select id="getAppointmentInfosByUserIdAndDate"
             resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
         select T.*, T2.COURSE_NAME, T2.DATE, T2.START_TIME, T2.END_TIME
-        from  T_APPOINTMENT_INFO T
+        from T_APPOINTMENT_INFO T
                  left join springboot_demo.T_COURSE T2 on T.course_id = T2.id
-        where user_id = #{userId} and T2.DATE >= #{date} and T.type in (1,4) order by T2.START_TIME asc
+        where user_id = #{userId}
+          and T2.DATE >= #{date}
+          and T.type in (1, 4)
+        order by T2.START_TIME asc
     </select>
     <select id="getAllAppointmentInfosByUserId"
             resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
         select T.*, T2.COURSE_NAME, T2.DATE, T2.START_TIME, T2.END_TIME
-        from  T_APPOINTMENT_INFO T
-                  left join springboot_demo.T_COURSE T2 on T.course_id = T2.id
-        where user_id = #{userId} order by T2.START_TIME asc
+        from T_APPOINTMENT_INFO T
+                 left join springboot_demo.T_COURSE T2 on T.course_id = T2.id
+        where user_id = #{userId}
+        order by T2.START_TIME asc
+    </select>
+    <select id="getAppointmentInfoByCourseIds"
+            resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
+        select T.*, TU.nickname, TU.avatar
+        from T_APPOINTMENT_INFO T
+                 left join springboot_demo.T_USER TU on TU.id = T.user_id
+        <where>
+            <foreach item="item" index="index" collection="courseIds"
+                     open="T.course_id in (" separator="," close=")" nullable="true">
+                #{item}
+            </foreach>
+        </where>
     </select>
 </mapper>

@@ -42,7 +42,7 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
         if (integerList.isEmpty()) {
             return pageDTO;
         }
-        Map<Integer, List<TAppointmentInfo>> subAppointmentInfoMap = tAppointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().in("course_id", integerList))
+        Map<Integer, List<TAppointmentInfo>> subAppointmentInfoMap = tAppointmentInfoService.getAppointmentInfoByCourseIds(integerList)
                 .stream().collect(Collectors.groupingBy(TAppointmentInfo::getCourseId));
         tCourseList.forEach(tCourse -> {
             if (subAppointmentInfoMap.containsKey(tCourse.getId())) {

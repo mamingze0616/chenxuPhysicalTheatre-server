@@ -14,6 +14,8 @@ import java.util.List;
 public interface TAppointmentInfoService extends IService<TAppointmentInfo> {
     List<TAppointmentInfo> getAppointmentInfoByCourseId(Integer courseId);
 
+    List<TAppointmentInfo> getAppointmentInfoByCourseIds(List<Integer> courseIds);
+
 
     List<TAppointmentInfo> getAppointmentInfosByUserIdAndDate(Integer userId, LocalDate date);
 
