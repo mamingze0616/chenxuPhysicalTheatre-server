@@ -21,4 +21,6 @@ public interface TAppointmentInfoService extends IService<TAppointmentInfo> {
 
     List<TAppointmentInfo> getAllAppointmentInfosByUserId(Integer userId);
 
+    List<TAppointmentInfo> getAllAppointmentInfosByUserIds(List<Integer> userIds);
+
 }

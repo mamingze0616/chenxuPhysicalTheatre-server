@@ -15,8 +15,7 @@ import java.util.List;
  * @createDate 2025-03-29 22:36:52
  */
 @Service
-public class TAppointmentInfoServiceImpl extends ServiceImpl<TAppointmentInfoMapper, TAppointmentInfo>
-        implements TAppointmentInfoService {
+public class TAppointmentInfoServiceImpl extends ServiceImpl<TAppointmentInfoMapper, TAppointmentInfo> implements TAppointmentInfoService {
 
     @Override
     public List<TAppointmentInfo> getAppointmentInfoByCourseId(Integer courseId) {
@@ -37,6 +36,11 @@ public class TAppointmentInfoServiceImpl extends ServiceImpl<TAppointmentInfoMap
     @Override
     public List<TAppointmentInfo> getAllAppointmentInfosByUserId(Integer userId) {
         return baseMapper.getAllAppointmentInfosByUserId(userId);
+    }
+
+    @Override
+    public List<TAppointmentInfo> getAllAppointmentInfosByUserIds(List<Integer> userIds) {
+        return baseMapper.getAllAppointmentInfosByUserIds(userIds);
     }
 }
 

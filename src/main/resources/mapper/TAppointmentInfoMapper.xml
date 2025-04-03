@@ -53,4 +53,16 @@
             </foreach>
         </where>
     </select>
+    <select id="getAllAppointmentInfosByUserIds"
+            resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
+        select T.*, T2.COURSE_NAME, T2.DATE, T2.START_TIME, T2.END_TIME
+        from T_APPOINTMENT_INFO T
+                 left join springboot_demo.T_COURSE T2 on T.course_id = T2.id
+        <where>
+            <foreach item="item" index="index" collection="userIds"
+                     open="T.user_id in (" separator="," close=")" nullable="true">
+                #{item}
+            </foreach>
+        </where>
+    </select>
 </mapper>

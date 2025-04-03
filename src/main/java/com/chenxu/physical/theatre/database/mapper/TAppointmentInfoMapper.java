@@ -21,6 +21,8 @@ public interface TAppointmentInfoMapper extends BaseMapper<TAppointmentInfo> {
 
     List<TAppointmentInfo> getAllAppointmentInfosByUserId(Integer userId);
 
+    List<TAppointmentInfo> getAllAppointmentInfosByUserIds(List<Integer> userIds);
+
 }
 
 

@@ -42,7 +42,7 @@ public class TUserServiceImpl extends ServiceImpl<TUserMapper, TUser>
             return tUserPageDTODTO;
         }
         Map<Integer, List<TAppointmentInfo>> tAppointmentInfoMap = tAppointmentInfoService
-                .list(new QueryWrapper<TAppointmentInfo>().in("user_id", idList)).stream()
+                .getAllAppointmentInfosByUserIds(idList).stream()
                 .collect(Collectors.groupingBy(TAppointmentInfo::getUserId));
         tUserList.forEach(tUser -> {
             if (tAppointmentInfoMap.containsKey(tUser.getId())) {
