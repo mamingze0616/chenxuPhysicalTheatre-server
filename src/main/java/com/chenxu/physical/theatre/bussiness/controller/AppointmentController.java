@@ -65,7 +65,6 @@ public class AppointmentController {
                 if (courses.isEmpty()) {
                     apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                     apiResponse.setData(resultList);
-                    return;
                 } else {
                     courses.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
                         ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
@@ -77,9 +76,6 @@ public class AppointmentController {
                     apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                     apiResponse.setData(resultList);
                 }
-
-                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setData(courses);
 
             }, () -> {
                 throw new RuntimeException("userId为空");
