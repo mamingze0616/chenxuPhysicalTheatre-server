@@ -5,9 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiOverviewOfCourseNumberModel;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
+import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
+import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
-import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.domain.TCourseOrder;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -52,29 +54,30 @@ public class AppointmentController {
     TCourseOrderService courseOrderService;
 
     //获取全部可预约课程,去除已经预约过的课程,日期不传默认今天,
-    @PostMapping("/getBookableCoursesByUseridAndDate")
-    public ApiResponse getBookableCoursesByUseridAndDate(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TAppointmentInfo appointmentInfo) {
+    @PostMapping("/getBookableCoursesByUserid")
+    public ApiResponse getBookableCoursesByUserid(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
+                                                  @RequestBody TAppointmentInfo appointmentInfo) {
         ApiResponse apiResponse = new ApiResponse();
+        List<ApiWeekCourseModel> resultList = new ArrayList<>();
         try {
             Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(userId -> {
-                LocalDate querydate = Optional.ofNullable(appointmentInfo.getDate()).orElse(LocalDate.now());
-                List<TCourse> courses = courseService.list(new QueryWrapper<TCourse>()
-                        //课程类型为未上
-                        .eq("type", TCourseType.NOT_START.getCode())
-                        //开始时间为当前时间之后
-                        .ge("start_time", LocalDateTime.now())
-                        //时间在querydate之前
-                        .ge("date", querydate)
-                        //按照日期和课时升序
-                        .orderByAsc("date", "lesson"));
-//                if (courses.size() == 0) {
-//                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-//                    apiResponse.setErrorMsg("没有可预约课程");
-//                    apiResponse.setData(courses);
-//                }
-                //查找1:已预约;3:已学;4:已签到的预约信息
-                List<TAppointmentInfo> appointmentInfos = appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().eq("user_id", userId).in("type", TAppointmentInfoTypeEnum.APPOINTED.getCode(), TAppointmentInfoTypeEnum.LEARNED.getCode(), TAppointmentInfoTypeEnum.SIGNED.getCode()));
-                logger.info("是否有可预约课程被删除:{}", courses.removeIf(course -> appointmentInfos.stream().anyMatch(appointmentInfo1 -> appointmentInfo1.getCourseId().equals(course.getId()))));
+                List<TCourse> courses = courseService.getBookableCoursesWithAppointmentInfoByUserid(userId);
+                if (courses.isEmpty()) {
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                    apiResponse.setData(resultList);
+                    return;
+                } else {
+                    courses.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
+                        ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
+                        apiWeekCourseModel.setDate(date);
+                        apiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(date.getDayOfWeek().getValue()).getDesc());
+                        apiWeekCourseModel.setList(tCourses);
+                        resultList.add(apiWeekCourseModel);
+                    });
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                    apiResponse.setData(resultList);
+                }
+
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(courses);
 

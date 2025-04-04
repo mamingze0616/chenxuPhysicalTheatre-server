@@ -53,6 +53,11 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
         pageDTO.setRecords(tCourseList);
         return pageDTO;
     }
+
+    @Override
+    public List<TCourse> getBookableCoursesWithAppointmentInfoByUserid(Integer userid) {
+        return baseMapper.getBookableCoursesWithAppointmentInfoByUserid(userid);
+    }
 }
 
 

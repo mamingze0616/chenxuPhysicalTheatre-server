@@ -2,6 +2,7 @@ package com.chenxu.physical.theatre.database.service.impl;
 
 import com.chenxu.physical.theatre.bussiness.controller.CourseController;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
+import com.chenxu.physical.theatre.database.service.TCourseService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,8 @@ class TCourseServiceImplTest {
     private static final Logger logger = LoggerFactory.getLogger(TCourseServiceImplTest.class);
     @Autowired
     private CourseController courseController;
+    @Autowired
+    private TCourseService tCourseService;
 
     @Test
     void testGetTwoWeekCourses() {
@@ -29,4 +32,9 @@ class TCourseServiceImplTest {
     }
 
 
+    @Test
+    void getBookableCoursesWithAppointmentInfoByUserid() {
+        logger.info(tCourseService.getBookableCoursesWithAppointmentInfoByUserid(Integer.valueOf(2)).toString());
+
+    }
 }

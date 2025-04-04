@@ -20,8 +20,19 @@
         LESSON,DATE,MAXIMUM,MINIMUM,
         START_TIME,END_TIME
     </sql>
+    <select id="getBookableCoursesWithAppointmentInfoByUserid"
+            resultMap="selectPageTCourseListWithAppointmentInfoListMap">
+        select tc.*, tai.id as APPOINTMENT_INFO_id, tai.user_id, tai.course_id
+        from T_COURSE tc
+                 left join T_APPOINTMENT_INFO tai on tc.id = tai.course_id
+        where tc.START_TIME >= CURRENT_TIMESTAMP
+          and tc.type = 1
+          and tc.id not in (select course_id from T_APPOINTMENT_INFO where user_id = #{userid})
+        order by tc.DATE, tc.LESSON
+    </select>
 
-    <resultMap id="selectPageTCourseListWithAppointmentInfoListMap" type="com.chenxu.physical.theatre.database.domain.TCourse">
+    <resultMap id="selectPageTCourseListWithAppointmentInfoListMap"
+               type="com.chenxu.physical.theatre.database.domain.TCourse">
         <id property="id" column="ID" jdbcType="INTEGER"/>
         <result property="courseName" column="COURSE_NAME" jdbcType="VARCHAR"/>
         <result property="type" column="TYPE" jdbcType="TINYINT"/>
@@ -32,9 +43,9 @@
         <result property="startTime" column="START_TIME" jdbcType="TIMESTAMP"/>
         <result property="endTime" column="END_TIME" jdbcType="TIMESTAMP"/>
         <collection property="appointmentInfos" ofType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
-            <id property="id" column="APPOINTMENT_INFO_id"/>
-            <result property="userId" column="user_id"/>
-            <result property="courseId" column="course_id"/>
+            <id property="id" column="APPOINTMENT_INFO_ID"/>
+            <result property="userId" column="USER_ID"/>
+            <result property="courseId" column="COURSE_ID"/>
         </collection>
     </resultMap>
 </mapper>

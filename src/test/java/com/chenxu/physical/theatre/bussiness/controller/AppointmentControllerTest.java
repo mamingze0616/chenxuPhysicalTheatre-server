@@ -94,8 +94,8 @@ class AppointmentControllerTest {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
             tAppointmentInfo.setCourseId(841);
-            tAppointmentInfo.setUserId(1);
-            tAppointmentInfo.setDate(LocalDate.now().plusDays(30));
+            tAppointmentInfo.setUserId(2);
+//            tAppointmentInfo.setDate(LocalDate.now().plusDays(30));
 
             logger.info(appointmentController.getBookableCoursesByUseridAndDate("111", tAppointmentInfo).toString());
         } catch (Exception e) {
@@ -143,5 +143,6 @@ class AppointmentControllerTest {
             logger.error("error: {}", e.getMessage());
         }
     }
+
 
 }

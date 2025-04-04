@@ -3,6 +3,8 @@ package com.chenxu.physical.theatre.database.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 
+import java.util.List;
+
 /**
  * @author mamingze
  * @description 针对表【T_COURSE(课程信息表)】的数据库操作Mapper
@@ -10,6 +12,9 @@ import com.chenxu.physical.theatre.database.domain.TCourse;
  * @Entity com.chenxu.physical.theatre.database.domain.TCourse
  */
 public interface TCourseMapper extends BaseMapper<TCourse> {
+
+    List<TCourse> getBookableCoursesWithAppointmentInfoByUserid(Integer userid);
+
 }
 
 
