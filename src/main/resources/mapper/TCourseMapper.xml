@@ -39,7 +39,7 @@
         <result property="lesson" column="LESSON" jdbcType="INTEGER"/>
         <result property="date" column="DATE" jdbcType="DATE"/>
         <result property="maximum" column="MAXIMUM" jdbcType="INTEGER"/>
-        <result property="minimum" column="MAXIMUM" jdbcType="INTEGER"/>
+        <result property="minimum" column="minimum" jdbcType="INTEGER"/>
         <result property="startTime" column="START_TIME" jdbcType="TIMESTAMP"/>
         <result property="endTime" column="END_TIME" jdbcType="TIMESTAMP"/>
         <collection property="appointmentInfos" ofType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
