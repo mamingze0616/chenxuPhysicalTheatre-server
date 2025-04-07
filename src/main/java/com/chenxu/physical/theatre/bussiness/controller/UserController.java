@@ -3,6 +3,7 @@ package com.chenxu.physical.theatre.bussiness.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
+import com.chenxu.physical.theatre.bussiness.service.UserService;
 import com.chenxu.physical.theatre.database.constant.TUserStatus;
 import com.chenxu.physical.theatre.database.constant.TUserType;
 import com.chenxu.physical.theatre.database.domain.TUser;
@@ -29,10 +30,11 @@ public class UserController {
 
     @Autowired
     TUserService tUserService;
+    @Autowired
+    UserService userService;
 
     @PostMapping("/login")
-    public ApiResponse login(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
-                             String openid) {
+    public ApiResponse login(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid) {
         logger.info("login::openid = [{}]", openid);
 
         ApiResponse apiResponse = new ApiResponse();
@@ -41,8 +43,7 @@ public class UserController {
         // 先查询一次是不是包含该用户
         try {
             Optional.ofNullable(openid).orElseThrow(() -> new RuntimeException("openid为空"));
-            Optional<TUser> tUserOptions = Optional.ofNullable(tUserService.
-                    getOne(new QueryWrapper<TUser>().eq("openid", openid), false));
+            Optional<TUser> tUserOptions = Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("openid", openid), false));
             tUserOptions.ifPresentOrElse(tUser -> {
                 //更新登陆时间
                 tUser.setLoginAt(LocalDateTime.now());
@@ -76,10 +77,7 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public ApiResponse
-    updateNicknameAndAvatar(@RequestBody TUser user,
-                            @RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
-                            String openid) {
+    public ApiResponse updateNicknameAndAvatar(@RequestBody TUser user, @RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid) {
         logger.info("updateNicknameAndAvatar::user = [{}], openid = [{}]", user, openid);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
@@ -131,8 +129,7 @@ public class UserController {
     }
 
     @PostMapping("/getUserById")
-    public ApiResponse getUserById(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
-                                   String openid, @RequestBody TUser user) {
+    public ApiResponse getUserById(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TUser user) {
         logger.info("getUserById::user = [{}], openid = [{}]", user, openid);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
@@ -156,16 +153,14 @@ public class UserController {
     }
 
     @PostMapping("/changeTypeToAdmin")
-    public ApiResponse changeTypeToAdmin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
-                                         String openid, @RequestBody TUser user) {
+    public ApiResponse changeTypeToAdmin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TUser user) {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
             Optional.ofNullable(user.getId()).ifPresentOrElse(id -> {
                 Optional.ofNullable(tUserService.getById(id)).ifPresentOrElse(tUser -> {
                     //判断权限
-                    if (tUserService.getOne(new QueryWrapper<TUser>().eq("openid", openid)).getType()
-                            .compareTo(TUserType.ADMIN) == 0) {
+                    if (tUserService.getOne(new QueryWrapper<TUser>().eq("openid", openid)).getType().compareTo(TUserType.ADMIN) == 0) {
                         tUser.setType(TUserType.ADMIN);
                         if (tUserService.updateById(tUser)) {
                             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
@@ -192,5 +187,46 @@ public class UserController {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         }
         return apiResponse;
+    }
+
+    @PostMapping("/registerOrLogin")
+    public ApiResponse registerOrLogin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
+                                       @RequestParam String code) {
+        logger.info("registerOrLogin::code = [{}]", code);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            String phoneNumber = userService.getUserPhoneNumber(code);
+            Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("phone", phoneNumber))).ifPresentOrElse(tUser -> {
+                //更新登陆时间
+                tUser.setLoginAt(LocalDateTime.now());
+                try {
+                    tUserService.updateById(tUser);
+                } catch (Exception e) {
+                    e.getMessage();
+                    logger.error("更新用户登录时间失败,忽略本次错误");
+                }
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(tUser);
+                apiResponse.setErrorMsg("登陆成功");
+            }, () -> {
+                TUser tUser = new TUser();
+                tUser.setOpenid(openid);
+                tUser.setStatus(TUserStatus.NEW_ADDED.getCode());
+                tUser.setType(TUserType.USER);
+                tUser.setNickname(openid.substring(22));
+                tUser.setAvatar("https://tdesign.gtimg.com/mobile/demos/avatar1.png");
+                tUserService.save(tUser);
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(tUser);
+                apiResponse.setErrorMsg("登陆成功");
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+
     }
 }

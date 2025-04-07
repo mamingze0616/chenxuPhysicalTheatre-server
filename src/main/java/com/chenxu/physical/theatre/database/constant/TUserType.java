@@ -13,7 +13,10 @@ import lombok.Getter;
  */
 @Getter
 public enum TUserType {
-    ADMIN(1, "管理员"), USER(2, "普通用户");
+    ADMIN(1, "管理员"),
+    USER(2, "普通用户"),
+    TEACHER(3, "老师"),
+    non_member(4, "非会员");
     @EnumValue
     @JsonValue
     private final Integer code;
