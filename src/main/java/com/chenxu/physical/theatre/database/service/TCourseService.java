@@ -16,4 +16,6 @@ public interface TCourseService extends IService<TCourse> {
 
     //获取某user的所有可预约课程,携带该课程的预约信息
     List<TCourse> getBookableCoursesWithAppointmentInfoByUserid(Integer userid);
+
+    List<TCourse> getAleardyBookedCoursersWithAppointmentInfoByUserid(Integer userid);
 }

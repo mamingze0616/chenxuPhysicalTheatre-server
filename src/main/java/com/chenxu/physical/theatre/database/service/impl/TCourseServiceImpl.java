@@ -58,6 +58,11 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
     public List<TCourse> getBookableCoursesWithAppointmentInfoByUserid(Integer userid) {
         return baseMapper.getBookableCoursesWithAppointmentInfoByUserid(userid);
     }
+
+    @Override
+    public List<TCourse> getAleardyBookedCoursersWithAppointmentInfoByUserid(Integer userid) {
+        return baseMapper.getAleardyBookedCoursersWithAppointmentInfoByUserid(userid);
+    }
 }
 
 

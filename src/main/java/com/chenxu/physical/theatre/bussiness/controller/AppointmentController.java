@@ -91,6 +91,48 @@ public class AppointmentController {
     }
 
     /**
+     * 获取用户预约过的课程
+     *
+     * @param appointmentInfo
+     * @return 按照天数分类, 附带课程预约信息
+     * @throws
+     */
+    @PostMapping("/getAleardyBookedCoursersWithAppointmentInfoByUserid")
+    public ApiResponse getAleardyBookedCoursersWithAppointmentInfoByUserid(@RequestBody TAppointmentInfo appointmentInfo) {
+        ApiResponse apiResponse = new ApiResponse();
+        List<ApiWeekCourseModel> resultList = new ArrayList<>();
+        try {
+            Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(userID -> {
+                List<TCourse> courses = courseService
+                        .getAleardyBookedCoursersWithAppointmentInfoByUserid(userID);
+                if (courses.isEmpty()) {
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                    apiResponse.setData(resultList);
+                } else {
+                    courses.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
+                        ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
+                        apiWeekCourseModel.setDate(date);
+                        apiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(date.getDayOfWeek().getValue()).getDesc());
+                        apiWeekCourseModel.setList(tCourses);
+                        resultList.add(apiWeekCourseModel);
+                    });
+                    //排序
+                    resultList.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                    apiResponse.setData(resultList);
+                }
+            }, () -> {
+                throw new RuntimeException("userId为空");
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
+    /**
      * 根据日期查询课程 ,从date开始查询
      *
      * @param openid
