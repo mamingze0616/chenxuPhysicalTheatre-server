@@ -189,7 +189,7 @@ public class UserController {
     }
 
     @PostMapping("/registerOrLogin")
-    public ApiResponse registerOrLogin(@RequestParam String code) {
+    public ApiResponse registerOrLogin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestParam String code) {
         logger.info("registerOrLogin::code = [{}]", code);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
