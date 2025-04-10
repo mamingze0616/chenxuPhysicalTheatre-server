@@ -41,7 +41,7 @@ class AppointmentControllerTest {
         try {
             TAppointmentInfo appointmentInfo = new TAppointmentInfo();
             appointmentInfo.setCourseId(841);
-            logger.info(appointmentController.getAppointmentInfoByCourseId("111", appointmentInfo).toString());
+            logger.info(appointmentController.getAppointmentInfoByCourseId(appointmentInfo).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }
@@ -52,7 +52,7 @@ class AppointmentControllerTest {
         try {
             TCourseOrder courseOrder = new TCourseOrder();
             courseOrder.setUserId(1);
-            logger.info(appointmentController.getOverviewOfCourseNumberInfoAndAppointmentInfo("111", courseOrder).toString());
+            logger.info(appointmentController.getOverviewOfCourseNumberInfoAndAppointmentInfo(courseOrder).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }
@@ -65,7 +65,7 @@ class AppointmentControllerTest {
             tAppointmentInfo.setCourseId(883);
             tAppointmentInfo.setUserId(1);
 
-            logger.info(appointmentController.doAppointmentByCourseId("111", tAppointmentInfo).toString());
+            logger.info(appointmentController.doAppointmentByCourseId(tAppointmentInfo).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }
@@ -81,7 +81,7 @@ class AppointmentControllerTest {
             tAppointmentInfo.setUserId(1);
             tAppointmentInfo.setDate(LocalDate.now().plusDays(30));
 
-            logger.info(appointmentController.getAppointmentInfosByUserIdAndDate("111", tAppointmentInfo).toString());
+            logger.info(appointmentController.getAppointmentInfosByUserIdAndDate(tAppointmentInfo).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }
@@ -97,7 +97,7 @@ class AppointmentControllerTest {
             tAppointmentInfo.setUserId(1);
 //            tAppointmentInfo.setDate(LocalDate.now().plusDays(30));
 
-            logger.info(appointmentController.getBookableCoursesByUserid("111", tAppointmentInfo).toString());
+            logger.info(appointmentController.getBookableCoursesByUserid(tAppointmentInfo).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }
@@ -111,7 +111,7 @@ class AppointmentControllerTest {
             tAppointmentInfo.setCourseId(883);
             tAppointmentInfo.setUserId(1);
 
-            logger.info(appointmentController.cancelCourseAppointment("111", tAppointmentInfo).toString());
+            logger.info(appointmentController.cancelCourseAppointment(tAppointmentInfo).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }
@@ -125,7 +125,7 @@ class AppointmentControllerTest {
             tCourse.setSize(10);
             tCourse.setType(TCourseType.NOT_START);
             tCourse.setDate(LocalDate.now());
-            logger.info(appointmentController.getCourseInfoWithAppointmentInfoList("111", tCourse).toString());
+            logger.info(appointmentController.getCourseInfoWithAppointmentInfoList(tCourse).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }
@@ -138,7 +138,7 @@ class AppointmentControllerTest {
             tUser.setCurrent(1);
             tUser.setSize(10);
 //            tUser.setType(TUser.TUserType.ADMIN);
-            logger.info(appointmentController.getUserInfoWithAppointmentInfoList("111", tUser).toString());
+            logger.info(appointmentController.getUserInfoWithAppointmentInfoList(tUser).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
         }

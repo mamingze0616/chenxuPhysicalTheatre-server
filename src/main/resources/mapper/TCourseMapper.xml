@@ -13,11 +13,13 @@
         <result property="maximum" column="MAXIMUM" jdbcType="INTEGER"/>
         <result property="startTime" column="START_TIME" jdbcType="TIMESTAMP"/>
         <result property="endTime" column="END_TIME" jdbcType="TIMESTAMP"/>
+        <result property="bookedNum" column="BOOKED_NUM" jdbcType="INTEGER"/>
+        <result property="minimum" column="MINIMUM" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         ID,COURSE_NAME,TYPE,
-        LESSON,DATE,MAXIMUM,MINIMUM,
+        LESSON,DATE,MAXIMUM,MINIMUM,BOOKED_NUM,
         START_TIME,END_TIME
     </sql>
     <select id="getBookableCoursesWithAppointmentInfoByUserid"
@@ -27,7 +29,8 @@
                  left join T_APPOINTMENT_INFO tai on tc.id = tai.course_id
         where tc.START_TIME >= CURRENT_TIMESTAMP
           and tc.type = 1
-          and tc.id not in (select course_id from T_APPOINTMENT_INFO where user_id = #{userid})
+          and tai.type = 1
+          and tc.id not in (select course_id from T_APPOINTMENT_INFO where user_id = #{userid} and type != 1)
         order by tc.DATE, tc.LESSON
     </select>
     <select id="getAleardyBookedCoursersWithAppointmentInfoByUserid"
@@ -49,7 +52,8 @@
         <result property="lesson" column="LESSON" jdbcType="INTEGER"/>
         <result property="date" column="DATE" jdbcType="DATE"/>
         <result property="maximum" column="MAXIMUM" jdbcType="INTEGER"/>
-        <result property="minimum" column="minimum" jdbcType="INTEGER"/>
+        <result property="minimum" column="MINIMUM" jdbcType="INTEGER"/>
+        <result property="bookedNum" column="BOOKED_NUM" jdbcType="INTEGER"/>
         <result property="startTime" column="START_TIME" jdbcType="TIMESTAMP"/>
         <result property="endTime" column="END_TIME" jdbcType="TIMESTAMP"/>
         <collection property="appointmentInfos" ofType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">

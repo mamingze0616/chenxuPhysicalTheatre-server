@@ -3,6 +3,8 @@ package com.chenxu.physical.theatre.database.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
+import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.mapper.TCourseMapper;
@@ -62,6 +64,28 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
     @Override
     public List<TCourse> getAleardyBookedCoursersWithAppointmentInfoByUserid(Integer userid) {
         return baseMapper.getAleardyBookedCoursersWithAppointmentInfoByUserid(userid);
+    }
+
+
+    @Override
+    public void setCourseFinished(Integer courseId) {
+        this.lambdaUpdate()
+                .eq(TCourse::getId, courseId).set(TCourse::getType, TCourseType.FINISHED.getCode()).update();
+        tAppointmentInfoService.lambdaUpdate()
+                .eq(TAppointmentInfo::getCourseId, courseId)
+                .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.APPOINTED.getCode())
+                .set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.LEARNED.getCode())
+                .update();
+    }
+
+    @Override
+    public void updateCourseBookedNumber(Integer courseId) {
+        long count = tAppointmentInfoService.count(new QueryWrapper<TAppointmentInfo>().eq("course_id", courseId)
+                .in("type", TAppointmentInfoTypeEnum.APPOINTED.getCode(), TAppointmentInfoTypeEnum.LEARNED.getCode(), TAppointmentInfoTypeEnum.SIGNED.getCode()));
+        this.lambdaUpdate()
+                .eq(TCourse::getId, courseId)
+                .set(TCourse::getBookedNum, Integer.valueOf((int) count))
+                .update();
     }
 }
 

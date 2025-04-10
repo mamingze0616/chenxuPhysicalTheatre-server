@@ -65,6 +65,8 @@ public class TCourse extends ApiRequestPageDto {
      * 结束时间
      */
     private LocalDateTime endTime;
+
+    private Integer bookedNum;
     @TableField(exist = false)
     private List<TAppointmentInfo> appointmentInfos;
 
@@ -88,7 +90,8 @@ public class TCourse extends ApiRequestPageDto {
                 && (this.getMaximum() == null ? other.getMaximum() == null : this.getMaximum().equals(other.getMaximum()))
                 && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
                 && (this.getEndTime() == null ? other.getEndTime() == null : this.getEndTime().equals(other.getEndTime()))
-                && (this.getMinimum() == null ? other.getMinimum() == null : this.getMinimum().equals(other.getMinimum()));
+                && (this.getMinimum() == null ? other.getMinimum() == null : this.getMinimum().equals(other.getMinimum()))
+                && (this.getBookedNum() == null ? other.getBookedNum() == null : this.getBookedNum().equals(other.getBookedNum()));
     }
 
     @Override
@@ -104,6 +107,7 @@ public class TCourse extends ApiRequestPageDto {
         result = prime * result + ((getStartTime() == null) ? 0 : getStartTime().hashCode());
         result = prime * result + ((getEndTime() == null) ? 0 : getEndTime().hashCode());
         result = prime * result + ((getMinimum() == null) ? 0 : getMinimum().hashCode());
+        result = prime * result + ((getBookedNum() == null) ? 0 : getBookedNum().hashCode());
         return result;
     }
 
@@ -122,6 +126,7 @@ public class TCourse extends ApiRequestPageDto {
         sb.append(", minimum=").append(minimum);
         sb.append(", startTime=").append(startTime);
         sb.append(", endTime=").append(endTime);
+        sb.append(", bookedNum=").append(bookedNum);
         sb.append(", appointmentInfos=").append(appointmentInfos);
         sb.append(",current=").append(getCurrent());
         sb.append(",size=").append(getSize());

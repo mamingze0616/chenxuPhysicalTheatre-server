@@ -20,7 +20,10 @@ import com.chenxu.physical.theatre.database.service.TUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -55,8 +58,8 @@ public class AppointmentController {
 
     //获取全部可预约课程,去除已经预约过的课程,日期不传默认今天,
     @PostMapping("/getBookableCoursesByUserid")
-    public ApiResponse getBookableCoursesByUserid(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                                  @RequestBody TAppointmentInfo appointmentInfo) {
+    public ApiResponse getBookableCoursesByUserid(@RequestBody TAppointmentInfo appointmentInfo) {
+        logger.info("getBookableCoursesByUserid::appointmentInfo = [{}]", appointmentInfo);
         ApiResponse apiResponse = new ApiResponse();
         List<ApiWeekCourseModel> resultList = new ArrayList<>();
         try {
@@ -103,8 +106,7 @@ public class AppointmentController {
         List<ApiWeekCourseModel> resultList = new ArrayList<>();
         try {
             Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(userID -> {
-                List<TCourse> courses = courseService
-                        .getAleardyBookedCoursersWithAppointmentInfoByUserid(userID);
+                List<TCourse> courses = courseService.getAleardyBookedCoursersWithAppointmentInfoByUserid(userID);
                 if (courses.isEmpty()) {
                     apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                     apiResponse.setData(resultList);
@@ -140,7 +142,7 @@ public class AppointmentController {
      * @return
      */
     @PostMapping("/getAppointmentInfosByUserIdAndDate")
-    public ApiResponse getAppointmentInfosByUserIdAndDate(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TAppointmentInfo appointmentInfo) {
+    public ApiResponse getAppointmentInfosByUserIdAndDate(@RequestBody TAppointmentInfo appointmentInfo) {
         ApiResponse apiResponse = new ApiResponse();
         try {
             Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(userID -> {
@@ -159,8 +161,8 @@ public class AppointmentController {
     }
 
     @PostMapping("/getAppointmentInfoByCourseId")
-    public ApiResponse getAppointmentInfoByCourseId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TAppointmentInfo appointmentInfo) {
-        logger.info("getAppointmentInfoByCoursrId::openid = [{}], appointmentInfo = [{}]", openid, appointmentInfo);
+    public ApiResponse getAppointmentInfoByCourseId(@RequestBody TAppointmentInfo appointmentInfo) {
+        logger.info("getAppointmentInfoByCoursrId:: appointmentInfo = [{}]", appointmentInfo);
         ApiResponse apiResponse = new ApiResponse();
         try {
             Optional.ofNullable(appointmentInfo.getCourseId()).ifPresentOrElse(CourseIdInteger -> {
@@ -186,8 +188,8 @@ public class AppointmentController {
      * @return
      */
     @PostMapping("getOverviewOfCourseNumberInfoAndAppointmentInfo")
-    public ApiResponse getOverviewOfCourseNumberInfoAndAppointmentInfo(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourseOrder courseOrder) {
-        logger.info("getOverviewOfCourseNumberInfo::openid = [{}], courseOrder = [{}]", openid, courseOrder);
+    public ApiResponse getOverviewOfCourseNumberInfoAndAppointmentInfo(@RequestBody TCourseOrder courseOrder) {
+        logger.info("getOverviewOfCourseNumberInfo:: courseOrder = [{}]", courseOrder);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         ApiOverviewOfCourseNumberModel apiOverviewOfCourseNumberModel = new ApiOverviewOfCourseNumberModel();
@@ -242,12 +244,12 @@ public class AppointmentController {
      * 预约某个课程,先判断已经学过的课程+已预约+已签到的课程跟总可用课时的关系,大于等于就无法预约
      * 在删除能搜索到的同款课程的预约信息,再进行预约管理
      *
-     * @param openid
+     * @param
      * @return
      */
     @PostMapping("/doAppointmentByCourseId")
-    public ApiResponse doAppointmentByCourseId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TAppointmentInfo appointmentInfo) {
-        logger.info("doAppointmentByCourseId::openid = [{}], appointmentInfo = [{}]", openid, appointmentInfo);
+    public ApiResponse doAppointmentByCourseId(@RequestBody TAppointmentInfo appointmentInfo) {
+        logger.info("doAppointmentByCourseId::appointmentInfo = [{}]", appointmentInfo);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
@@ -274,9 +276,7 @@ public class AppointmentController {
                     )).ifPresentOrElse(appointmentInfoList -> {
 
                         //有相关预约结果,在查询课程订单表
-
                         //遍历所有有效订单的CourseNumbe作为总数量
-
                         //判断有效的预约信息是否大于等于课程订单的课程数量
                         if (appointmentInfoList.size() >= totalCourseNumber.get()) {
                             //课时用完无法预约
@@ -297,6 +297,7 @@ public class AppointmentController {
                                         appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
                                     }
                                     if (appointmentInfoService.save(appointmentInfo)) {
+                                        courseService.updateCourseBookedNumber(courseId);
                                         apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                                         apiResponse.setData(appointmentInfo);
                                     } else {
@@ -334,12 +335,12 @@ public class AppointmentController {
     /**
      * 取消预约某个课程,如果在24小时不能取消预约
      *
-     * @param openid
+     * @param
      * @return
      */
     @PostMapping("/cancelCourseAppointment")
-    public ApiResponse cancelCourseAppointment(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TAppointmentInfo appointmentInfo) {
-        logger.info("cancelCourseAppointment::openid = [{}], appointmentInfo = [{}]", openid, appointmentInfo);
+    public ApiResponse cancelCourseAppointment(@RequestBody TAppointmentInfo appointmentInfo) {
+        logger.info("cancelCourseAppointment:: appointmentInfo = [{}]", appointmentInfo);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         apiResponse.setErrorMsg(APIRESPONSE_SUCCESS_MSG);
@@ -361,6 +362,7 @@ public class AppointmentController {
                             //如果小于24小时,则取消预约
                             tempAppointment.setType(TAppointmentInfoTypeEnum.CANCELED);
                             if (appointmentInfoService.updateById(tempAppointment)) {
+                                courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
                                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                                 apiResponse.setData(tempAppointment);
                             }
@@ -388,8 +390,8 @@ public class AppointmentController {
      * @return
      */
     @PostMapping("/getCourseInfoWithAppointmentInfoList")
-    public ApiResponse getCourseInfoWithAppointmentInfoList(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourse course) {
-        logger.info("getAppointmentInfoListWithCourse::openid = [{}], course = [{}]", openid, course);
+    public ApiResponse getCourseInfoWithAppointmentInfoList(@RequestBody TCourse course) {
+        logger.info("getAppointmentInfoListWithCourse:: course = [{}]", course);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
@@ -414,9 +416,8 @@ public class AppointmentController {
      * @return
      */
     @PostMapping("/getUserInfoWithAppointmentInfoList")
-    public ApiResponse getUserInfoWithAppointmentInfoList(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                                          @RequestBody TUser user) {
-        logger.info("getUserInfoWithAppointmentInfoList::openid = [{}], course = [{}]", openid, user);
+    public ApiResponse getUserInfoWithAppointmentInfoList(@RequestBody TUser user) {
+        logger.info("getUserInfoWithAppointmentInfoList:: course = [{}]", user);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
