@@ -30,6 +30,7 @@ public class UserService {
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("code", code);
             String responseText = restTemplate.postForObject(url, requestBody, String.class);
+            logger.info("接口返回:[{}]", responseText);
             // 2. 然后手动转换为 PhoneResponse
             ObjectMapper mapper = new ObjectMapper();
             PhoneResponse phoneResponse = mapper.readValue(responseText, PhoneResponse.class);

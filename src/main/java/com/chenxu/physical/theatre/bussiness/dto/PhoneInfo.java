@@ -16,4 +16,5 @@ public class PhoneInfo {
     private String phoneNumber;
     private String purePhoneNumber;
     private String countryCode;
+    private Watermark watermark;
 }
