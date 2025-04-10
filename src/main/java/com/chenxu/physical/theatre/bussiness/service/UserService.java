@@ -32,7 +32,8 @@ public class UserService {
                 return response.getPhone_info().getPurePhoneNumber();
             }
         } catch (Exception e) {
-            logger.error("获取手机号失败");
+            e.printStackTrace();
+            logger.error("获取手机号失败:" + e.getMessage());
             throw new RuntimeException("获取手机号失败");
         }
         throw new RuntimeException("获取手机号失败");
