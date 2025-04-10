@@ -385,7 +385,7 @@ public class AppointmentController {
     /**
      * 获取课程表和课程预约表联合查询的预约信息,查询条件为日期,不传日期则传全部课程的预约信息(包括往期课程)
      *
-     * @param openid
+     * @param
      * @param course 课程信息,带有日期查询字段,不传默认查询全部日期
      * @return
      */
@@ -411,8 +411,8 @@ public class AppointmentController {
     /**
      * 获取人员表和课程预约表联合查询的预约信息,查询条件为人员ID,不传日期则传全部人员的信息
      *
-     * @param openid
-     * @param user   人员信息
+     * @param
+     * @param user 人员信息
      * @return
      */
     @PostMapping("/getUserInfoWithAppointmentInfoList")

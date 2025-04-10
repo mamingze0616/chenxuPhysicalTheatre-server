@@ -24,18 +24,17 @@
     </sql>
     <select id="getBookableCoursesWithAppointmentInfoByUserid"
             resultMap="selectPageTCourseListWithAppointmentInfoListMap">
-        select tc.*, tai.id as APPOINTMENT_INFO_id, tai.user_id, tai.course_id
+        select tc.*, tai.id as APPOINTMENT_INFO_id, tai.user_id, tai.course_id, tai.type as APPOINTMENT_INFO_TYPE
         from T_COURSE tc
                  left join T_APPOINTMENT_INFO tai on tc.id = tai.course_id
         where tc.START_TIME >= CURRENT_TIMESTAMP
           and tc.type = 1
-          and tai.type = 1
           and tc.id not in (select course_id from T_APPOINTMENT_INFO where user_id = #{userid} and type != 1)
         order by tc.DATE, tc.LESSON
     </select>
     <select id="getAleardyBookedCoursersWithAppointmentInfoByUserid"
             resultMap="selectPageTCourseListWithAppointmentInfoListMap">
-        select tc.*, tai.id as APPOINTMENT_INFO_id, tai.user_id, tai.course_id
+        select tc.*, tai.id as APPOINTMENT_INFO_id, tai.user_id, tai.course_id, tai.type as APPOINTMENT_INFO_TYPE
         from T_COURSE tc
                  left join T_APPOINTMENT_INFO tai on tc.id = tai.course_id
         where tc.START_TIME >= CURRENT_TIMESTAMP
@@ -60,6 +59,7 @@
             <id property="id" column="APPOINTMENT_INFO_ID"/>
             <result property="userId" column="USER_ID"/>
             <result property="courseId" column="COURSE_ID"/>
+            <result property="type" column="APPOINTMENT_INFO_TYPE"/>
         </collection>
     </resultMap>
 </mapper>
