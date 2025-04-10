@@ -85,14 +85,12 @@ public class UserCourseOrderController {
     /**
      * 添加课程订单
      *
-     * @param openid
      * @param courseOrder
      * @return
      */
-    @PostMapping("add")
-    public ApiResponse addCourseOrder(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                      @RequestBody TCourseOrder courseOrder) {
-        logger.info("addCourseOrder::openid = [{}], courseOrder = [{}]", openid, courseOrder);
+    @PostMapping("addCourseOrder")
+    public ApiResponse addCourseOrder(@RequestBody TCourseOrder courseOrder) {
+        logger.info("addCourseOrder::openid = [{}], courseOrder = [{}]", courseOrder);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
@@ -100,7 +98,7 @@ public class UserCourseOrderController {
                 //根据courseOrder传过来的operatorId查找用户
                 Optional.ofNullable(courseOrder.getOperatorId()).ifPresentOrElse(operatorId -> {
                     Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("id", courseOrder.getOperatorId()))).ifPresentOrElse(tUser -> {
-                        if (TUserType.ADMIN.equals(tUser.getType()) && openid.equals(tUser.getOpenid())) {
+                        if (TUserType.ADMIN.equals(tUser.getType())) {
                             //是管理员,则增加课程订单
                             courseOrder.setCreateAt(LocalDateTime.now());
                             courseOrder.setStatus(TCourseOrderStatus.NORMAL);
