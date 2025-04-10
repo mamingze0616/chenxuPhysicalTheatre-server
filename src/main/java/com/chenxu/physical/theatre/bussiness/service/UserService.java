@@ -4,9 +4,11 @@ import com.chenxu.physical.theatre.bussiness.dto.PhoneResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author mamingze
@@ -24,9 +26,9 @@ public class UserService {
     public String getUserPhoneNumber(String code) {
         try {
             String url = "http://api.weixin.qq.com/wxa/business/getuserphonenumber";
-            JSONObject param = new JSONObject();
-            param.put("code", code);
-            PhoneResponse response = restTemplate.postForObject(url, param, PhoneResponse.class);
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("code", code);
+            PhoneResponse response = restTemplate.postForObject(url, requestBody, PhoneResponse.class);
             logger.info("接口返回:[{}]", response);
             if (response.getErrcode() == 0) {
                 return response.getPhone_info().getPurePhoneNumber();
