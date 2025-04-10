@@ -1,6 +1,7 @@
 package com.chenxu.physical.theatre.bussiness.service;
 
 import com.chenxu.physical.theatre.bussiness.dto.PhoneResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,13 @@ public class UserService {
             String url = "http://api.weixin.qq.com/wxa/business/getuserphonenumber";
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("code", code);
-            PhoneResponse response = restTemplate.postForObject(url, requestBody, PhoneResponse.class);
-            logger.info("接口返回:[{}]", response);
-            if (response.getErrcode() == 0) {
-                return response.getPhone_info().getPurePhoneNumber();
+            String responseText = restTemplate.postForObject(url, requestBody, String.class);
+            // 2. 然后手动转换为 PhoneResponse
+            ObjectMapper mapper = new ObjectMapper();
+            PhoneResponse phoneResponse = mapper.readValue(responseText, PhoneResponse.class);
+            logger.info("接口返回:[{}]", phoneResponse);
+            if (phoneResponse.getErrcode() == 0) {
+                return phoneResponse.getPhone_info().getPurePhoneNumber();
             }
         } catch (Exception e) {
             e.printStackTrace();
