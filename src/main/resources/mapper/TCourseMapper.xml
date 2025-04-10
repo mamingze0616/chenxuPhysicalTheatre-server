@@ -31,13 +31,14 @@
         order by tc.DATE, tc.LESSON
     </select>
     <select id="getAleardyBookedCoursersWithAppointmentInfoByUserid"
-            resultType="com.chenxu.physical.theatre.database.domain.TCourse">
+            resultMap="selectPageTCourseListWithAppointmentInfoListMap">
         select tc.*, tai.id as APPOINTMENT_INFO_id, tai.user_id, tai.course_id
         from T_COURSE tc
                  left join T_APPOINTMENT_INFO tai on tc.id = tai.course_id
         where tc.START_TIME >= CURRENT_TIMESTAMP
           and tc.type = 1
-          and tc.id in (select course_id from T_APPOINTMENT_INFO where user_id= #{userid})
+          and tc.id in (select course_id from T_APPOINTMENT_INFO where user_id = #{userid})
+        order by tc.DATE, tc.LESSON
     </select>
 
     <resultMap id="selectPageTCourseListWithAppointmentInfoListMap"

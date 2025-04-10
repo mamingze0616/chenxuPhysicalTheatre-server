@@ -94,7 +94,7 @@ class AppointmentControllerTest {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
             tAppointmentInfo.setCourseId(841);
-            tAppointmentInfo.setUserId(2);
+            tAppointmentInfo.setUserId(1);
 //            tAppointmentInfo.setDate(LocalDate.now().plusDays(30));
 
             logger.info(appointmentController.getBookableCoursesByUserid("111", tAppointmentInfo).toString());
@@ -141,6 +141,20 @@ class AppointmentControllerTest {
             logger.info(appointmentController.getUserInfoWithAppointmentInfoList("111", tUser).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());
+        }
+    }
+
+    @Test
+    void getAleardyBookedCoursersWithAppointmentInfoByUserid() {
+        try {
+            TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
+            tAppointmentInfo.setCourseId(841);
+            tAppointmentInfo.setUserId(1);
+//            tAppointmentInfo.setDate()
+            logger.info(appointmentController.getAleardyBookedCoursersWithAppointmentInfoByUserid(tAppointmentInfo).toString());
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
