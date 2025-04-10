@@ -13,6 +13,6 @@ import lombok.ToString;
 @Data
 @ToString
 public class Watermark {
-    private String timestam;
+    private String timestamp;
     private String appid;
 }
