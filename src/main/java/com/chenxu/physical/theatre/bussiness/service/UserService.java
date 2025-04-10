@@ -23,7 +23,7 @@ public class UserService {
 
     public String getUserPhoneNumber(String code) {
         try {
-            String url = "https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=ACCESS_TOKEN";
+            String url = "http://api.weixin.qq.com/wxa/business/getuserphonenumber";
             JSONObject param = new JSONObject();
             param.put("code", code);
             PhoneResponse response = restTemplate.postForObject(url, param, PhoneResponse.class);

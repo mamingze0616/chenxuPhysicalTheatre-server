@@ -36,7 +36,6 @@ public class UserController {
     @PostMapping("/login")
     public ApiResponse login(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid) {
         logger.info("login::openid = [{}]", openid);
-
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         apiResponse.setErrorMsg("登陆失败");
@@ -190,8 +189,7 @@ public class UserController {
     }
 
     @PostMapping("/registerOrLogin")
-    public ApiResponse registerOrLogin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                       @RequestParam String code) {
+    public ApiResponse registerOrLogin(@RequestParam String code) {
         logger.info("registerOrLogin::code = [{}]", code);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
