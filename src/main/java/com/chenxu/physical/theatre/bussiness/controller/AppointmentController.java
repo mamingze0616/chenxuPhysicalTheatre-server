@@ -348,29 +348,22 @@ public class AppointmentController {
             Optional.ofNullable(appointmentInfo.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
             Optional.ofNullable(appointmentInfo.getCourseId()).orElseThrow(() -> new RuntimeException("courseId为空"));
             Optional.ofNullable(appointmentInfoService.getOne(new QueryWrapper<TAppointmentInfo>().eq("course_id", appointmentInfo.getCourseId()).eq("user_id", appointmentInfo.getUserId()))).ifPresentOrElse(tempAppointment -> {
-                //
-                if (TAppointmentInfoTypeEnum.CANCELED.compareTo(tempAppointment.getType()) == 0) {
-                    //如果已经取消预约,则直接返回
-                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                    apiResponse.setData(tempAppointment);
-                } else {
-                    Optional.ofNullable(courseService.getById(appointmentInfo.getCourseId())).ifPresentOrElse(course -> {
-                        if (LocalDateTime.now().isAfter(course.getStartTime().minusHours(24))) {
-                            //如果已经超过24小时,则不能取消预约
-                            throw new RuntimeException("距离开始不满24小时,不能取消预约");
-                        } else {
-                            //如果小于24小时,则取消预约
-                            tempAppointment.setType(TAppointmentInfoTypeEnum.CANCELED);
-                            if (appointmentInfoService.updateById(tempAppointment)) {
-                                courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
-                                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                                apiResponse.setData(tempAppointment);
-                            }
+                Optional.ofNullable(courseService.getById(appointmentInfo.getCourseId())).ifPresentOrElse(course -> {
+                    if (LocalDateTime.now().isAfter(course.getStartTime().minusHours(24))) {
+                        //如果已经超过24小时,则不能取消预约
+                        throw new RuntimeException("距离开始不满24小时,不能取消预约");
+                    } else {
+                        //如果小于24小时,则取消预约
+                        tempAppointment.setType(TAppointmentInfoTypeEnum.CANCELED);
+                        if (appointmentInfoService.updateById(tempAppointment)) {
+                            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                            apiResponse.setData(tempAppointment);
                         }
-                    }, () -> {
-                        throw new RuntimeException("课程订单信息查询失败");
-                    });
-                }
+                    }
+                    courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
+                }, () -> {
+                    throw new RuntimeException("课程订单信息查询失败");
+                });
             }, () -> {
                 throw new RuntimeException("该用户没有预约过该课程");
             });

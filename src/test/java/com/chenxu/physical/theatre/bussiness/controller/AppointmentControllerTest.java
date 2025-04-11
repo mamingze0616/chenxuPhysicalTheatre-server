@@ -93,7 +93,6 @@ class AppointmentControllerTest {
     void getBookableCoursesByUseridAndDate() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
-            tAppointmentInfo.setCourseId(841);
             tAppointmentInfo.setUserId(1);
 //            tAppointmentInfo.setDate(LocalDate.now().plusDays(30));
 
@@ -108,7 +107,7 @@ class AppointmentControllerTest {
     void cancelCourseAppointment() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
-            tAppointmentInfo.setCourseId(883);
+            tAppointmentInfo.setCourseId(1067);
             tAppointmentInfo.setUserId(1);
 
             logger.info(appointmentController.cancelCourseAppointment(tAppointmentInfo).toString());
@@ -148,7 +147,6 @@ class AppointmentControllerTest {
     void getAleardyBookedCoursersWithAppointmentInfoByUserid() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
-            tAppointmentInfo.setCourseId(841);
             tAppointmentInfo.setUserId(1);
 //            tAppointmentInfo.setDate()
             logger.info(appointmentController.getAleardyBookedCoursersWithAppointmentInfoByUserid(tAppointmentInfo).toString());
