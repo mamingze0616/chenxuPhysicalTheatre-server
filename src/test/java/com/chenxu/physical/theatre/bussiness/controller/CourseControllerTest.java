@@ -1,7 +1,6 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
-import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -51,12 +52,13 @@ class CourseControllerTest {
     }
 
     @Test
-    void getCoursesByID2() throws Exception {
+    void add() throws Exception {
         // 发送GET请求
         TCourse course = new TCourse();
-        course.setId(813);
-        course.setType(TCourseType.NOT_START);
-        logger.info("responseEntity: {}", courseController.getCoursesByID("www", course));
+        course.setDate(LocalDate.now());
+        course.setLesson(2);
+        course.setCourseName("测试");
+        logger.info("responseEntity: {}", courseController.addCourse(course));
 
     }
 

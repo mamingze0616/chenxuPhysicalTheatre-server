@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
-import com.chenxu.physical.theatre.database.constant.*;
+import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
+import com.chenxu.physical.theatre.database.constant.TCourseConstans;
+import com.chenxu.physical.theatre.database.constant.TCourseStartTime;
+import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TCourse;
-import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.service.TCourseService;
-import com.chenxu.physical.theatre.database.service.TUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,36 +35,34 @@ public class CourseController {
     private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
     @Autowired
     private TCourseService courseService;
-    @Autowired
-    private TUserService tUserService;
 
 
-    @PostMapping("/add")
-    public ApiResponse addCourse(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourse course) {
-        logger.info("addCourse::openid = [{}], course = [{}]", openid, course);
+    @PostMapping("/addCourse")
+    public ApiResponse addCourse(@RequestBody TCourse course) {
+        logger.info("addCourse::course = [{}]", course);
         ApiResponse apiResponse = new ApiResponse();
         //先查询此用户是否有权限操作
         try {
-            Optional<TUser> tUserOptions = Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("openid", openid), false));
-            tUserOptions.ifPresentOrElse(tUser -> {
-                if (TUserType.ADMIN.compareTo(tUser.getType()) == 0) {
-                    //是管理员
-                    course.setType(TCourseType.NOT_START);
-                    courseService.save(course);
-                } else {
-                    //没有权限
-                    apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-                    apiResponse.setErrorMsg("用户无权限操作");
-                }
-            }, () -> {
-                throw new RuntimeException("用户不存在");
-            });
+            //先查询该节课是否有课程
+            if (courseService.getOne(new QueryWrapper<TCourse>()
+                    .eq("date", course.getDate())
+                    .eq("lesson", course.getLesson())) != null) {
+                throw new RuntimeException("该课程已存在");
+            }
+            course.setType(TCourseType.NOT_START);
+            if (course.getStartTime() == null) {
+                LocalDateTime startTime = course.getDate().atTime(TCourseStartTime.getStartTimeByCode(course.getLesson()));
+                course.setStartTime(startTime);
+                course.setEndTime(startTime.plusHours(1));
+            }
+            courseService.save(course);
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(course);
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
         }
-
         return apiResponse;
     }
 

@@ -137,7 +137,6 @@ public class AppointmentController {
     /**
      * 根据日期查询课程 ,从date开始查询
      *
-     * @param openid
      * @param appointmentInfo
      * @return
      */
