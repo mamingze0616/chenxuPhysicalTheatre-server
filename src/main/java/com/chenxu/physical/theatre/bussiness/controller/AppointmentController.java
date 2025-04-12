@@ -400,6 +400,10 @@ public class AppointmentController {
                             } else {
                                 throw new RuntimeException("签到失败");
                             }
+                        } else if (tempAppointment.getType() == TAppointmentInfoTypeEnum.SIGNED) {
+                            throw new RuntimeException("该课程已经签到过了");
+                        } else {
+                            throw new RuntimeException("该课程状态无法签到!");
                         }
                     }, () -> {
                         throw new RuntimeException("该用户没有预约过该课程");
