@@ -4,11 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
-import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
-import com.chenxu.physical.theatre.database.constant.TCourseConstans;
-import com.chenxu.physical.theatre.database.constant.TCourseStartTime;
-import com.chenxu.physical.theatre.database.constant.TCourseType;
+import com.chenxu.physical.theatre.database.constant.*;
+import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
+import com.chenxu.physical.theatre.database.service.TAppointmentInfoService;
 import com.chenxu.physical.theatre.database.service.TCourseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +34,8 @@ public class CourseController {
     private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
     @Autowired
     private TCourseService courseService;
+    @Autowired
+    private TAppointmentInfoService appointmentInfoService;
 
 
     @PostMapping("/addCourse")
@@ -229,8 +230,6 @@ public class CourseController {
                         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
                         apiResponse.setErrorMsg("更新失败");
                     }
-
-
                 }, () -> {
                     throw new RuntimeException("此id的数据为空");
                 });
@@ -243,5 +242,75 @@ public class CourseController {
         }
         return apiResponse;
     }
+
+    @PostMapping("/setFinished")
+    public ApiResponse setFinished(@RequestBody TCourse course) {
+        logger.info("updateCourse:: course = [{}]", course);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            Optional.ofNullable(course.getId()).orElseThrow(() -> new RuntimeException("id为空"));
+            Optional.ofNullable(courseService.getById(course.getId())).ifPresentOrElse(tCourse -> {
+                if (courseService.lambdaUpdate().set(TCourse::getType, TCourseType.FINISHED.getCode())
+                        .eq(TCourse::getId, course.getId())
+                        .update()) {
+                    //更新预约信息,更新已签到为已学
+                    appointmentInfoService.lambdaUpdate()
+                            .set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.LEARNED.getCode())
+                            .eq(TAppointmentInfo::getCourseId, course.getId())
+                            .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.SIGNED.getCode())
+                            .update();
+                    //更新预约信息,更新已预约未签到的为已预约未签到
+                    appointmentInfoService.lambdaUpdate()
+                            .set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.NOT_SIGNED.getCode())
+                            .eq(TAppointmentInfo::getCourseId, course.getId())
+                            .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.APPOINTED.getCode())
+                            .update();
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                    apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+                    apiResponse.setData(tCourse);
+                } else {
+                    throw new RuntimeException("更新失败");
+                }
+            }, () -> {
+                throw new RuntimeException("无相关课程");
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
+    @PostMapping("/setStartSigningIn")
+    public ApiResponse setStartSigningIn(@RequestBody TCourse course) {
+        logger.info("updateCourse:: course = [{}]", course);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            Optional.ofNullable(course.getId()).orElseThrow(() -> new RuntimeException("id为空"));
+            Optional.ofNullable(courseService.getById(course.getId())).ifPresentOrElse(tCourse -> {
+                if (courseService.lambdaUpdate().set(TCourse::getType, TCourseType.START_SIGNING_IN.getCode())
+                        .eq(TCourse::getId, course.getId())
+                        .update()) {
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                    apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+                    apiResponse.setData(tCourse);
+                } else {
+                    throw new RuntimeException("更新失败");
+                }
+            }, () -> {
+                throw new RuntimeException("无相关课程");
+            });
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
 
 }

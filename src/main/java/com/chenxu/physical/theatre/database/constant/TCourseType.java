@@ -14,7 +14,9 @@ public enum TCourseType {
     NOT_START(1, "未上"),
     FINISHED(2, "已上"),
     DELETED(3, "删除"),
-    NOT_REGISTER(4, "未注册");
+    NOT_REGISTER(4, "未注册"),
+    START_SIGNING_IN(5, "开始签到");//开始签到之后才可以设为已上
+
     @EnumValue
     @JsonValue
     private final Integer code;

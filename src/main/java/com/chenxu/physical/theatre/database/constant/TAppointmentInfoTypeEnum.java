@@ -14,12 +14,13 @@ import lombok.Getter;
 @Getter
 public enum TAppointmentInfoTypeEnum {
     /**
-     * 1:已预约;2:取消预约;3:已学;4:已签到
+     * 1:已预约;2:取消预约;3:已学;4:已签到;5:已预约未签到
      */
     APPOINTED(1, "已预约"),
     CANCELED(2, "取消预约"),
     LEARNED(3, "已学"),
-    SIGNED(4, "已签到");
+    SIGNED(4, "已签到"),
+    NOT_SIGNED(5, "已预约未签到");
 
     @EnumValue
     @JsonValue
