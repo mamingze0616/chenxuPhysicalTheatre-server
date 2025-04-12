@@ -1,5 +1,6 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,5 +58,12 @@ class CourseControllerTest {
         course.setType(TCourseType.NOT_START);
         logger.info("responseEntity: {}", courseController.getCoursesByID("www", course));
 
+    }
+
+    @Test
+    void adminGetCourseList() throws Exception {
+        // 发送GET请求
+        ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
+        logger.info("responseEntity: {}", courseController.adminGetCourseList(apiWeekCourseModel));
     }
 }

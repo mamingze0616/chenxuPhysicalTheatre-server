@@ -39,15 +39,12 @@ public class CourseController {
 
 
     @PostMapping("/add")
-    public ApiResponse addCourse(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
-                                 String openid,
-                                 @RequestBody TCourse course) {
+    public ApiResponse addCourse(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourse course) {
         logger.info("addCourse::openid = [{}], course = [{}]", openid, course);
         ApiResponse apiResponse = new ApiResponse();
         //先查询此用户是否有权限操作
         try {
-            Optional<TUser> tUserOptions = Optional.ofNullable(tUserService
-                    .getOne(new QueryWrapper<TUser>().eq("openid", openid), false));
+            Optional<TUser> tUserOptions = Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("openid", openid), false));
             tUserOptions.ifPresentOrElse(tUser -> {
                 if (TUserType.ADMIN.compareTo(tUser.getType()) == 0) {
                     //是管理员
@@ -78,10 +75,8 @@ public class CourseController {
      * @param apiWeekCourseModel
      * @return
      */
-
     @PostMapping("/getTwoWeekCourses")
-    public ApiResponse getTwoWeekCourses(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                         @RequestBody ApiWeekCourseModel apiWeekCourseModel) {
+    public ApiResponse getTwoWeekCourses(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody ApiWeekCourseModel apiWeekCourseModel) {
         logger.info("getTwoWeekCourses::openid = [{}], date = [{}]", openid, apiWeekCourseModel);
         //查询权限先不做
         ApiResponse apiResponse = new ApiResponse();
@@ -100,9 +95,46 @@ public class CourseController {
         return apiResponse;
     }
 
+    /**
+     * 管理员获取课程信息
+     *
+     * @param apiWeekCourseModel
+     * @return
+     */
+    @PostMapping("/adminGetCourseList")
+    public ApiResponse adminGetCourseList(@RequestBody ApiWeekCourseModel apiWeekCourseModel) {
+        logger.info("adminGetCourseList::date = [{}]", apiWeekCourseModel);
+        ApiResponse apiResponse = new ApiResponse();
+        List<ApiWeekCourseModel> resultList = new ArrayList<>();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            //没有日期的话默认当前日期
+            LocalDate tempDate = Optional.ofNullable(apiWeekCourseModel.getDate()).orElse(LocalDate.now());
+            List<TCourse> courseList = courseService.list(new QueryWrapper<TCourse>()
+                    //大于等于date
+                    .ge("date", tempDate).ne("type", TCourseType.NOT_REGISTER.getCode()).orderByAsc("date", "lesson"));
+            courseList.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
+                ApiWeekCourseModel tempApiWeekCourseModel = new ApiWeekCourseModel();
+                tempApiWeekCourseModel.setDate(date);
+                tempApiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(date.getDayOfWeek().getValue()).getDesc());
+                tempApiWeekCourseModel.setList(tCourses);
+                resultList.add(tempApiWeekCourseModel);
+            });
+            //排序
+            resultList.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(resultList);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
     @PostMapping("/getCoursesByID")
-    public ApiResponse getCoursesByID(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                      @RequestBody TCourse course) {
+    public ApiResponse getCoursesByID(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourse course) {
         logger.info("getCoursesByID::openid = [{}], id = [{}]", openid, course.getId());
         ApiResponse apiResponse = new ApiResponse();
         try {
@@ -138,8 +170,7 @@ public class CourseController {
             apiWeekCourseModel.setDate(plusDaysdate);
             apiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(plusDaysdate.getDayOfWeek().getValue()).getDesc());
             //当天临时课程
-            List<TCourse> tempList = list.stream().filter(c -> c.getDate().equals(plusDaysdate))
-                    .collect(Collectors.toList());
+            List<TCourse> tempList = list.stream().filter(c -> c.getDate().equals(plusDaysdate)).collect(Collectors.toList());
             if (tempList.size() == 0) {
                 tempList = initEverdayCourse(plusDaysdate);
             } else {
@@ -176,8 +207,7 @@ public class CourseController {
 
     //修改课程信息
     @PostMapping("/updateCourse")
-    public ApiResponse updateCourse(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid,
-                                    @RequestBody TCourse course) {
+    public ApiResponse updateCourse(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourse course) {
         logger.info("updateCourse::openid = [{}], course = [{}]", openid, course);
         ApiResponse apiResponse = new ApiResponse();
         try {
