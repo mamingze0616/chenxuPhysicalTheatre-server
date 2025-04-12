@@ -41,7 +41,7 @@
         select tc.*, tai.id as APPOINTMENT_INFO_id, tai.user_id, tai.course_id, tai.type as APPOINTMENT_INFO_TYPE
         from T_COURSE tc
                  left join T_APPOINTMENT_INFO tai on tc.id = tai.course_id
-        where (tc.type = 1 or tc.type = 2 or tc.type = 5)
+        where (tc.type = 1 or tc.type = 5)
           and exists (select 1
                       from T_APPOINTMENT_INFO tmp
                       where tmp.course_id = tc.id
