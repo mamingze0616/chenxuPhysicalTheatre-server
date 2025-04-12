@@ -45,7 +45,7 @@
           and exists (select 1
                       from T_APPOINTMENT_INFO tmp
                       where tmp.course_id = tc.id
-                        and (tmp.type != 2)
+                        and (tmp.type = 1 or tmp.type = 2 or tmp.type = 5)
                         and tmp.user_id = #{userid})
         order by tc.DATE, tc.LESSON
     </select>
