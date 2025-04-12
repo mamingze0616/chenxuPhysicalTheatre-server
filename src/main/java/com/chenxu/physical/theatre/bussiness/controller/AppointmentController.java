@@ -182,7 +182,6 @@ public class AppointmentController {
     /**
      * 查询已上,已预约,总可数量三项信息
      *
-     * @param openid
      * @param courseOrder
      * @return
      */
@@ -372,6 +371,45 @@ public class AppointmentController {
         }
         return apiResponse;
 
+    }
+
+    /**
+     * 签到某个课程
+     *
+     * @param
+     * @param appointmentInfo 预约信息,带有课程id和用户id
+     * @return
+     */
+    @PostMapping("/signInCourseAppointment")
+    public ApiResponse signInCourseAppointment(@RequestBody TAppointmentInfo appointmentInfo) {
+        logger.info("signInCourseAppointment:: appointmentInfo = [{}]", appointmentInfo);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            Optional.ofNullable(appointmentInfo.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
+            Optional.ofNullable(appointmentInfo.getCourseId()).orElseThrow(() -> new RuntimeException("courseId为空"));
+            Optional.ofNullable(appointmentInfoService.getOne(new QueryWrapper<TAppointmentInfo>()
+                            .eq("course_id", appointmentInfo.getCourseId())
+                            .eq("user_id", appointmentInfo.getUserId())))
+                    .ifPresentOrElse(tempAppointment -> {
+                        if (tempAppointment.getType() == TAppointmentInfoTypeEnum.APPOINTED) {
+                            tempAppointment.setType(TAppointmentInfoTypeEnum.SIGNED);
+                            if (appointmentInfoService.updateById(tempAppointment)) {
+                                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                                apiResponse.setErrorMsg(APIRESPONSE_SUCCESS_MSG);
+                                apiResponse.setData(tempAppointment);
+                            } else {
+                                throw new RuntimeException("签到失败");
+                            }
+                        }
+                    }, () -> {
+                        throw new RuntimeException("该用户没有预约过该课程");
+                    });
+        } catch (Exception e) {
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
     }
 
     /**
