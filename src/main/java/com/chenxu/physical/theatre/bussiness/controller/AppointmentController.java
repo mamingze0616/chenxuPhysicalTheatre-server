@@ -286,10 +286,9 @@ public class AppointmentController {
                                     //先查询是否已经预约过,有取消预约状态的会把状态改为已预约,
                                     //可预约默认还没开课,所以不会是已学,只可能是已预约或者取消预约
                                     //已预约的情况的信息先删除,在增加新的预约信息(保证了预约信息的唯一性)
-                                    Optional.ofNullable(appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().eq("course_id", courseId).eq("user_id", appointmentInfo.getUserId()))).ifPresent(appointmentInfoListOfSameCourseId -> {
-                                        //删掉旧s预约信息
-                                        appointmentInfoService.removeByIds(appointmentInfoListOfSameCourseId.stream().map(TAppointmentInfo::getId).collect(Collectors.toList()));
-                                    });
+                                    appointmentInfoService.remove(new QueryWrapper<TAppointmentInfo>()
+                                            .eq("course_id", courseId)
+                                            .eq("user_id", appointmentInfo.getUserId()));
                                     //新增预约信息
                                     if (appointmentInfo.getType() == null) {
                                         appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
