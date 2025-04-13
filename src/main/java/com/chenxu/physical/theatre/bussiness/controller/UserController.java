@@ -87,7 +87,6 @@ public class UserController {
                 Optional.ofNullable(tUserService.getById(id)).ifPresentOrElse(tUser -> {
                     tUser.setNickname(user.getNickname());
                     tUser.setAvatar(user.getAvatar());
-                    tUser.setPhone(user.getPhone());
                     tUser.setStatus(TUserStatus.NORMAL.getCode());
                     if (tUserService.updateById(tUser)) {
                         apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
@@ -211,6 +210,7 @@ public class UserController {
                 TUser tUser = new TUser();
                 tUser.setOpenid(openid);
                 tUser.setStatus(TUserStatus.NEW_ADDED.getCode());
+                tUser.setPhone(phoneNumber);
                 tUser.setType(TUserType.USER);
                 tUser.setNickname(openid.substring(22));
                 tUser.setAvatar("https://tdesign.gtimg.com/mobile/demos/avatar1.png");
