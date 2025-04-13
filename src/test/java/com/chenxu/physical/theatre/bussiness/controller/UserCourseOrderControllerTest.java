@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static com.chenxu.physical.theatre.TestConstant.ADMIN_OPENID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -53,9 +52,9 @@ class UserCourseOrderControllerTest {
     }
 
     @Test
-    void queryALLByUserId() throws Exception {
+    void queryOrderByUserId() throws Exception {
         TUser tUser = new TUser();
-        tUser.setId(2);
-        userCourseOrderController.queryALLByUserId(ADMIN_OPENID, tUser);
+        tUser.setId(10);
+        userCourseOrderController.queryOrderByUserId(tUser);
     }
 }

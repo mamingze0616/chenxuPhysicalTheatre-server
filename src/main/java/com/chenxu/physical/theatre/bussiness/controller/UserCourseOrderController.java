@@ -34,45 +34,30 @@ public class UserCourseOrderController {
     TUserService tUserService;
 
     /**
-     * 获取个人全部订单,判断权限如果是管理员则可以查询出带有作废状态的数据,是普通用户则无法查询出作废状态的数据
+     * 获取个人订单
      *
-     * @param openid
      * @param tUser
      * @return
      */
-    @PostMapping("/queryALLByUserId")
-    public ApiResponse queryALLByUserId(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TUser tUser) {
-        logger.info("queryByUserId::openid = [{}], tUser = [{}]", openid, tUser);
+    @PostMapping("/queryOrderByUserId")
+    public ApiResponse queryOrderByUserId(@RequestBody TUser tUser) {
+        logger.info("queryByUserId::tUser = [{}]", tUser.getId());
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
-
-            Optional.ofNullable(tUser.getId()).ifPresentOrElse(userId -> {
-                QueryWrapper<TCourseOrder> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("user_id", userId);
-                Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("openid", openid)))
-                        .ifPresentOrElse(temptUser -> {
-                            if (!TUserType.ADMIN.equals(temptUser.getType())) {
-                                //不是管理员,则增加一个查询条件
-                                queryWrapper.ne("status", TCourseOrderStatus.DELETED);
-                            }
-                        }, () -> {
-                            //不存在该用户,则增加一个查询条件
-                            queryWrapper.ne("status", TCourseOrderStatus.DELETED);
-//                            throw new RuntimeException("此id的数据为空");
-                        });
-                Optional.ofNullable(courseOrderService.list(queryWrapper)).ifPresentOrElse(tCourseOrder -> {
-                    if (tCourseOrder.size() == 0) {
-                        throw new RuntimeException("此userId的数据为空");
-                    }
-                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                    apiResponse.setData(tCourseOrder);
-                }, () -> {
-                    throw new RuntimeException("查询出错");
-                });
+            Optional.ofNullable(tUser.getId()).orElseThrow(() -> new RuntimeException("userId为空"));
+            QueryWrapper<TCourseOrder> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", tUser.getId());
+            Optional.ofNullable(courseOrderService.list(queryWrapper)).ifPresentOrElse(tCourseOrder -> {
+                if (tCourseOrder.size() == 0) {
+                    throw new RuntimeException("无可用订单");
+                }
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(tCourseOrder);
             }, () -> {
-                throw new RuntimeException("userId为空");
+                throw new RuntimeException("查询出错");
             });
+
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setErrorMsg(e.getMessage());
@@ -129,8 +114,7 @@ public class UserCourseOrderController {
     }
 
     @PostMapping("update")
-    public ApiResponse updateCourseOrder(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
-                                         String openid, @RequestBody TCourseOrder courseOrder) {
+    public ApiResponse updateCourseOrder(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourseOrder courseOrder) {
         logger.info("updateCourseOrder::openid = [{}], courseOrder = [{}]", openid, courseOrder);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
