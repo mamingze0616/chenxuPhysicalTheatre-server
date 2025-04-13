@@ -51,7 +51,7 @@ class AppointmentControllerTest {
     void getOverviewOfCourseNumberInfoAndAppointmentInfo() {
         try {
             TCourseOrder courseOrder = new TCourseOrder();
-            courseOrder.setUserId(1);
+            courseOrder.setUserId(9);
             logger.info(appointmentController.getOverviewOfCourseNumberInfoAndAppointmentInfo(courseOrder).toString());
         } catch (Exception e) {
             logger.error("error: {}", e.getMessage());

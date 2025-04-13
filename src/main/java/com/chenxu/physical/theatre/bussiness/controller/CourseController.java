@@ -5,7 +5,6 @@ import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
-import com.chenxu.physical.theatre.database.constant.TCourseConstans;
 import com.chenxu.physical.theatre.database.constant.TCourseStartTime;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TCourse;
@@ -70,34 +69,6 @@ public class CourseController {
     }
 
     /**
-     * 获取从date日期开始的两周内的课程信息
-     * 如果某一天没课程就先新增课程
-     *
-     * @param openid
-     * @param apiWeekCourseModel
-     * @return
-     */
-    @PostMapping("/getTwoWeekCourses")
-    public ApiResponse getTwoWeekCourses(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody ApiWeekCourseModel apiWeekCourseModel) {
-        logger.info("getTwoWeekCourses::openid = [{}], date = [{}]", openid, apiWeekCourseModel);
-        //查询权限先不做
-        ApiResponse apiResponse = new ApiResponse();
-        //先按照日期查询课程
-        try {
-            //没有日期的话默认当前日期
-            LocalDate tempDate = Optional.ofNullable(apiWeekCourseModel.getDate()).orElse(LocalDate.now());
-            //先查询两个星期
-            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-            apiResponse.setData(checkTwoWeekCourses(tempDate));
-        } catch (Exception e) {
-            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-            apiResponse.setErrorMsg(e.getMessage());
-        }
-
-        return apiResponse;
-    }
-
-    /**
      * 管理员获取课程信息
      *
      * @param apiWeekCourseModel
@@ -155,56 +126,6 @@ public class CourseController {
             apiResponse.setErrorMsg(e.getMessage());
         }
         return apiResponse;
-    }
-
-
-    private List<ApiWeekCourseModel> checkTwoWeekCourses(LocalDate date) {
-        List<ApiWeekCourseModel> apiWeekCourseModels = new ArrayList<>(14);
-        List<TCourse> list = courseService.list(new QueryWrapper<TCourse>()
-                //大于等于date
-                .ge("date", date)
-                //小于两星期后的日期
-                .lt("date", date.plusDays(TCourseConstans.TWO_WEEK_DAYS)));
-        for (int i = 0; i < TCourseConstans.TWO_WEEK_DAYS; i++) {
-            LocalDate plusDaysdate = date.plusDays(i);
-
-            ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
-            apiWeekCourseModel.setDate(plusDaysdate);
-            apiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(plusDaysdate.getDayOfWeek().getValue()).getDesc());
-            //当天临时课程
-            List<TCourse> tempList = list.stream().filter(c -> c.getDate().equals(plusDaysdate)).collect(Collectors.toList());
-            if (tempList.size() == 0) {
-                tempList = initEverdayCourse(plusDaysdate);
-            } else {
-                //暂时不处理其他情况
-            }
-            tempList.sort((o1, o2) -> o1.getLesson().compareTo(o2.getLesson()));
-            apiWeekCourseModel.setList(tempList);
-            apiWeekCourseModels.add(apiWeekCourseModel);
-        }
-        return apiWeekCourseModels;
-
-    }
-
-    private List<TCourse> initEverdayCourse(LocalDate date) {
-        List<TCourse> list = new ArrayList<>(TCourseConstans.LESSON_NUMBER);
-        for (int i = 1; i <= TCourseConstans.LESSON_NUMBER; i++) {
-            StringBuffer courseName = new StringBuffer(date.toString());
-            courseName.append("第").append(i).append("节");
-            TCourse course = new TCourse();
-            course.setCourseName(courseName.toString());
-            course.setDate(date);
-            course.setLesson(i);
-            course.setMaximum(TCourseConstans.MAXIMUM);
-            course.setType(TCourseType.NOT_REGISTER);
-            LocalDateTime startTime = date.atTime(TCourseStartTime.getStartTimeByCode(i));
-            course.setStartTime(startTime);
-            course.setEndTime(startTime.plusHours(1));
-            courseService.save(course);
-            list.add(course);
-        }
-        return list;
-
     }
 
     //修改课程信息

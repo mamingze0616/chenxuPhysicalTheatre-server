@@ -187,7 +187,7 @@ public class AppointmentController {
      */
     @PostMapping("getOverviewOfCourseNumberInfoAndAppointmentInfo")
     public ApiResponse getOverviewOfCourseNumberInfoAndAppointmentInfo(@RequestBody TCourseOrder courseOrder) {
-        logger.info("getOverviewOfCourseNumberInfo:: courseOrder = [{}]", courseOrder);
+        logger.info("getOverviewOfCourseNumberInfo:: courseOrder.userid = [{}]", courseOrder.getUserId());
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         ApiOverviewOfCourseNumberModel apiOverviewOfCourseNumberModel = new ApiOverviewOfCourseNumberModel();
@@ -196,40 +196,43 @@ public class AppointmentController {
         apiOverviewOfCourseNumberModel.setAppointedNumber(0);
         apiResponse.setData(apiOverviewOfCourseNumberModel);
         try {
-            Optional.ofNullable(courseOrder.getUserId()).ifPresentOrElse(userId -> {
-                //查询该用户的所有订单状态为正常的订单
-                Optional.ofNullable(courseOrderService.list(new QueryWrapper<TCourseOrder>().eq("user_id", userId).eq("status", TCourseOrderStatus.NORMAL.getCode()))).ifPresentOrElse(tCourseOrderList -> {
-                    //
-                    AtomicInteger totalCourseNumber = new AtomicInteger();
-                    //遍历所有有效订单的CourseNumbe作为总数量
-                    tCourseOrderList.forEach(tCourseOrder -> {
-                        //原子加和
-                        totalCourseNumber.addAndGet(tCourseOrder.getCourseNumber());
-                    });
-                    apiOverviewOfCourseNumberModel.setTotalCourseNumber(totalCourseNumber.get());
-                    //查询该用户的所有预约信息
-                    List<TAppointmentInfo> tAppointmentInfoList = appointmentInfoService.getAllAppointmentInfosByUserId(userId);
-                    //过滤所有已学的预约信息
-                    List<TAppointmentInfo> learnedAppointmentInfoList = tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.LEARNED) || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.SIGNED)).collect(Collectors.toList());
-                    apiOverviewOfCourseNumberModel.setLearnedNumber(learnedAppointmentInfoList.size());
-                    apiOverviewOfCourseNumberModel.setLearnedCourseList(learnedAppointmentInfoList);
-                    //过滤所有已预约的预约信息
-                    List<TAppointmentInfo> appointedCourseList = tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.APPOINTED)).collect(Collectors.toList());
-                    apiOverviewOfCourseNumberModel.setAppointedCourseList(appointedCourseList);
-                    apiOverviewOfCourseNumberModel.setAppointedNumber(appointedCourseList.size());
-                    //合并已学和已预约的预约信息
-                    tAppointmentInfoList.addAll(learnedAppointmentInfoList);
-                    apiOverviewOfCourseNumberModel.setTotalCourseList(tAppointmentInfoList);
+            Optional.ofNullable(courseOrder.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
+            //查询该用户的所有订单状态为正常的订单
+            Optional.ofNullable(courseOrderService.list(new QueryWrapper<TCourseOrder>()
+                            .eq("user_id", courseOrder.getUserId())
+                            .eq("status", TCourseOrderStatus.NORMAL.getCode())))
+                    .ifPresentOrElse(tCourseOrderList -> {
+                        AtomicInteger totalCourseNumber = new AtomicInteger();
+                        //遍历所有有效订单的CourseNumbe作为总数量
+                        tCourseOrderList.forEach(tCourseOrder -> {
+                            //原子加和
+                            totalCourseNumber.addAndGet(tCourseOrder.getCourseNumber());
+                        });
+                        apiOverviewOfCourseNumberModel.setTotalCourseNumber(totalCourseNumber.get());
+                        //查询该用户的所有预约信息
+                        List<TAppointmentInfo> tAppointmentInfoList = appointmentInfoService.getAllAppointmentInfosByUserId(courseOrder.getUserId());
+                        //过滤所有已学和已签到的预约信息
+                        List<TAppointmentInfo> learnedAppointmentInfoList = tAppointmentInfoList.stream()
+                                .filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.LEARNED)
+                                        || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.SIGNED))
+                                .collect(Collectors.toList());
+                        apiOverviewOfCourseNumberModel.setLearnedNumber(learnedAppointmentInfoList.size());
+                        apiOverviewOfCourseNumberModel.setLearnedCourseList(learnedAppointmentInfoList);
+                        //过滤所有已预约和已预约未签到的预约信息
+                        List<TAppointmentInfo> appointedCourseList = tAppointmentInfoList.stream().filter(tAppointmentInfo ->
+                                        tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.APPOINTED)
+                                                || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.NOT_SIGNED))
+                                .collect(Collectors.toList());
+                        apiOverviewOfCourseNumberModel.setAppointedCourseList(appointedCourseList);
+                        apiOverviewOfCourseNumberModel.setAppointedNumber(appointedCourseList.size());
+                        apiOverviewOfCourseNumberModel.setTotalCourseList(tAppointmentInfoList);
 
-                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                    apiResponse.setData(apiOverviewOfCourseNumberModel);
-                }, () -> {
-                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                    apiResponse.setData(apiOverviewOfCourseNumberModel);
-                });
-            }, () -> {
-                throw new RuntimeException("userId为空");
-            });
+                        apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                        apiResponse.setData(apiOverviewOfCourseNumberModel);
+                    }, () -> {
+                        apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                        apiResponse.setData(apiOverviewOfCourseNumberModel);
+                    });
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setErrorMsg("获取失败");

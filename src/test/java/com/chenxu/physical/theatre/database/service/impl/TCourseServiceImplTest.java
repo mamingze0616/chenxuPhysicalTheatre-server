@@ -2,7 +2,6 @@ package com.chenxu.physical.theatre.database.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.controller.CourseController;
-import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.service.TCourseService;
@@ -30,12 +29,6 @@ class TCourseServiceImplTest {
     private CourseController courseController;
     @Autowired
     private TCourseService tCourseService;
-
-    @Test
-    void testGetTwoWeekCourses() {
-        ApiWeekCourseModel apiDateRequest = new ApiWeekCourseModel();
-        logger.info("testGetTwoWeekCourses::{}", courseController.getTwoWeekCourses("dddd", apiDateRequest));
-    }
 
 
     @Test
