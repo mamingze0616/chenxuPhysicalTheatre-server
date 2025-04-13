@@ -268,9 +268,8 @@ public class AppointmentController {
                         throw new RuntimeException("该用户可用课时为零");
                     }
                     //到这里保证有可用课时,查询所有已预约,已签到和已学的预约信息,
-                    Optional.ofNullable(appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().eq("user_id", userId).eq("type", TAppointmentInfoTypeEnum.APPOINTED.getCode())//已预约
-                            .or().eq("type", TAppointmentInfoTypeEnum.LEARNED.getCode())//已学
-                            .or().eq("type", TAppointmentInfoTypeEnum.SIGNED.getCode())//已签到
+                    Optional.ofNullable(appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().eq("user_id", userId).in("type", TAppointmentInfoTypeEnum.APPOINTED.getCode(), TAppointmentInfoTypeEnum.LEARNED.getCode(), TAppointmentInfoTypeEnum.SIGNED.getCode())//已预约
+
                     )).ifPresentOrElse(appointmentInfoList -> {
 
                         //有相关预约结果,在查询课程订单表

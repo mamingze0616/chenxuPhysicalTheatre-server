@@ -19,7 +19,7 @@ public interface TCourseService extends IService<TCourse> {
 
     List<TCourse> getAleardyBookedCoursersWithAppointmentInfoByUserid(Integer userid);
 
-    //将往期课程的type设置为已上,更新预约信息的type为已学(只更新原先type为已预约的)
+    //将往期课程的type设置为已上,将签到的设置为已学,将已预约的设置为未签到
     public void setCourseFinished(Integer courseId);
 
     public void updateCourseBookedNumber(Integer courseId);

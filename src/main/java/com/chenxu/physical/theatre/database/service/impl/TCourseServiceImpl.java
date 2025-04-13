@@ -73,8 +73,13 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
                 .eq(TCourse::getId, courseId).set(TCourse::getType, TCourseType.FINISHED.getCode()).update();
         tAppointmentInfoService.lambdaUpdate()
                 .eq(TAppointmentInfo::getCourseId, courseId)
-                .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.APPOINTED.getCode())
+                .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.SIGNED.getCode())
                 .set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.LEARNED.getCode())
+                .update();
+        tAppointmentInfoService.lambdaUpdate()
+                .eq(TAppointmentInfo::getCourseId, courseId)
+                .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.APPOINTED.getCode())
+                .set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.NOT_SIGNED.getCode())
                 .update();
     }
 

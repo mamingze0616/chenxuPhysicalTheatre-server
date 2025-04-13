@@ -45,7 +45,6 @@ class TCourseServiceImplTest {
     }
 
     @Test
-    @Disabled
     void updateCourseType() {
         tCourseService.list(new QueryWrapper<TCourse>().lt("end_time", LocalDateTime.now())
                 .eq("type", TCourseType.NOT_START.getCode())).forEach(c -> {
