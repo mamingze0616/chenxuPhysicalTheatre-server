@@ -94,7 +94,7 @@ public class AppointmentController {
     }
 
     /**
-     * 获取用户预约过的课程
+     * 获取用户预约过,但没上和没签到的课程
      *
      * @param appointmentInfo
      * @return 按照天数分类, 附带课程预约信息

@@ -147,7 +147,7 @@ class AppointmentControllerTest {
     void getAleardyBookedCoursersWithAppointmentInfoByUserid() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
-            tAppointmentInfo.setUserId(1);
+            tAppointmentInfo.setUserId(3);
 //            tAppointmentInfo.setDate()
             logger.info(appointmentController.getAleardyBookedCoursersWithAppointmentInfoByUserid(tAppointmentInfo).toString());
 
