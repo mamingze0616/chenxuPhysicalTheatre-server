@@ -1,5 +1,6 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.chenxu.physical.theatre.database.domain.TUser;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,5 +30,12 @@ class UserControllerTest {
 //        mockMvc.perform(post("/user/getAllUser")).andDo(print());
         logger.info(userController.getAllUser().toString());
 //        userController.getAllUser();
+    }
+
+    @Test
+    void changeTypeToAdmin() {
+        TUser user = new TUser();
+        user.setId(2);
+        userController.changeTypeToAdmin(user);
     }
 }
