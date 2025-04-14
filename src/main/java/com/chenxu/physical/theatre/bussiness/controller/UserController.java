@@ -157,6 +157,12 @@ public class UserController {
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
             Optional.ofNullable(user.getId()).orElseThrow(() -> new RuntimeException("id为空"));
+            //管理员数量限制
+            if (tUserService.count(new QueryWrapper<TUser>().eq("type", TUserType.ADMIN.getCode())) >= 3) {
+                apiResponse.setErrorMsg("管理员数量已达上限");
+                apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+                return apiResponse;
+            }
 
             Optional.ofNullable(tUserService.getById(user.getId())).ifPresentOrElse(tUser -> {
 
