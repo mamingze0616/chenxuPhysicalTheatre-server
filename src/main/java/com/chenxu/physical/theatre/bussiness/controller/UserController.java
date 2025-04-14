@@ -186,6 +186,23 @@ public class UserController {
         return apiResponse;
     }
 
+    //按照名称或者手机号搜索所有用户
+    @PostMapping("/searchUser")
+    public ApiResponse searchUser(@RequestParam String search) {
+        logger.info("searchUser::search = [{}]", search);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            apiResponse.setData(tUserService.list(new QueryWrapper<TUser>().like("nickname", search).or().like("phone", search)));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+    }
+
     @PostMapping("/registerOrLogin")
     public ApiResponse registerOrLogin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestParam String code) {
         logger.info("registerOrLogin::code = [{}]", code);

@@ -38,4 +38,9 @@ class UserControllerTest {
         user.setId(2);
         userController.changeTypeToAdmin(user);
     }
+
+    @Test
+    void searchUser() {
+        userController.searchUser("");
+    }
 }
