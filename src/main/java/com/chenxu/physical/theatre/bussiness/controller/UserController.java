@@ -151,34 +151,27 @@ public class UserController {
     }
 
     @PostMapping("/changeTypeToAdmin")
-    public ApiResponse changeTypeToAdmin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TUser user) {
+    public ApiResponse changeTypeToAdmin(@RequestBody TUser user) {
+        logger.info("changeTypeToAdmin::user = [{}]", user);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
-            Optional.ofNullable(user.getId()).ifPresentOrElse(id -> {
-                Optional.ofNullable(tUserService.getById(id)).ifPresentOrElse(tUser -> {
-                    //判断权限
-                    if (tUserService.getOne(new QueryWrapper<TUser>().eq("openid", openid)).getType().compareTo(TUserType.ADMIN) == 0) {
-                        tUser.setType(TUserType.ADMIN);
-                        if (tUserService.updateById(tUser)) {
-                            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                            apiResponse.setErrorMsg("更新成功");
-                        } else {
-                            apiResponse.setErrorMsg("更新失败");
-                            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-                        }
+            Optional.ofNullable(user.getId()).orElseThrow(() -> new RuntimeException("id为空"));
 
-                    } else {
-                        apiResponse.setErrorMsg("更新失败:无权操作");
-                        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-                    }
+            Optional.ofNullable(tUserService.getById(user.getId())).ifPresentOrElse(tUser -> {
 
-                }, () -> {
-                    throw new RuntimeException("此id的数据为空");
-                });
+                tUser.setType(TUserType.ADMIN);
+                if (tUserService.updateById(tUser)) {
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                    apiResponse.setErrorMsg("更新成功");
+                } else {
+                    apiResponse.setErrorMsg("更新失败");
+                    apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+                }
             }, () -> {
-                throw new RuntimeException("id为空");
+                throw new RuntimeException("此id的数据为空");
             });
+
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setErrorMsg(e.getMessage());
