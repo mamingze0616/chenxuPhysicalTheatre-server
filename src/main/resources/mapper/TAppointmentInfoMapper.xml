@@ -18,7 +18,7 @@
     </sql>
     <select id="getAppointmentInfoByCourseId"
             resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
-        select T.*, T2.nickname, T2.avatar
+        select T.*, T2.nickname, T2.avatar,T2.phone
         from T_APPOINTMENT_INFO T
                  left join springboot_demo.T_USER T2 on T.user_id = T2.id
         where course_id = #{courseId}

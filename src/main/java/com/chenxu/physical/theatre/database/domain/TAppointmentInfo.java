@@ -56,6 +56,8 @@ public class TAppointmentInfo {
     private LocalDateTime endTime;
     @TableField(exist = false)
     private LocalDate date;
+    @TableField(exist = false)
+    private String phone;
 
     @Override
     public boolean equals(Object that) {

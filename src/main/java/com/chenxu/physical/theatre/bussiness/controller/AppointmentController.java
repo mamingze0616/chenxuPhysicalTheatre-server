@@ -164,14 +164,12 @@ public class AppointmentController {
         logger.info("getAppointmentInfoByCoursrId:: appointmentInfo = [{}]", appointmentInfo);
         ApiResponse apiResponse = new ApiResponse();
         try {
-            Optional.ofNullable(appointmentInfo.getCourseId()).ifPresentOrElse(CourseIdInteger -> {
-                List<TAppointmentInfo> list = appointmentInfoService.getAppointmentInfoByCourseId(CourseIdInteger);
-                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setData(list);
-            }, () -> {
-                throw new RuntimeException("courseId为空");
-            });
+            Optional.ofNullable(appointmentInfo.getCourseId()).orElseThrow(() -> new RuntimeException("课程Id为空"));
+            List<TAppointmentInfo> list = appointmentInfoService.getAppointmentInfoByCourseId(appointmentInfo.getCourseId());
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(list);
         } catch (Exception e) {
+            logger.error(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
         }
