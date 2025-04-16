@@ -189,6 +189,12 @@ public class CourseController {
         return apiResponse;
     }
 
+    /**
+     * 开始签到,如果未满足最小开课人数,则无法签到
+     *
+     * @param course
+     * @return
+     */
     @PostMapping("/setStartSigningIn")
     public ApiResponse setStartSigningIn(@RequestBody TCourse course) {
         logger.info("updateCourse:: course = [{}]", course);
@@ -197,6 +203,10 @@ public class CourseController {
         try {
             Optional.ofNullable(course.getId()).orElseThrow(() -> new RuntimeException("id为空"));
             Optional.ofNullable(courseService.getById(course.getId())).ifPresentOrElse(tCourse -> {
+                if (tCourse.getBookedNum() < tCourse.getMinimum()) {
+                    throw new RuntimeException("人数不足,无法开始签到");
+                }
+
                 if (courseService.lambdaUpdate().set(TCourse::getType, TCourseType.START_SIGNING_IN.getCode())
                         .eq(TCourse::getId, course.getId())
                         .update()) {
