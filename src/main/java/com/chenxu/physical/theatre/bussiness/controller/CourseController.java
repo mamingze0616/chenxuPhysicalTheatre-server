@@ -181,12 +181,13 @@ public class CourseController {
             Optional.ofNullable(courseService.getCourserWithAppointmentInfoByCourseId(course.getId())).ifPresentOrElse(tCourse -> {
                 if (tCourse.getAppointmentInfos().stream().filter(appointmentInfo -> appointmentInfo.getType()
                         .equals(TAppointmentInfoTypeEnum.SIGNED)).count() < tCourse.getBookedNum()) {
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                     apiResponse.setErrorMsg("有未签到人员");
-                } else {
-                    apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+                    return;
                 }
                 courseService.setCourseFinished(course.getId());
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
                 apiResponse.setData(tCourse);
             }, () -> {
                 throw new RuntimeException("无相关课程");
