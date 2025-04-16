@@ -14,7 +14,10 @@ import com.chenxu.physical.theatre.database.service.TCourseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -108,8 +111,8 @@ public class CourseController {
     }
 
     @PostMapping("/getCoursesByID")
-    public ApiResponse getCoursesByID(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourse course) {
-        logger.info("getCoursesByID::openid = [{}], id = [{}]", openid, course.getId());
+    public ApiResponse getCoursesByID(@RequestBody TCourse course) {
+        logger.info("getCoursesByID:: id = [{}]", course.getId());
         ApiResponse apiResponse = new ApiResponse();
         try {
             Optional.ofNullable(course.getId()).ifPresentOrElse(idInteger -> {
@@ -131,32 +134,22 @@ public class CourseController {
 
     //修改课程信息
     @PostMapping("/updateCourse")
-    public ApiResponse updateCourse(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourse course) {
-        logger.info("updateCourse::openid = [{}], course = [{}]", openid, course);
+    public ApiResponse updateCourse(@RequestBody TCourse course) {
+        logger.info("updateCourse:: course = [{}]", course);
         ApiResponse apiResponse = new ApiResponse();
         try {
-            Optional.ofNullable(course).ifPresentOrElse(idInteger -> {
-                Optional.ofNullable(courseService.getById(course.getId())).ifPresentOrElse(tCourse -> {
-                    tCourse.setCourseName(course.getCourseName());
-                    //如果原状态是未注册状态，则修改为未上状态
-                    if (tCourse.getType().equals(TCourseType.NOT_REGISTER)) {
-                        tCourse.setType(TCourseType.NOT_START);
-                    } else {
-                        tCourse.setType(course.getType());
-                    }
-                    tCourse.setMaximum(course.getMaximum());
-                    tCourse.setStartTime(course.getStartTime());
-                    tCourse.setEndTime(course.getEndTime());
-                    if (courseService.updateById(tCourse)) {
-                        apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                        apiResponse.setData(tCourse);
-                    } else {
-                        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-                        apiResponse.setErrorMsg("更新失败");
-                    }
-                }, () -> {
-                    throw new RuntimeException("此id的数据为空");
-                });
+            Optional.ofNullable(course.getId()).orElseThrow(() -> {
+                throw new RuntimeException("id为空");
+            });
+            Optional.ofNullable(courseService.getById(course.getId())).ifPresentOrElse(tCourse -> {
+                tCourse.setCourseName(course.getCourseName());
+                tCourse.setMaximum(course.getMaximum());
+                tCourse.setMinimum(course.getMinimum());
+                tCourse.setStartTime(course.getStartTime());
+                tCourse.setEndTime(course.getStartTime().plusHours(1));
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+                apiResponse.setData(tCourse);
             }, () -> {
                 throw new RuntimeException("此id的数据为空");
             });
