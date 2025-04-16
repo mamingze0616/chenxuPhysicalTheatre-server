@@ -49,6 +49,13 @@
                         and tmp.user_id = #{userid})
         order by tc.DATE, tc.LESSON
     </select>
+    <select id="getCourserWithAppointmentInfoByCourseId"
+            resultMap="selectPageTCourseListWithAppointmentInfoListMap">
+        select tc.*, tai.id as APPOINTMENT_INFO_id, tai.user_id, tai.course_id, tai.type as APPOINTMENT_INFO_TYPE
+        from T_COURSE tc
+                 left join T_APPOINTMENT_INFO tai on tc.id = tai.course_id
+        where tc.id = #{courseId}
+    </select>
 
     <resultMap id="selectPageTCourseListWithAppointmentInfoListMap"
                type="com.chenxu.physical.theatre.database.domain.TCourse">

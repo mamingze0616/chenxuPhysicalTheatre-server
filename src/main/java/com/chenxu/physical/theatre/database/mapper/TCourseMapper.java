@@ -17,6 +17,8 @@ public interface TCourseMapper extends BaseMapper<TCourse> {
 
     List<TCourse> getAleardyBookedCoursersWithAppointmentInfoByUserid(Integer userid);
 
+    TCourse getCourserWithAppointmentInfoByCourseId(Integer courseId);
+
 }
 
 

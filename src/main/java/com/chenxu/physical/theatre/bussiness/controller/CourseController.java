@@ -5,6 +5,7 @@ import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
+import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseStartTime;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TCourse;
@@ -166,6 +167,12 @@ public class CourseController {
         return apiResponse;
     }
 
+    /**
+     * 查询签到人数和未签到人数,
+     *
+     * @param course
+     * @return
+     */
     @PostMapping("/setFinished")
     public ApiResponse setFinished(@RequestBody TCourse course) {
         logger.info("updateCourse:: course = [{}]", course);
@@ -173,10 +180,15 @@ public class CourseController {
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
             Optional.ofNullable(course.getId()).orElseThrow(() -> new RuntimeException("id为空"));
-            Optional.ofNullable(courseService.getById(course.getId())).ifPresentOrElse(tCourse -> {
+            Optional.ofNullable(courseService.getCourserWithAppointmentInfoByCourseId(course.getId())).ifPresentOrElse(tCourse -> {
+                if (tCourse.getAppointmentInfos().stream().filter(appointmentInfo -> appointmentInfo.getType()
+                        .equals(TAppointmentInfoTypeEnum.SIGNED)).count() < tCourse.getBookedNum()) {
+                    apiResponse.setErrorMsg("有未签到人员");
+                } else {
+                    apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+                }
                 courseService.setCourseFinished(course.getId());
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
                 apiResponse.setData(tCourse);
             }, () -> {
                 throw new RuntimeException("无相关课程");
