@@ -147,9 +147,14 @@ public class CourseController {
                 tCourse.setMinimum(course.getMinimum());
                 tCourse.setStartTime(course.getStartTime());
                 tCourse.setEndTime(course.getStartTime().plusHours(1));
-                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
-                apiResponse.setData(tCourse);
+                if (courseService.updateById(tCourse)) {
+                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                    apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+                    apiResponse.setData(tCourse);
+                } else {
+                    apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+                    apiResponse.setErrorMsg("更新失败");
+                }
             }, () -> {
                 throw new RuntimeException("此id的数据为空");
             });
