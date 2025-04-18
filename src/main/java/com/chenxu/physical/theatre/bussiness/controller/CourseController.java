@@ -88,7 +88,8 @@ public class CourseController {
             //没有日期的话默认当前日期
             LocalDate tempDate = Optional.ofNullable(apiWeekCourseModel.getDate()).orElse(LocalDate.now());
             List<TCourse> courseList = courseService.list(new QueryWrapper<TCourse>()
-                    //大于等于date
+                    //从date之日起七天的日期的数据
+                    .le("date", tempDate.plusDays(6))
                     .ge("date", tempDate).ne("type", TCourseType.NOT_REGISTER.getCode()).orderByAsc("date", "lesson"));
             courseList.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
                 ApiWeekCourseModel tempApiWeekCourseModel = new ApiWeekCourseModel();
