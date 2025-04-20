@@ -8,7 +8,6 @@ import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
-import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
@@ -31,7 +30,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.chenxu.physical.theatre.bussiness.constant.Constant.APIRESPONSE_SUCCESS_MSG;
@@ -194,32 +192,22 @@ public class AppointmentController {
         try {
             Optional.ofNullable(courseOrder.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
             //查询该用户的所有订单状态为正常的订单
-            Optional.ofNullable(courseOrderService.list(new QueryWrapper<TCourseOrder>().eq("user_id", courseOrder.getUserId()).eq("status", TCourseOrderStatus.NORMAL.getCode()))).ifPresentOrElse(tCourseOrderList -> {
-                AtomicInteger totalCourseNumber = new AtomicInteger();
-                //遍历所有有效订单的CourseNumbe作为总数量
-                tCourseOrderList.forEach(tCourseOrder -> {
-                    //原子加和
-                    totalCourseNumber.addAndGet(tCourseOrder.getCourseNumber());
-                });
-                apiOverviewOfCourseNumberModel.setTotalCourseNumber(totalCourseNumber.get());
-                //查询该用户的所有预约信息
-                List<TAppointmentInfo> tAppointmentInfoList = appointmentInfoService.getAllAppointmentInfosByUserId(courseOrder.getUserId());
-                //过滤所有已学和已签到的预约信息
-                List<TAppointmentInfo> learnedAppointmentInfoList = tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.LEARNED) || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.SIGNED)).collect(Collectors.toList());
-                apiOverviewOfCourseNumberModel.setLearnedNumber(learnedAppointmentInfoList.size());
-                apiOverviewOfCourseNumberModel.setLearnedCourseList(learnedAppointmentInfoList);
-                //过滤所有已预约和已预约未签到的预约信息
-                List<TAppointmentInfo> appointedCourseList = tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.APPOINTED) || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.NOT_SIGNED)).collect(Collectors.toList());
-                apiOverviewOfCourseNumberModel.setAppointedCourseList(appointedCourseList);
-                apiOverviewOfCourseNumberModel.setAppointedNumber(appointedCourseList.size());
-                apiOverviewOfCourseNumberModel.setTotalCourseList(tAppointmentInfoList);
+            int totalCourseNumber = courseOrderService.getTotalCourseNumberByUserId(courseOrder.getUserId());
+            apiOverviewOfCourseNumberModel.setTotalCourseNumber(totalCourseNumber);
+            //查询该用户的所有预约信息
+            List<TAppointmentInfo> tAppointmentInfoList = appointmentInfoService.getAllAppointmentInfosByUserId(courseOrder.getUserId());
+            //过滤所有已学和已签到的预约信息
+            List<TAppointmentInfo> learnedAppointmentInfoList = tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.LEARNED) || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.SIGNED)).collect(Collectors.toList());
+            apiOverviewOfCourseNumberModel.setLearnedNumber(learnedAppointmentInfoList.size());
+            apiOverviewOfCourseNumberModel.setLearnedCourseList(learnedAppointmentInfoList);
+            //过滤所有已预约和已预约未签到的预约信息
+            List<TAppointmentInfo> appointedCourseList = tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.APPOINTED) || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.NOT_SIGNED)).collect(Collectors.toList());
+            apiOverviewOfCourseNumberModel.setAppointedCourseList(appointedCourseList);
+            apiOverviewOfCourseNumberModel.setAppointedNumber(appointedCourseList.size());
+            apiOverviewOfCourseNumberModel.setTotalCourseList(tAppointmentInfoList);
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(apiOverviewOfCourseNumberModel);
 
-                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setData(apiOverviewOfCourseNumberModel);
-            }, () -> {
-                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setData(apiOverviewOfCourseNumberModel);
-            });
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setErrorMsg("获取失败");
@@ -244,25 +232,16 @@ public class AppointmentController {
             Optional.ofNullable(appointmentInfo.getCourseId()).orElseThrow(() -> new RuntimeException("课程Id为空"));
             Optional.ofNullable(appointmentInfo.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
             //查询当前用户购买的课时
-            List<TCourseOrder> tCourseOrderList = courseOrderService.list(new QueryWrapper<TCourseOrder>().eq("user_id", appointmentInfo.getCourseId()).eq("status", TCourseOrderStatus.NORMAL.getCode()));
-            if (tCourseOrderList == null || tCourseOrderList.size() == 0) {
-                throw new RuntimeException("该用户没有可用课时订单");
-            }
-            //有订单消息
-            AtomicInteger totalCourseNumber = new AtomicInteger();
-            tCourseOrderList.forEach(tCourseOrder -> {
-                //原子加和
-                totalCourseNumber.addAndGet(tCourseOrder.getCourseNumber());
-            });
-            if (totalCourseNumber.get() <= 0) {
+            int totalCourseNumber = courseOrderService.getTotalCourseNumberByUserId(appointmentInfo.getUserId());
+            if (totalCourseNumber <= 0) {
                 throw new RuntimeException("该用户可用课时为零");
             }
-            //到这里保证有可用课时,查询所有已预约,已签到,已学和已预约未签到的预约信息,
-            List<TAppointmentInfo> appointmentInfoList = appointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().eq("user_id", appointmentInfo.getCourseId()).in("type", TAppointmentInfoTypeEnum.APPOINTED.getCode(), TAppointmentInfoTypeEnum.LEARNED.getCode(), TAppointmentInfoTypeEnum.SIGNED.getCode(), TAppointmentInfoTypeEnum.NOT_SIGNED.getCode()));
+            //到这里保证有可用课时,查询预约信息,
+            List<TAppointmentInfo> appointmentInfoList = appointmentInfoService.getAllAppointmentInfosByUserId(appointmentInfo.getUserId());
             //有相关预约结果,在查询课程订单表
             //遍历所有有效订单的CourseNumbe作为总数量
             //判断有效的预约信息是否大于等于课程订单的课程数量
-            if (appointmentInfoList == null || appointmentInfoList.size() >= totalCourseNumber.get()) {
+            if (appointmentInfoList == null || appointmentInfoList.size() >= totalCourseNumber) {
                 //课时用完无法预约
                 throw new RuntimeException("课时用完无法预约");
             } else {
@@ -278,12 +257,10 @@ public class AppointmentController {
                     }
                     //先查询是否已经预约过,有取消预约状态的会把状态改为已预约,
                     //可预约默认还没开课,所以不会是已学,只可能是已预约或者取消预约
-                    //已预约的情况的信息先删除,在增加新的预约信息(保证了预约信息的唯一性)
+                    //已预约的情况的信息先删除,在增加预约信息(保证了预约信息的唯一性)
                     appointmentInfoService.remove(new QueryWrapper<TAppointmentInfo>().eq("course_id", appointmentInfo.getCourseId()).eq("user_id", appointmentInfo.getUserId()));
                     //新增预约信息
-                    if (appointmentInfo.getType() == null) {
-                        appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
-                    }
+                    appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
                     if (appointmentInfoService.save(appointmentInfo)) {
                         courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
                         apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
@@ -296,7 +273,6 @@ public class AppointmentController {
                 });
 
             }
-
 
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -324,10 +300,10 @@ public class AppointmentController {
             Optional.ofNullable(appointmentInfoService.getOne(new QueryWrapper<TAppointmentInfo>().eq("course_id", appointmentInfo.getCourseId()).eq("user_id", appointmentInfo.getUserId()))).ifPresentOrElse(tempAppointment -> {
                 Optional.ofNullable(courseService.getById(appointmentInfo.getCourseId())).ifPresentOrElse(course -> {
                     if (LocalDateTime.now().isAfter(course.getStartTime().minusHours(24))) {
-                        //如果已经超过24小时,则不能取消预约
+                        //如果不满24小时,则不能取消预约
                         throw new RuntimeException("距离开始不满24小时,不能取消预约");
                     } else {
-                        //如果小于24小时,则取消预约
+                        //如果大于24小时,则取消预约
                         tempAppointment.setType(TAppointmentInfoTypeEnum.CANCELED);
                         if (appointmentInfoService.updateById(tempAppointment)) {
                             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);

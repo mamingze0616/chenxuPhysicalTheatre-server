@@ -39,6 +39,7 @@
         from T_APPOINTMENT_INFO T
                  left join springboot_demo.T_COURSE T2 on T.course_id = T2.id
         where user_id = #{userId}
+          and T.type != 2
         order by T2.START_TIME asc
     </select>
     <select id="getAppointmentInfoByCourseIds"
