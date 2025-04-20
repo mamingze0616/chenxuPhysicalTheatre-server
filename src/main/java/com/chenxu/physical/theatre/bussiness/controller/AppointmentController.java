@@ -56,35 +56,33 @@ public class AppointmentController {
     @Autowired
     TCourseOrderService courseOrderService;
 
-    //获取全部可预约课程,去除已经预约过的课程,日期不传默认今天,
+    //获取全部可预约课程,去除已经预约过的课程,日期不传默认今天,查询七天的课程
     @PostMapping("/getBookableCoursesByUserid")
     public ApiResponse getBookableCoursesByUserid(@RequestBody TAppointmentInfo appointmentInfo) {
         logger.info("getBookableCoursesByUserid::appointmentInfo = [{}]", appointmentInfo);
         ApiResponse apiResponse = new ApiResponse();
         List<ApiWeekCourseModel> resultList = new ArrayList<>();
         try {
-            Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(userId -> {
-                List<TCourse> courses = courseService.getBookableCoursesWithAppointmentInfoByUserid(userId);
-                if (courses.isEmpty()) {
-                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                    apiResponse.setData(resultList);
-                } else {
-                    courses.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
-                        ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
-                        apiWeekCourseModel.setDate(date);
-                        apiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(date.getDayOfWeek().getValue()).getDesc());
-                        apiWeekCourseModel.setList(tCourses);
-                        resultList.add(apiWeekCourseModel);
-                    });
-                    //排序
-                    resultList.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
-                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                    apiResponse.setData(resultList);
-                }
-
-            }, () -> {
-                throw new RuntimeException("userId为空");
-            });
+            LocalDate tempDate = Optional.ofNullable(appointmentInfo.getDate()).orElse(LocalDate.now());
+            Optional.ofNullable(appointmentInfo.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
+            List<TCourse> courses = courseService
+                    .getBookableCoursesWithAppointmentInfoByUserid(appointmentInfo.getUserId(), tempDate, tempDate.plusDays(6));
+            if (courses.isEmpty()) {
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(resultList);
+            } else {
+                courses.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
+                    ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
+                    apiWeekCourseModel.setDate(date);
+                    apiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(date.getDayOfWeek().getValue()).getDesc());
+                    apiWeekCourseModel.setList(tCourses);
+                    resultList.add(apiWeekCourseModel);
+                });
+                //排序
+                resultList.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(resultList);
+            }
         } catch (Exception e) {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
@@ -94,7 +92,7 @@ public class AppointmentController {
     }
 
     /**
-     * 获取用户预约过,但没上和没签到的课程
+     * 获取用户预约过,但没上和没签到的课程,时间是一周内,时间不传默认传本日
      *
      * @param appointmentInfo
      * @return 按照天数分类, 附带课程预约信息
@@ -105,27 +103,27 @@ public class AppointmentController {
         ApiResponse apiResponse = new ApiResponse();
         List<ApiWeekCourseModel> resultList = new ArrayList<>();
         try {
-            Optional.ofNullable(appointmentInfo.getUserId()).ifPresentOrElse(userID -> {
-                List<TCourse> courses = courseService.getAleardyBookedCoursersWithAppointmentInfoByUserid(userID);
-                if (courses.isEmpty()) {
-                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                    apiResponse.setData(resultList);
-                } else {
-                    courses.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
-                        ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
-                        apiWeekCourseModel.setDate(date);
-                        apiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(date.getDayOfWeek().getValue()).getDesc());
-                        apiWeekCourseModel.setList(tCourses);
-                        resultList.add(apiWeekCourseModel);
-                    });
-                    //排序,增肌修改文字
-                    resultList.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
-                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                    apiResponse.setData(resultList);
-                }
-            }, () -> {
-                throw new RuntimeException("userId为空");
-            });
+
+            LocalDate tempDate = Optional.ofNullable(appointmentInfo.getDate()).orElse(LocalDate.now());
+            Optional.ofNullable(appointmentInfo.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
+            List<TCourse> courses = courseService.getAleardyBookedCoursersWithAppointmentInfoByUserid(appointmentInfo.getUserId(), tempDate, tempDate.plusDays(6));
+            if (courses.isEmpty()) {
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(resultList);
+            } else {
+                courses.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
+                    ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
+                    apiWeekCourseModel.setDate(date);
+                    apiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(date.getDayOfWeek().getValue()).getDesc());
+                    apiWeekCourseModel.setList(tCourses);
+                    resultList.add(apiWeekCourseModel);
+                });
+                //排序,增肌修改文字
+                resultList.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(resultList);
+            }
+
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
@@ -462,9 +460,7 @@ public class AppointmentController {
         try {
             Optional.ofNullable(appointmentInfo.getId()).orElseThrow(() -> new RuntimeException("id为空"));
             Optional.ofNullable(appointmentInfoService.getById(appointmentInfo.getId())).ifPresentOrElse(tmpAppointment -> {
-                appointmentInfoService.lambdaUpdate()
-                        .set(TAppointmentInfo::getType, appointmentInfo.getType())
-                        .eq(TAppointmentInfo::getId, appointmentInfo.getId()).update();
+                appointmentInfoService.lambdaUpdate().set(TAppointmentInfo::getType, appointmentInfo.getType()).eq(TAppointmentInfo::getId, appointmentInfo.getId()).update();
                 courseService.updateCourseBookedNumber(tmpAppointment.getCourseId());
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setErrorMsg(APIRESPONSE_SUCCESS_MSG);

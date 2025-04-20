@@ -13,6 +13,7 @@ import com.chenxu.physical.theatre.database.service.TCourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,13 +58,13 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
     }
 
     @Override
-    public List<TCourse> getBookableCoursesWithAppointmentInfoByUserid(Integer userid) {
-        return baseMapper.getBookableCoursesWithAppointmentInfoByUserid(userid);
+    public List<TCourse> getBookableCoursesWithAppointmentInfoByUserid(Integer userid, LocalDate startDate, LocalDate endDate) {
+        return baseMapper.getBookableCoursesWithAppointmentInfoByUserid(userid, startDate, endDate);
     }
 
     @Override
-    public List<TCourse> getAleardyBookedCoursersWithAppointmentInfoByUserid(Integer userid) {
-        return baseMapper.getAleardyBookedCoursersWithAppointmentInfoByUserid(userid);
+    public List<TCourse> getAleardyBookedCoursersWithAppointmentInfoByUserid(Integer userid, LocalDate startDate, LocalDate endDate) {
+        return baseMapper.getAleardyBookedCoursersWithAppointmentInfoByUserid(userid, startDate, endDate);
     }
 
     @Override

@@ -33,7 +33,7 @@ class TCourseServiceImplTest {
 
     @Test
     void getBookableCoursesWithAppointmentInfoByUserid() {
-        logger.info(tCourseService.getBookableCoursesWithAppointmentInfoByUserid(Integer.valueOf(2)).toString());
+//        logger.info(tCourseService.getBookableCoursesWithAppointmentInfoByUserid(Integer.valueOf(2)).toString());
 
     }
 

@@ -3,6 +3,7 @@ package com.chenxu.physical.theatre.database.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -13,9 +14,9 @@ import java.util.List;
  */
 public interface TCourseMapper extends BaseMapper<TCourse> {
 
-    List<TCourse> getBookableCoursesWithAppointmentInfoByUserid(Integer userid);
+    List<TCourse> getBookableCoursesWithAppointmentInfoByUserid(Integer userid, LocalDate startDate, LocalDate endDate);
 
-    List<TCourse> getAleardyBookedCoursersWithAppointmentInfoByUserid(Integer userid);
+    List<TCourse> getAleardyBookedCoursersWithAppointmentInfoByUserid(Integer userid, LocalDate startDate, LocalDate endDate);
 
     TCourse getCourserWithAppointmentInfoByCourseId(Integer courseId);
 
