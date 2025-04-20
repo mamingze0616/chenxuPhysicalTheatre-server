@@ -147,8 +147,8 @@ class AppointmentControllerTest {
     void getAleardyBookedCoursersWithAppointmentInfoByUserid() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
-            tAppointmentInfo.setUserId(3);
-//            tAppointmentInfo.setDate()
+            tAppointmentInfo.setUserId(1);
+            tAppointmentInfo.setDate(LocalDate.now().minusDays(6));
             logger.info(appointmentController.getAleardyBookedCoursersWithAppointmentInfoByUserid(tAppointmentInfo).toString());
 
         } catch (Exception e) {
