@@ -68,4 +68,12 @@ class CourseControllerTest {
         ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
         logger.info("responseEntity: {}", courseController.adminGetCourseList(apiWeekCourseModel));
     }
+
+    @Test
+    void setFinished() throws Exception {
+        // 发送GET请求
+        TCourse course = new TCourse();
+        course.setId(1239);
+        logger.info("responseEntity: {}", courseController.setFinished(course));
+    }
 }
