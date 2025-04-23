@@ -46,7 +46,7 @@
           and tc.DATE >= #{startDate}
           and tc.DATE <![CDATA[<=]]> #{endDate}
           and tai.user_id = #{userid}
-        order by tc.DATE, tai.type
+        order by tc.DATE , tc.LESSON, tai.type desc
     </select>
     <select id="getCourserWithAppointmentInfoByCourseId"
             resultMap="selectPageTCourseListWithAppointmentInfoListMap">

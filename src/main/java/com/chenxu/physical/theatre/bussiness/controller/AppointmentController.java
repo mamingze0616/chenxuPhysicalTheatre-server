@@ -116,7 +116,6 @@ public class AppointmentController {
                     resultList.add(apiWeekCourseModel);
                 });
                 //排序
-                resultList.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(resultList);
             }
