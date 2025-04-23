@@ -45,6 +45,7 @@
         where (tc.type = 1 or tc.type = 2 or tc.type = 5)
           and tc.DATE >= #{startDate}
           and tc.DATE <![CDATA[<=]]> #{endDate}
+          and tai.type != 2 and tc.DATE >= #{startDate}
           and tai.user_id = #{userid}
         order by  tc.type desc,tc.LESSON ASC
     </select>
