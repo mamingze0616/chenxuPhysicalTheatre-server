@@ -2,7 +2,6 @@ package com.chenxu.physical.theatre.database.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.controller.CourseController;
-import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.service.TCourseService;
 import org.junit.jupiter.api.Disabled;
@@ -11,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.LocalDateTime;
 
 
 /**
@@ -38,11 +35,12 @@ class TCourseServiceImplTest {
     }
 
     @Test
+    @Disabled
     void updateCourseType() {
-        tCourseService.list(new QueryWrapper<TCourse>().lt("end_time", LocalDateTime.now())
-                .eq("type", TCourseType.NOT_START.getCode())).forEach(c -> {
-            tCourseService.setCourseFinished(c.getId());
-        });
+//        tCourseService.list(new QueryWrapper<TCourse>().lt("end_time", LocalDateTime.now())
+//                .eq("type", TCourseType.NOT_START.getCode())).forEach(c -> {
+//            tCourseService.setCourseFinished(c.getId());
+//        });
     }
 
     @Test
