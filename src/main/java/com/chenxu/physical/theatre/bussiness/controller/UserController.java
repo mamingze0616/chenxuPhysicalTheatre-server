@@ -227,7 +227,7 @@ public class UserController {
                 tUser.setOpenid(openid);
                 tUser.setStatus(TUserStatus.NEW_ADDED.getCode());
                 tUser.setPhone(phoneNumber);
-                tUser.setType(TUserType.USER);
+                tUser.setType(TUserType.NON_MEMBER);
                 tUser.setNickname(openid.substring(22));
                 tUser.setAvatar("https://tdesign.gtimg.com/mobile/demos/avatar1.png");
                 tUserService.save(tUser);
