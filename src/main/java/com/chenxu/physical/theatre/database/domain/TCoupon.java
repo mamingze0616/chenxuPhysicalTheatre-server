@@ -1,29 +1,31 @@
 package com.chenxu.physical.theatre.database.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.util.Date;
+import com.chenxu.physical.theatre.database.constant.TCouponType;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 /**
  * 优惠券表
+ *
  * @TableName T_COUPON
  */
-@TableName(value ="T_COUPON")
+@TableName(value = "T_COUPON")
 @Data
 public class TCoupon {
     /**
-     * 
+     *
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     /**
      * 1:课程;2;折扣
      */
-    private Integer type;
+    private TCouponType type;
 
     /**
      * 有效期长度
@@ -33,7 +35,7 @@ public class TCoupon {
     /**
      * 有效期默认开始时间
      */
-    private Date startTime;
+    private LocalDate startTime;
 
     /**
      * 折扣力度例如80:打八折
@@ -44,6 +46,11 @@ public class TCoupon {
      * 赠送的课程数量
      */
     private Integer courseNumber;
+
+    /**
+     *
+     */
+    private String title;
 
     @Override
     public boolean equals(Object that) {
@@ -58,11 +65,12 @@ public class TCoupon {
         }
         TCoupon other = (TCoupon) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
-            && (this.getValidityPeriod() == null ? other.getValidityPeriod() == null : this.getValidityPeriod().equals(other.getValidityPeriod()))
-            && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
-            && (this.getDiscount() == null ? other.getDiscount() == null : this.getDiscount().equals(other.getDiscount()))
-            && (this.getCourseNumber() == null ? other.getCourseNumber() == null : this.getCourseNumber().equals(other.getCourseNumber()));
+                && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
+                && (this.getValidityPeriod() == null ? other.getValidityPeriod() == null : this.getValidityPeriod().equals(other.getValidityPeriod()))
+                && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
+                && (this.getDiscount() == null ? other.getDiscount() == null : this.getDiscount().equals(other.getDiscount()))
+                && (this.getCourseNumber() == null ? other.getCourseNumber() == null : this.getCourseNumber().equals(other.getCourseNumber()))
+                && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()));
     }
 
     @Override
@@ -75,6 +83,7 @@ public class TCoupon {
         result = prime * result + ((getStartTime() == null) ? 0 : getStartTime().hashCode());
         result = prime * result + ((getDiscount() == null) ? 0 : getDiscount().hashCode());
         result = prime * result + ((getCourseNumber() == null) ? 0 : getCourseNumber().hashCode());
+        result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
         return result;
     }
 
@@ -90,6 +99,7 @@ public class TCoupon {
         sb.append(", startTime=").append(startTime);
         sb.append(", discount=").append(discount);
         sb.append(", courseNumber=").append(courseNumber);
+        sb.append(", title=").append(title);
         sb.append("]");
         return sb.toString();
     }

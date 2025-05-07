@@ -10,10 +10,11 @@
             <result property="couponId" column="coupon_id" jdbcType="INTEGER"/>
             <result property="status" column="status" jdbcType="INTEGER"/>
             <result property="issueTime" column="issue_time" jdbcType="DATE"/>
+            <result property="effectiveDays" column="effective_days" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,user_id,coupon_id,
-        status,issue_time
+        status,issue_time,effective_days
     </sql>
 </mapper>

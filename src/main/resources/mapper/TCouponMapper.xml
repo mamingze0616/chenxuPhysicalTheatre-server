@@ -11,10 +11,12 @@
             <result property="startTime" column="start_time" jdbcType="DATE"/>
             <result property="discount" column="discount" jdbcType="INTEGER"/>
             <result property="courseNumber" column="course_number" jdbcType="INTEGER"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,type,validity_period,
-        start_time,discount,course_number
+        start_time,discount,course_number,
+        title
     </sql>
 </mapper>
