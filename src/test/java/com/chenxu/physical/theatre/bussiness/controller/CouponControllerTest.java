@@ -1,5 +1,6 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.chenxu.physical.theatre.bussiness.dto.ApiIssueCouponRequest;
 import com.chenxu.physical.theatre.database.constant.TCouponType;
 import com.chenxu.physical.theatre.database.domain.TCoupon;
 import com.chenxu.physical.theatre.database.domain.TUserCoupons;
@@ -27,9 +28,9 @@ class CouponControllerTest {
         tCoupon.setCourseNumber(1);
         tCoupon.setDiscount(80);
         tCoupon.setStartTime(LocalDate.now());
-        tCoupon.setTitle("免费体验课");
-        tCoupon.setType(TCouponType.COUPON_TYPE_COURSE);
-        tCoupon.setValidityPeriod(60);
+        tCoupon.setTitle("折扣券");
+        tCoupon.setType(TCouponType.COUPON_TYPE_DISCOUNT);
+        tCoupon.setValidityPeriod(85);
         couponController.add(tCoupon);
     }
 
@@ -40,9 +41,17 @@ class CouponControllerTest {
     @Test
     void ississueCoupon() {
         TUserCoupons tUserCoupons = new TUserCoupons();
-        tUserCoupons.setCouponId(10);
+        tUserCoupons.setCouponId(1);
         tUserCoupons.setUserId(1);
         tUserCoupons.setEffectiveDays(10);
         couponController.ississueCoupon(tUserCoupons);
+    }
+
+    @Test
+    void batchIssuseCoupon() {
+        ApiIssueCouponRequest tUserCoupons = new ApiIssueCouponRequest();
+        tUserCoupons.setCouponId(3);
+        tUserCoupons.setUserIds("1;2;3;4;6;");
+        couponController.batchIssuseCoupon(tUserCoupons);
     }
 }

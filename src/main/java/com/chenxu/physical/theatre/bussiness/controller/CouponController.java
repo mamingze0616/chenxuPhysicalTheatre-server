@@ -1,6 +1,8 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
+import com.chenxu.physical.theatre.bussiness.dto.ApiIssueCouponRequest;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.database.constant.TUserCouponsStatus;
 import com.chenxu.physical.theatre.database.domain.TCoupon;
@@ -41,6 +43,10 @@ public class CouponController {
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
             //新增优惠券
+            //当前日期在5月20号之前
+            if (LocalDate.now().isBefore(LocalDate.of(2025, 5, 20))) {
+                tCoupon.setStartTime(LocalDate.of(2025, 5, 20));
+            }
             tCouponService.save(tCoupon);
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
         } catch (Exception e) {
@@ -69,6 +75,25 @@ public class CouponController {
         return apiResponse;
     }
 
+    @PostMapping("/getCouponListByUserId")
+    public ApiResponse getCouponListByUserId(@RequestBody TUserCoupons tUserCoupons) {
+        logger.info("getCouponList::tUserCoupons = [{}]", tUserCoupons);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            //获取优惠券列表
+            Optional.ofNullable(tUserCoupons.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
+
+            apiResponse.setData(tUserCouponsService.list(new QueryWrapper<TUserCoupons>().eq("user_id", tUserCoupons.getUserId())));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+        } catch (Exception e) {
+            logger.error("getCouponList::error = [{}]", e.getMessage());
+            apiResponse.setErrorMsg("获取失败");
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+    }
+
     //用户领取优惠券
     @PostMapping("/userGetCoupon")
     public ApiResponse userGetCoupon(@RequestBody TUserCoupons tUserCoupons) {
@@ -86,7 +111,7 @@ public class CouponController {
         return apiResponse;
     }
 
-    //下发优惠券
+    //给制定用户下发优惠券
     @PostMapping("/issueCoupon")
     public ApiResponse ississueCoupon(@RequestBody TUserCoupons tUserCoupons) {
         logger.info("issueCoupon::TUserCoupons = [{}]", tUserCoupons);
@@ -113,6 +138,42 @@ public class CouponController {
         } catch (Exception e) {
             logger.error("issueCoupon::error = [{}]", e.getMessage());
             apiResponse.setErrorMsg("获取失败");
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+    }
+
+
+    //批量下发优惠券
+    @PostMapping("/batchIssuseCoupon")
+    public ApiResponse batchIssuseCoupon(@RequestBody ApiIssueCouponRequest apiIssueCouponRequest) {
+        logger.info("batchIssuseCoupon::ApiIssueCouponRequest = [{}]", apiIssueCouponRequest);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            //判空
+            Optional.ofNullable(apiIssueCouponRequest.getUserIds()).orElseThrow(() -> new RuntimeException("userIds为空"));
+            Optional.ofNullable(apiIssueCouponRequest.getCouponId()).orElseThrow(() -> new RuntimeException("couponId为空"));
+            //获取优惠券
+            TCoupon tCoupon = tCouponService.getById(apiIssueCouponRequest.getCouponId());
+            //按照;分割
+            String[] userIds = apiIssueCouponRequest.getUserIds().split(";");
+            for (String userId : userIds) {
+                TUserCoupons tUserCoupons = new TUserCoupons();
+                tUserCoupons.setUserId(Integer.parseInt(userId));
+                tUserCoupons.setCouponId(apiIssueCouponRequest.getCouponId());
+                tUserCoupons.setStatus(TUserCouponsStatus.NOT_USE);
+                if (LocalDate.now().isBefore(LocalDate.of(2025, 5, 20))) {
+                    tUserCoupons.setIssueTime(LocalDate.of(2025, 5, 20));
+                } else {
+                    tUserCoupons.setIssueTime(LocalDate.now());
+                }
+                tUserCouponsService.save(tUserCoupons);
+            }
+
+        } catch (Exception e) {
+            logger.error("batchIssuseCoupon::error = [{}]", e.getMessage());
+            apiResponse.setErrorMsg("下发失败");
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         }
         return apiResponse;
