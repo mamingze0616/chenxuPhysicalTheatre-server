@@ -1,6 +1,5 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiIssueCouponRequest;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
@@ -84,7 +83,7 @@ public class CouponController {
             //获取优惠券列表
             Optional.ofNullable(tUserCoupons.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
 
-            apiResponse.setData(tUserCouponsService.list(new QueryWrapper<TUserCoupons>().eq("user_id", tUserCoupons.getUserId())));
+            apiResponse.setData(tUserCouponsService.getCouponListByUserId(tUserCoupons.getUserId()));
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
         } catch (Exception e) {
             logger.error("getCouponList::error = [{}]", e.getMessage());

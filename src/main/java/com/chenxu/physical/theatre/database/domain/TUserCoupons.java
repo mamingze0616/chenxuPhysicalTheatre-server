@@ -48,6 +48,8 @@ public class TUserCoupons {
      */
     private Integer effectiveDays;
 
+    private TCoupon tCoupon;
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {

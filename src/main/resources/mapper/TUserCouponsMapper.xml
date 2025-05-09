@@ -5,16 +5,33 @@
 <mapper namespace="com.chenxu.physical.theatre.database.mapper.TUserCouponsMapper">
 
     <resultMap id="BaseResultMap" type="com.chenxu.physical.theatre.database.domain.TUserCoupons">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="userId" column="user_id" jdbcType="INTEGER"/>
-            <result property="couponId" column="coupon_id" jdbcType="INTEGER"/>
-            <result property="status" column="status" jdbcType="INTEGER"/>
-            <result property="issueTime" column="issue_time" jdbcType="DATE"/>
-            <result property="effectiveDays" column="effective_days" jdbcType="INTEGER"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="couponId" column="coupon_id" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="issueTime" column="issue_time" jdbcType="DATE"/>
+        <result property="effectiveDays" column="effective_days" jdbcType="INTEGER"/>
+        <collection property="tCoupon" ofType="com.chenxu.physical.theatre.database.domain.TCoupon">
+            <id property="id" column="COUPON_ID"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="validityPeriod" column="validity_period" jdbcType="INTEGER"/>
+            <result property="startTime" column="start_time" jdbcType="DATE"/>
+            <result property="discount" column="discount" jdbcType="INTEGER"/>
+            <result property="courseNumber" column="course_number" jdbcType="INTEGER"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+        </collection>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,user_id,coupon_id,
+        T_USER_COUPONS.id,user_id,coupon_id,
         status,issue_time,effective_days
     </sql>
+    <select id="getCouponListByUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>,
+        coupon.type,coupon.validity_period,
+        coupon.start_time,coupon.discount,coupon.course_number, coupon.title
+        from T_USER_COUPONS left join T_COUPON coupon on T_USER_COUPONS.coupon_id = coupon.id
+        where user_id = #{userId}
+    </select>
 </mapper>

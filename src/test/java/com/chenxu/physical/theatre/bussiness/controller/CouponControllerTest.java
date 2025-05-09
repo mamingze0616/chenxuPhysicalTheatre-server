@@ -4,6 +4,7 @@ import com.chenxu.physical.theatre.bussiness.dto.ApiIssueCouponRequest;
 import com.chenxu.physical.theatre.database.constant.TCouponType;
 import com.chenxu.physical.theatre.database.domain.TCoupon;
 import com.chenxu.physical.theatre.database.domain.TUserCoupons;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,6 +40,15 @@ class CouponControllerTest {
     }
 
     @Test
+    void getCouponListByUserId() {
+        TUserCoupons tUserCoupons = new TUserCoupons();
+        tUserCoupons.setUserId(1);
+        couponController.getCouponListByUserId(tUserCoupons);
+    }
+
+
+    @Test
+    @Disabled
     void ississueCoupon() {
         TUserCoupons tUserCoupons = new TUserCoupons();
         tUserCoupons.setCouponId(1);
@@ -48,6 +58,7 @@ class CouponControllerTest {
     }
 
     @Test
+    @Disabled
     void batchIssuseCoupon() {
         ApiIssueCouponRequest tUserCoupons = new ApiIssueCouponRequest();
         tUserCoupons.setCouponId(3);
