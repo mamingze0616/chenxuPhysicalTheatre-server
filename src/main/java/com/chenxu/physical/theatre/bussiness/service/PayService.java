@@ -57,7 +57,7 @@ public class PayService {
             container.put("service", service);
             container.put("path", path);
             requestBody.put("container", container);
-
+            logger.info("接口请求:[{}]", requestBody);
             String responseText = restTemplate.postForObject(unifiedOrderUrl, requestBody, String.class);
             logger.info("接口返回:[{}]", responseText);
             return responseText;
