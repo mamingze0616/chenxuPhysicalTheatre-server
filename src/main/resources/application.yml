@@ -15,3 +15,17 @@ spring:
 
 mybatis:
   mapper-locations: classpath*:mapper/*Mapper.xml
+
+wx:
+  env: ${ENV_ID}
+  mch: ${MCH_ID}
+
+pay:
+  unifiedOrder:
+    url: http://api.weixin.qq.com/_/pay/unifiedOrder
+    callback:
+      service: ${CALLBACK_SERVICE}
+      path: /pay/callback
+
+sercurity:
+    algorithm: SHA256withRSA
