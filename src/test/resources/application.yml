@@ -12,6 +12,19 @@ spring:
     view:
       suffix: .html
       prefix: /
+wx:
+  env: '1'
+  mch: '2'
+
+pay:
+  unifiedOrder:
+    url: http://api.weixin.qq.com/_/pay/unifiedOrder
+    callback:
+      service: '2'
+      path: /pay/callback
+
+sercurity:
+  algorithm: SHA256withRSA
 
 mybatis:
   mapper-locations: classpath*:mapper/*Mapper.xml

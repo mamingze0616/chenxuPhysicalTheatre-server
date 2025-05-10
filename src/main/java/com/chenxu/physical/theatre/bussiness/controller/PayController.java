@@ -2,15 +2,13 @@ package com.chenxu.physical.theatre.bussiness.controller;
 
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
+import com.chenxu.physical.theatre.bussiness.dto.ApiUnifiedOrderRequest;
 import com.chenxu.physical.theatre.bussiness.service.PayService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author mamingze
@@ -28,7 +26,7 @@ public class PayController {
 
     @PostMapping("/unifiedOrder")
     public ApiResponse unifiedOrder(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
-                                    String openid, HttpServletRequest request) {
+                                    String openid, @RequestBody ApiUnifiedOrderRequest apiUnifiedOrderRequest, HttpServletRequest request) {
 
         String ipAddress = request.getHeader("X-Forwarded-For");
 
@@ -46,7 +44,7 @@ public class PayController {
         if (ipAddress != null && ipAddress.contains(",")) {
             ipAddress = ipAddress.split(",")[0];
         }
-        logger.info("openid:{},ipAddress:{}", openid, ipAddress);
+        logger.info("openid:{},ipAddress:{},apiUnifiedOrderRequest:{}", openid, ipAddress, apiUnifiedOrderRequest);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
