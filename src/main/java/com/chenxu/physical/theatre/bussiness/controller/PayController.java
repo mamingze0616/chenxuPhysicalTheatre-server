@@ -51,7 +51,7 @@ public class PayController {
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-            apiResponse.setData(payService.unifiedOrder(openid, "测试商品", "123456", 100, ipAddress));
+            apiResponse.setData(payService.unifiedOrder(openid, "测试商品cece", "123456", 100, ipAddress));
         } catch (Exception e) {
             e.printStackTrace();
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
