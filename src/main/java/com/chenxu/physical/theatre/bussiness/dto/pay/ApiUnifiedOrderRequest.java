@@ -1,4 +1,4 @@
-package com.chenxu.physical.theatre.bussiness.dto;
+package com.chenxu.physical.theatre.bussiness.dto.pay;
 
 import lombok.Data;
 import lombok.ToString;

@@ -2,7 +2,7 @@ package com.chenxu.physical.theatre.bussiness.controller;
 
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
-import com.chenxu.physical.theatre.bussiness.dto.ApiUnifiedOrderRequest;
+import com.chenxu.physical.theatre.bussiness.dto.pay.ApiUnifiedOrderRequest;
 import com.chenxu.physical.theatre.bussiness.service.PayService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -23,6 +23,12 @@ public class PayController {
     private static final Logger logger = LoggerFactory.getLogger(PayController.class);
     @Autowired
     private PayService payService;
+
+//    @PostMapping("/callback")
+//    public ApiResponse callback() {
+//        logger.info("PayController.unifiedOrder");
+//        return payService.unifiedOrder(payUnifiedOrderRequest);
+//    }
 
     @PostMapping("/unifiedOrder")
     public ApiResponse unifiedOrder(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
