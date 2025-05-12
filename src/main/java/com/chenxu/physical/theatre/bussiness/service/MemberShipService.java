@@ -5,7 +5,6 @@ import com.chenxu.physical.theatre.database.constant.TUserOrderStatus;
 import com.chenxu.physical.theatre.database.domain.TPayOrder;
 import com.chenxu.physical.theatre.database.domain.TUserOrder;
 import com.chenxu.physical.theatre.database.service.TUserOrderService;
-import com.chenxu.physical.theatre.database.service.TUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +24,7 @@ public class MemberShipService {
     @Autowired
     PayService payService;
 
-    @Autowired
-    TUserService tUserService;
+
     @Autowired
     TUserOrderService tUserOrderService;
 
@@ -34,13 +32,13 @@ public class MemberShipService {
         //获取下单用户的openid
         TPayOrder payOrder = new TPayOrder();
         try {
-            String openid = tUserService.getById(tUserOrder.getUserId()).getOpenid();
+
             //第一步:预创建一个空白支付订单
-            TPayOrder prePayOrder = payService.preCreatePayOrder(openid,
-                    "普通用户升级成为会员用户", tUserOrder.getAmount());
+            TPayOrder prePayOrder = payService.preCreateMembershipPayOrder(tUserOrder,
+                    "普通用户升级成为会员用户");
             //创建一个用户升级订单,绑定预创建的支付订单
             tUserOrder.setPayOrderId(prePayOrder.getId());
-            tUserOrder.setStatus(TUserOrderStatus.NOT_PAY);
+            tUserOrder.setStatus(TUserOrderStatus.UNPAID);
             //第二步:保存用户升级订单
             tUserOrderService.save(tUserOrder);
             //第三步:给微信官网发送请求，获取预支付订单

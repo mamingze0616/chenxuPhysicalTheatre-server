@@ -1,9 +1,12 @@
 package com.chenxu.physical.theatre.bussiness.service;
 
 import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
+import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
 import com.chenxu.physical.theatre.database.domain.TPayOrder;
+import com.chenxu.physical.theatre.database.domain.TUserOrder;
 import com.chenxu.physical.theatre.database.service.TPayOrderService;
+import com.chenxu.physical.theatre.database.service.TUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +44,23 @@ public class PayService {
 
     @Autowired
     RestTemplate restTemplate;
+    @Autowired
+    TUserService tUserService;
 
 
-    public TPayOrder preCreatePayOrder(String openid, String body, Integer totalFee) {
+    public TPayOrder preCreateMembershipPayOrder(TUserOrder tUserOrder, String body) {
         TPayOrder tPayOrder = new TPayOrder();
-        tPayOrder.setOpenid(openid);
-        tPayOrder.setBody(body);
-        tPayOrder.setTotalFee(totalFee);
-        payOrderService.save(tPayOrder);
+        try {
+            String openid = tUserService.getById(tUserOrder.getUserId()).getOpenid();
+            tPayOrder.setType(TPayOrderType.MEMBERSHIP);
+            tPayOrder.setOpenid(openid);
+            tPayOrder.setBody(body);
+            tPayOrder.setStatus(TPayOrderStatus.UNPAID);
+            tPayOrder.setTotalFee(tUserOrder.getAmount());
+            payOrderService.save(tPayOrder);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
         return tPayOrder;
     }
 

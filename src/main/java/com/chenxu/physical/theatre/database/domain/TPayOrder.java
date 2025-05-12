@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
+import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
 import lombok.Data;
 
@@ -26,7 +27,7 @@ public class TPayOrder {
     /**
      * 1:未支付;2:已支付;3:已取消
      */
-    private Integer status;
+    private TPayOrderStatus status;
 
     /**
      * 1:会员;2:课程
