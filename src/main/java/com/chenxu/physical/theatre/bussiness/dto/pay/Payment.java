@@ -18,6 +18,8 @@ public class Payment {
     String timeStamp;
     String nonceStr;
     @JsonProperty("package")
-    PackageObject packageObject;
+    String packageObject;
+    String signType;
+    String paySign;
 
 }
