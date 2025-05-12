@@ -17,8 +17,11 @@ mybatis:
   mapper-locations: classpath*:mapper/*Mapper.xml
 
 wx:
+  url:
+    getPhoneNumber: http://api.weixin.qq.com/wxa/business/getuserphonenumber
   env: ${ENV_ID}
   mch: ${MCH_ID}
+
 
 pay:
   unifiedOrder:
