@@ -26,7 +26,7 @@ public class PayController {
     @Autowired
     private PayService payService;
 
-    @PostMapping(value = "/callback", consumes = "application/xml", produces = "application/xml")
+    @PostMapping("/callback")
     public JSONObject callback(@RequestBody ApiPayCallbackRequest apiPayCallbackRequest) {
         logger.info("callback:{}", apiPayCallbackRequest);
         JSONObject result = new JSONObject();

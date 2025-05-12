@@ -1,6 +1,5 @@
 package com.chenxu.physical.theatre.bussiness.dto;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 import lombok.ToString;
 
@@ -13,7 +12,7 @@ import lombok.ToString;
  */
 @Data
 @ToString
-@JacksonXmlRootElement(localName = "xml")
+//@JacksonXmlRootElement(localName = "xml")
 public class ApiPayCallbackResponse {
     String returnCode;
     String returnMsg;
