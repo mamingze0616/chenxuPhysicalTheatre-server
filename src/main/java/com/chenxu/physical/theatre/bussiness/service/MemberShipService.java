@@ -32,7 +32,6 @@ public class MemberShipService {
         //获取下单用户的openid
         TPayOrder payOrder = new TPayOrder();
         try {
-
             //第一步:预创建一个空白支付订单
             TPayOrder prePayOrder = payService.preCreateMembershipPayOrder(tUserOrder,
                     "普通用户升级成为会员用户");
@@ -44,7 +43,6 @@ public class MemberShipService {
             //第三步:给微信官网发送请求，获取预支付订单
             payOrder = payService.unifiedOrder(prePayOrder,
                     tUserOrder.getId(), TPayOrderType.MEMBERSHIP, spbillCreateIp);
-
         } catch (Exception e) {
             logger.error(e.getMessage());
         } finally {
