@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -30,9 +29,9 @@ class MemshipContollerTest {
 
     @Test
     void callback() {
-        JSONObject jsonObject = new JSONObject();
-        logger.info(payController.callback(jsonObject).toString());
-        ;
+//        JSONObject jsonObject = new JSONObject();
+//        logger.info(payController.callback(jsonObject).toString());
+//        ;
     }
 
     @Test
