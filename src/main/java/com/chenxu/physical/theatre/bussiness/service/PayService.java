@@ -1,6 +1,7 @@
 package com.chenxu.physical.theatre.bussiness.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.chenxu.physical.theatre.bussiness.dto.ApiPayCallbackRequest;
 import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
@@ -13,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -49,14 +49,14 @@ public class PayService {
     @Autowired
     TUserService tUserService;
 
-    public TPayOrder finishedPayOrder(JSONObject jsonObject) {
+    public TPayOrder finishedPayOrder(ApiPayCallbackRequest apiPayCallbackRequest) {
         TPayOrder tPayOrder = new TPayOrder();
         try {
             tPayOrder = payOrderService.getOne(new QueryWrapper<TPayOrder>()
-                    .eq("out_trade_no", jsonObject.getString("out_trade_no")));
+                    .eq("out_trade_no", apiPayCallbackRequest.getOutTradeNo()));
             if (tPayOrder != null) {
                 tPayOrder.setStatus(TPayOrderStatus.PAID);
-                tPayOrder.setPayJson(jsonObject);
+                tPayOrder.setPayJson(apiPayCallbackRequest);
                 payOrderService.updateById(tPayOrder);
             }
         } catch (Exception e) {

@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.chenxu.physical.theatre.bussiness.dto.ApiPayCallbackRequest;
 import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
 import lombok.Data;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 /**
  * 用户支付订单表
@@ -85,7 +85,7 @@ public class TPayOrder {
      * 支付结果json
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private JSONObject payJson;
+    private ApiPayCallbackRequest payJson;
 
     @Override
     public boolean equals(Object that) {

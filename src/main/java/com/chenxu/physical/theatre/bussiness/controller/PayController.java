@@ -1,6 +1,7 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
+import com.chenxu.physical.theatre.bussiness.dto.ApiPayCallbackRequest;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.pay.ApiUnifiedOrderRequest;
 import com.chenxu.physical.theatre.bussiness.service.PayService;
@@ -26,12 +27,12 @@ public class PayController {
     @Autowired
     private PayService payService;
 
-    @PostMapping("/callback")
-    public JSONObject callback(@RequestBody JSONObject jsonObject) {
-        logger.info("callback:{}", jsonObject);
+    @PostMapping(value = "/callback", consumes = "application/xml", produces = "application/xml")
+    public JSONObject callback(@RequestBody ApiPayCallbackRequest apiPayCallbackRequest) {
+        logger.info("callback:{}", apiPayCallbackRequest);
         JSONObject result = new JSONObject();
         try {
-            payService.finishedPayOrder(jsonObject);
+            payService.finishedPayOrder(apiPayCallbackRequest);
             result.put("return_code", "SUCCESS");
             result.put("return_msg", "OK");
         } catch (JSONException e) {
