@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -24,11 +26,21 @@ public class PayController {
     @Autowired
     private PayService payService;
 
-//    @PostMapping("/callback")
-//    public ApiResponse callback() {
-//        logger.info("PayController.unifiedOrder");
-//        return payService.unifiedOrder(payUnifiedOrderRequest);
-//    }
+    @PostMapping("/callback")
+    public JSONObject callback(@RequestBody JSONObject jsonObject) {
+        logger.info("callback:{}", jsonObject);
+        JSONObject result = new JSONObject();
+        try {
+            
+            result.put("return_code", "SUCCESS");
+            result.put("return_msg", "OK");
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        } finally {
+            return result;
+        }
+
+    }
 
     @PostMapping("/unifiedOrder")
     public ApiResponse unifiedOrder(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
