@@ -160,7 +160,7 @@ public class PayService {
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
-            String responseText = restTemplate.postForObject(unifiedOrderUrl, requestBody, String.class);
+            String responseText = restTemplate.postForObject(unifiedOrderUrl, entity, String.class);
             // 2. 然后手动转换为 PhoneResponse
             ObjectMapper mapper = new ObjectMapper();
             logger.info("接口返回:[{}]", responseText);
