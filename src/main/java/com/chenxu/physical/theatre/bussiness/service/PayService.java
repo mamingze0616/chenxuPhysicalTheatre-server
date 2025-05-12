@@ -70,7 +70,7 @@ public class PayService {
         sb.append(tPayOrder.getId()).append("_").append(type.getCode()).append("_").append(outTradeNo);
         tPayOrder.setOutTradeNo(sb.toString());
         tPayOrder.setType(type);
-        payOrderService.save(tPayOrder);
+        payOrderService.updateById(tPayOrder);
         return tPayOrder;
     }
 
