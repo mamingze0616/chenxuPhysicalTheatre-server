@@ -18,7 +18,7 @@ org-springframework-boot-spring-boot-starter-logging = { module = "org.springfra
 org-springframework-boot-spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 org-springframework-boot-spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 org-springframework-boot-spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
-#com-fasterxml-jackson-dataformat-jackson-dataformat-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml" , version.ref = "jackson-dataformat-xml"}
+com-fasterxml-jackson-dataformat-jackson-dataformat-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml" , version.ref = "jackson-dataformat-xml"}
 
 junit-jupiter-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 com-baomidou-mybatis-plus-bom = { module = "com.baomidou:mybatis-plus-bom",version.ref = "com-baomidou-mybatis-plus-boot-starter"}
