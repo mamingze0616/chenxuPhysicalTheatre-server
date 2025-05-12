@@ -13,6 +13,8 @@ spring:
       suffix: .html
       prefix: /
 wx:
+  url:
+    getPhoneNumber: http://api.weixin.qq.com/wxa/business/getuserphonenumber
   env: '1'
   mch: '2'
 
