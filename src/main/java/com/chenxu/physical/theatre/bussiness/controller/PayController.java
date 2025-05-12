@@ -31,7 +31,7 @@ public class PayController {
         logger.info("callback:{}", jsonObject);
         JSONObject result = new JSONObject();
         try {
-            
+            payService.finishedPayOrder(jsonObject);
             result.put("return_code", "SUCCESS");
             result.put("return_msg", "OK");
         } catch (JSONException e) {

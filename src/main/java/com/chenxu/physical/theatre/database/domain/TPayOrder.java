@@ -9,6 +9,7 @@ import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
 import lombok.Data;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 /**
  * 用户支付订单表
@@ -83,7 +84,8 @@ public class TPayOrder {
     /**
      * 支付结果json
      */
-    private Object payJson;
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private JSONObject payJson;
 
     @Override
     public boolean equals(Object that) {

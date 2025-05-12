@@ -4,7 +4,10 @@ import com.chenxu.physical.theatre.bussiness.service.PayService;
 import com.chenxu.physical.theatre.database.domain.TUserOrder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -16,10 +19,21 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @SpringBootTest(classes = {com.chenxu.physical.theatre.ChenxuPhysicalTheatreServerApplication.class})
 class MemshipContollerTest {
+    private static final Logger logger = LoggerFactory.getLogger(MemshipContollerTest.class);
+
     @Autowired
     MemshipContoller memshipContoller;
     @Autowired
+    PayController payController;
+    @Autowired
     PayService payService;
+
+    @Test
+    void callback() {
+        JSONObject jsonObject = new JSONObject();
+        logger.info(payController.callback(jsonObject).toString());
+        ;
+    }
 
     @Test
     @Disabled
