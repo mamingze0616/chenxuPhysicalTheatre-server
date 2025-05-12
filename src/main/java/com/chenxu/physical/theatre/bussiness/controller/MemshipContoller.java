@@ -44,7 +44,7 @@ public class MemshipContoller {
             Optional.ofNullable(tUserOrder.getUserId()).orElseThrow(() -> new RuntimeException("用户id为空"));
             Optional.ofNullable(tUserOrder.getAmount()).orElseThrow(() -> new RuntimeException("金额不能为空"));
             //要下一个会员升级订单的话要创建一个支付订单
-            apiResponse.setCode(apiResponse.getCode());
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
             apiResponse.setData(memberShipService.preUpgrade(tUserOrder, IpUtils.getIp(request)));
         } catch (Exception e) {
             logger.error(e.getMessage());
