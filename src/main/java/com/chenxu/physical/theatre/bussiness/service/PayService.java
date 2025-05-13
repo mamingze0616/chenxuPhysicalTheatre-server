@@ -6,8 +6,10 @@ import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
 import com.chenxu.physical.theatre.database.domain.TPayOrder;
+import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.domain.TUserOrder;
 import com.chenxu.physical.theatre.database.service.TPayOrderService;
+import com.chenxu.physical.theatre.database.service.TUserOrderService;
 import com.chenxu.physical.theatre.database.service.TUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -20,9 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author mamingze
@@ -53,6 +53,9 @@ public class PayService {
     @Autowired
     TUserService tUserService;
 
+    @Autowired
+    TUserOrderService userOrderService;
+
     public TPayOrder finishedPayOrder(ApiPayCallbackRequest apiPayCallbackRequest) {
         TPayOrder tPayOrder = new TPayOrder();
         try {
@@ -68,7 +71,6 @@ public class PayService {
         } finally {
             return tPayOrder;
         }
-
 
     }
 
@@ -174,6 +176,31 @@ public class PayService {
             throw new RuntimeException("统一下单失败");
         }
 
+    }
+
+
+    //获取该用户的所有类型的订单
+    public List<TPayOrder> getPayOrdersByUserId(TUser tUser) {
+        List<TPayOrder> tPayOrders = new ArrayList<>();
+        try {
+            String openid = tUserService.getById(tUser.getId()).getOpenid();
+            tPayOrders = payOrderService.list(new QueryWrapper<TPayOrder>().eq("openid", openid));
+            tPayOrders.forEach(tPayOrder -> {
+                //
+                String getOutTradeNo = tPayOrder.getOutTradeNo();
+                //按照_分割
+                String[] split = getOutTradeNo.split("_");
+                if (TPayOrderType.MEMBERSHIP.getCode().equals(Integer.parseInt(split[1]))) {
+                    tPayOrder.setTUserOrder(userOrderService.getById(Integer.parseInt(split[2])));
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获取该用户的所有类型的订单失败:" + e.getMessage());
+            throw new RuntimeException("获取该用户的所有类型的订单失败");
+        }
+        return tPayOrders;
     }
 
 }

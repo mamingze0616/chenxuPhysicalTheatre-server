@@ -1,7 +1,10 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiPayCallbackRequest;
+import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.service.PayService;
+import com.chenxu.physical.theatre.database.domain.TUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +42,22 @@ public class PayController {
         } finally {
             return result;
         }
+    }
+
+    @PostMapping("/getPayOrdersByUserId")
+    public ApiResponse getPayOrdersByUserId(@RequestBody TUser tUser) {
+        logger.info("getPayOrdersByUserId:: user = [{}]", tUser);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            apiResponse.setData(payService.getPayOrdersByUserId(tUser));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
 
     }
 

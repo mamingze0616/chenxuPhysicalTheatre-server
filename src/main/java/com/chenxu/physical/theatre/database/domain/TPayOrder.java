@@ -86,6 +86,9 @@ public class TPayOrder {
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
     private ApiPayCallbackRequest payJson;
+    
+    @TableField(exist = false)
+    private TUserOrder tUserOrder;
 
     @Override
     public boolean equals(Object that) {
