@@ -204,23 +204,26 @@ public class UserController {
     }
 
     @PostMapping("/registerOrLogin")
-    public ApiResponse registerOrLogin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestParam String code) {
+    public ApiResponse registerOrLogin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
+                                       String openid, @RequestParam String code) {
         logger.info("registerOrLogin::code = [{}]", code);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
             String phoneNumber = userService.getUserPhoneNumber(code);
             Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("phone", phoneNumber))).ifPresentOrElse(tUser -> {
-                //更新登陆时间
-                tUser.setLoginAt(LocalDateTime.now());
                 try {
+                    //更新登陆时间
+                    tUser.setLoginAt(LocalDateTime.now());
                     tUserService.updateById(tUser);
+
                 } catch (Exception e) {
                     e.getMessage();
                     logger.error("更新用户登录时间失败,忽略本次错误");
                 }
+
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setData(tUser);
+                apiResponse.setData(userService.getUserCardInfo(tUser));
                 apiResponse.setErrorMsg("登陆成功");
             }, () -> {
                 TUser tUser = new TUser();
@@ -244,25 +247,5 @@ public class UserController {
 
     }
 
-    /**
-     * 获取用户的会员卡展示所需的信息
-     *
-     * @param user
-     * @return
-     */
-    @PostMapping("/getUserCardInfo")
-    public ApiResponse getUserCardInfo(@RequestBody TUser user) {
-        logger.info("getUserCardInfo::user = [{}]", user.getId());
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-        try {
-            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-            apiResponse.setData(userService.getUserCardInfo(user));
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            apiResponse.setErrorMsg(e.getMessage());
-            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-        }
-        return apiResponse;
-    }
+
 }

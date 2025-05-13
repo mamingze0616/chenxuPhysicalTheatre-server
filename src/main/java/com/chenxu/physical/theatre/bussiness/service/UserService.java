@@ -16,7 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author mamingze
@@ -61,15 +63,14 @@ public class UserService {
 
     }
 
-    public List<TUserCoupons> getUserCardInfo(TUser tUser) {
-        List<TUserCoupons> list = new ArrayList<>();
+    public TUser getUserCardInfo(TUser tUser) {
         try {
-            list = tUserCouponsService.list(new QueryWrapper<TUserCoupons>().eq("user_id", tUser.getId()));
+            tUser.setUserCoupons(tUserCouponsService.list(new QueryWrapper<TUserCoupons>().eq("user_id", tUser.getId())));
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("获取用户卡信息失败:" + e.getMessage());
             throw new RuntimeException("获取用户卡信息失败");
         }
-        return list;
+        return tUser;
     }
 }

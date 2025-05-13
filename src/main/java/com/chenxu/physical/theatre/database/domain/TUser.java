@@ -67,6 +67,8 @@ public class TUser extends ApiRequestPageDto {
 
     @TableField(exist = false)
     private List<TAppointmentInfo> appointmentInfos;
+    @TableField(exist = false)
+    List<TUserCoupons> userCoupons;
 
     @Override
     public boolean equals(Object that) {
