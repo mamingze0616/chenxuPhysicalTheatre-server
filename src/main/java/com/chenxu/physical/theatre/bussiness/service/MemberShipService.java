@@ -1,9 +1,12 @@
 package com.chenxu.physical.theatre.bussiness.service;
 
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
+import com.chenxu.physical.theatre.database.constant.TUserCouponsStatus;
 import com.chenxu.physical.theatre.database.constant.TUserOrderStatus;
 import com.chenxu.physical.theatre.database.domain.TPayOrder;
+import com.chenxu.physical.theatre.database.domain.TUserCoupons;
 import com.chenxu.physical.theatre.database.domain.TUserOrder;
+import com.chenxu.physical.theatre.database.service.TUserCouponsService;
 import com.chenxu.physical.theatre.database.service.TUserOrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +26,8 @@ public class MemberShipService {
 
     @Autowired
     PayService payService;
+    @Autowired
+    TUserCouponsService tUserCouponsService;
 
 
     @Autowired
@@ -34,7 +39,7 @@ public class MemberShipService {
         try {
             //第一步:预创建一个空白支付订单
             TPayOrder prePayOrder = payService.preCreateMembershipPayOrder(tUserOrder,
-                    "普通用户升级成为会员用户");
+                    "升级会员订单");
             //创建一个用户升级订单,绑定预创建的支付订单
             tUserOrder.setPayOrderId(prePayOrder.getId());
             tUserOrder.setStatus(TUserOrderStatus.UNPAID);
@@ -43,6 +48,9 @@ public class MemberShipService {
             //第三步:给微信官网发送请求，获取预支付订单
             payOrder = payService.unifiedOrder(prePayOrder,
                     tUserOrder.getId(), TPayOrderType.MEMBERSHIP, spbillCreateIp);
+            tUserCouponsService.lambdaUpdate().in(TUserCoupons::getId, tUserOrder.getCouponIds().split(";"))
+                    .set(TUserCoupons::getStatus, TUserCouponsStatus.FINISHED.getCode())
+                    .update();
         } catch (Exception e) {
             logger.error(e.getMessage());
         } finally {

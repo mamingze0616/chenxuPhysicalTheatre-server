@@ -8,9 +8,11 @@
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="paramName" column="param_name" jdbcType="VARCHAR"/>
             <result property="paramValue" column="param_value" jdbcType="VARCHAR"/>
+            <result property="paramChineseName" column="param_chinese_name" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,param_name,param_value
+        id,param_name,param_value,
+        param_chinese_name
     </sql>
 </mapper>

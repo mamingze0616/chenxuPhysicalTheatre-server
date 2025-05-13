@@ -29,6 +29,11 @@ public class TSysParams {
      */
     private String paramValue;
 
+    /**
+     * 
+     */
+    private Integer paramChineseName;
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -43,7 +48,8 @@ public class TSysParams {
         TSysParams other = (TSysParams) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.getParamName() == null ? other.getParamName() == null : this.getParamName().equals(other.getParamName()))
-            && (this.getParamValue() == null ? other.getParamValue() == null : this.getParamValue().equals(other.getParamValue()));
+            && (this.getParamValue() == null ? other.getParamValue() == null : this.getParamValue().equals(other.getParamValue()))
+            && (this.getParamChineseName() == null ? other.getParamChineseName() == null : this.getParamChineseName().equals(other.getParamChineseName()));
     }
 
     @Override
@@ -53,6 +59,7 @@ public class TSysParams {
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getParamName() == null) ? 0 : getParamName().hashCode());
         result = prime * result + ((getParamValue() == null) ? 0 : getParamValue().hashCode());
+        result = prime * result + ((getParamChineseName() == null) ? 0 : getParamChineseName().hashCode());
         return result;
     }
 
@@ -65,6 +72,7 @@ public class TSysParams {
         sb.append(", id=").append(id);
         sb.append(", paramName=").append(paramName);
         sb.append(", paramValue=").append(paramValue);
+        sb.append(", paramChineseName=").append(paramChineseName);
         sb.append("]");
         return sb.toString();
     }
