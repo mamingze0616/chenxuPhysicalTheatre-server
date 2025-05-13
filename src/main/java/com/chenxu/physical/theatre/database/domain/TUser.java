@@ -65,8 +65,18 @@ public class TUser extends ApiRequestPageDto {
      */
     private LocalDateTime loginAt;
 
+    /**
+     *
+     */
+    private Integer effectiveCourseCount;
+    /**
+     *
+     */
+    private Integer completedCourseCount;
+
     @TableField(exist = false)
     private List<TAppointmentInfo> appointmentInfos;
+
     @TableField(exist = false)
     List<TUserCoupons> userCoupons;
 
@@ -90,7 +100,9 @@ public class TUser extends ApiRequestPageDto {
                 && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
                 && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
                 && (this.getCreatedAt() == null ? other.getCreatedAt() == null : this.getCreatedAt().equals(other.getCreatedAt()))
-                && (this.getLoginAt() == null ? other.getLoginAt() == null : this.getLoginAt().equals(other.getLoginAt()));
+                && (this.getLoginAt() == null ? other.getLoginAt() == null : this.getLoginAt().equals(other.getLoginAt()))
+                && (this.getEffectiveCourseCount() == null ? other.getEffectiveCourseCount() == null : this.getEffectiveCourseCount().equals(other.getEffectiveCourseCount()))
+                && (this.getCompletedCourseCount() == null ? other.getCompletedCourseCount() == null : this.getCompletedCourseCount().equals(other.getCompletedCourseCount()));
     }
 
     @Override
@@ -106,6 +118,8 @@ public class TUser extends ApiRequestPageDto {
         result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
         result = prime * result + ((getCreatedAt() == null) ? 0 : getCreatedAt().hashCode());
         result = prime * result + ((getLoginAt() == null) ? 0 : getLoginAt().hashCode());
+        result = prime * result + ((getEffectiveCourseCount() == null) ? 0 : getEffectiveCourseCount().hashCode());
+        result = prime * result + ((getCompletedCourseCount() == null) ? 0 : getCompletedCourseCount().hashCode());
         return result;
     }
 
@@ -125,6 +139,8 @@ public class TUser extends ApiRequestPageDto {
         sb.append(", createdat=").append(createdAt);
         sb.append(", loginat=").append(loginAt);
         sb.append(", appointmentInfos=").append(appointmentInfos);
+        sb.append(", effectiveCourseCount=").append(effectiveCourseCount);
+        sb.append(", completedCourseCount=").append(completedCourseCount);
         sb.append("]");
         return sb.toString();
     }

@@ -7,9 +7,11 @@ import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
+import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.mapper.TCourseMapper;
 import com.chenxu.physical.theatre.database.service.TAppointmentInfoService;
 import com.chenxu.physical.theatre.database.service.TCourseService;
+import com.chenxu.physical.theatre.database.service.TUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,8 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
         implements TCourseService {
     @Autowired
     private TAppointmentInfoService tAppointmentInfoService;
+    @Autowired
+    private TUserService tUserService;
 
     @Override
     public PageDTO<TCourse> selectPageTCourseList(PageDTO<TCourse> page, TCourse course) {
@@ -77,16 +81,26 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
     public void setCourseFinished(Integer courseId) {
         this.lambdaUpdate()
                 .eq(TCourse::getId, courseId).set(TCourse::getType, TCourseType.FINISHED.getCode()).update();
+        //更新已签到的人为已学
         tAppointmentInfoService.lambdaUpdate()
                 .eq(TAppointmentInfo::getCourseId, courseId)
                 .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.SIGNED.getCode())
                 .set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.LEARNED.getCode())
                 .update();
+        //更新未签到的人为已预约未签到
         tAppointmentInfoService.lambdaUpdate()
                 .eq(TAppointmentInfo::getCourseId, courseId)
                 .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.APPOINTED.getCode())
                 .set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.NOT_SIGNED.getCode())
                 .update();
+        //更新用户表的已学的课程信息
+        tAppointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().eq("course_id", courseId))
+                .forEach(tAppointmentInfo -> {
+                    tUserService.lambdaUpdate()
+                            .eq(TUser::getId, tAppointmentInfo.getUserId())
+                            .setSql("completed_course_count = ( select count(*) from T_APPOINTMENT_INFO where T_APPOINTMENT_INFO.user_id = T_USER.id and T_APPOINTMENT_INFO.type in (3,4,5) )")
+                            .update();
+                });
     }
 
     @Override
