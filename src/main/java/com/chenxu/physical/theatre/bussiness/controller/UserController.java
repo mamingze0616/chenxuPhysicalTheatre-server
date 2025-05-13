@@ -243,4 +243,26 @@ public class UserController {
         return apiResponse;
 
     }
+
+    /**
+     * 获取用户的会员卡展示所需的信息
+     *
+     * @param user
+     * @return
+     */
+    @PostMapping("/getUserCardInfo")
+    public ApiResponse getUserCardInfo(@RequestBody TUser user) {
+        logger.info("getUserCardInfo::user = [{}]", user.getId());
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(userService.getUserCardInfo(user));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+    }
 }

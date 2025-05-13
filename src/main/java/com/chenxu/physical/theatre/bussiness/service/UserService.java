@@ -1,6 +1,10 @@
 package com.chenxu.physical.theatre.bussiness.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.dto.PhoneResponse;
+import com.chenxu.physical.theatre.database.domain.TUser;
+import com.chenxu.physical.theatre.database.domain.TUserCoupons;
+import com.chenxu.physical.theatre.database.service.TUserCouponsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author mamingze
@@ -30,6 +32,8 @@ public class UserService {
     RestTemplate restTemplate;
     @Value("${wx.url.getPhoneNumber}")
     private String getPhoneNumber;
+    @Autowired
+    TUserCouponsService tUserCouponsService;
 
     public String getUserPhoneNumber(String code) {
         try {
@@ -55,5 +59,17 @@ public class UserService {
         }
         throw new RuntimeException("获取手机号失败");
 
+    }
+
+    public List<TUserCoupons> getUserCardInfo(TUser tUser) {
+        List<TUserCoupons> list = new ArrayList<>();
+        try {
+            list = tUserCouponsService.list(new QueryWrapper<TUserCoupons>().eq("user_id", tUser.getId()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获取用户卡信息失败:" + e.getMessage());
+            throw new RuntimeException("获取用户卡信息失败");
+        }
+        return list;
     }
 }

@@ -6,7 +6,7 @@ mysql-mysql-connector-java = "8.0.26"
 com-baomidou-mybatis-plus-boot-starter = "3.5.10.1"
 org-projectlombok-lombok = "1.18.32"
 org-springframework-boot-spring-boot-gradle-plugin = "3.4.4"
-jackson-dataformat-xml = "2.18.3"
+#jackson-dataformat-xml = "2.18.3"
 
 [libraries]
 mysql-mysql-connector-java = { module = "mysql:mysql-connector-java", version.ref = "mysql-mysql-connector-java" }
@@ -18,7 +18,7 @@ org-springframework-boot-spring-boot-starter-logging = { module = "org.springfra
 org-springframework-boot-spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 org-springframework-boot-spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 org-springframework-boot-spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
-com-fasterxml-jackson-dataformat-jackson-dataformat-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml" , version.ref = "jackson-dataformat-xml"}
+#com-fasterxml-jackson-dataformat-jackson-dataformat-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml" , version.ref = "jackson-dataformat-xml"}
 
 junit-jupiter-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 com-baomidou-mybatis-plus-bom = { module = "com.baomidou:mybatis-plus-bom",version.ref = "com-baomidou-mybatis-plus-boot-starter"}
