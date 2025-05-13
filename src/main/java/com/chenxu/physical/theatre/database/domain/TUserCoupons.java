@@ -2,6 +2,7 @@ package com.chenxu.physical.theatre.database.domain;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chenxu.physical.theatre.database.constant.TUserCouponsStatus;
@@ -47,7 +48,7 @@ public class TUserCoupons {
      * 几天之内有效
      */
     private Integer effectiveDays;
-
+    @TableField(exist = false)
     private TCoupon tCoupon;
 
     @Override
