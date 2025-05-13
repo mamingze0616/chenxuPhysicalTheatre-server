@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * @author mamingze
  * @version 1.0
- * @title TPayOrderStatus
+ * @title TPayOrderStatuss
  * @description
  * @create 2025/5/12 18:55
  */
