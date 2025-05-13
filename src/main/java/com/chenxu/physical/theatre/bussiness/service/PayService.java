@@ -63,6 +63,9 @@ public class PayService {
                     .eq("out_trade_no", apiPayCallbackRequest.getOutTradeNo()));
             if (tPayOrder != null) {
                 tPayOrder.setStatus(TPayOrderStatus.PAID);
+                tPayOrder.setResultCode(apiPayCallbackRequest.getResultCode());
+                tPayOrder.setTimeEnd(apiPayCallbackRequest.getTimeEnd());
+                tPayOrder.setTransactionId(apiPayCallbackRequest.getTransactionId());
                 tPayOrder.setPayJson(apiPayCallbackRequest);
                 payOrderService.updateById(tPayOrder);
             }
@@ -121,6 +124,8 @@ public class PayService {
                     tPayOrder.getTotalFee(), spbillCreateIp);
             //将预订单的返回结果存储
             tPayOrder.setPreJson(payUnifiedOrderResponse);
+            tPayOrder.setTimeStamp(payUnifiedOrderResponse.getRespdata().getPayment().getTimeStamp());
+            tPayOrder.setResultCode(payUnifiedOrderResponse.getRespdata().getResultCode());
             payOrderService.updateById(tPayOrder);
             return tPayOrder;
         } catch (Exception e) {

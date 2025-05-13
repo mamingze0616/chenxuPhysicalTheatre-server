@@ -13,16 +13,16 @@ import lombok.ToString;
 @Data
 @ToString
 public class Respdata {
-    String return_code;
-    String return_msg;
+    String returnCode;
+    String returnMsg;
     String appid;
-    String mch_id;
-    String sub_appid;
-    String sub_mch_id;
-    String nonce_str;
+    String mchId;
+    String subAppid;
+    String subMchId;
+    String nonceStr;
     String sign;
-    String result_code;
-    String trade_type;
-    String prepay_id;
+    String resultCode;
+    String tradeType;
+    String prepayId;
     Payment payment;
 }
