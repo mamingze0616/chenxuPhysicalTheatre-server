@@ -88,8 +88,9 @@ public class PayService {
     //微信支付平台发送查询订单请求
     public TPayOrder sendQueryOrderRequestToWeiXin(TPayOrder tPayOrder) {
         try {
-            logger.info("开始查询订单");
+
             tPayOrder = payOrderService.getById(tPayOrder.getId());
+            logger.info("开始查询订单");
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
             headers.setContentType(MediaType.APPLICATION_JSON);
