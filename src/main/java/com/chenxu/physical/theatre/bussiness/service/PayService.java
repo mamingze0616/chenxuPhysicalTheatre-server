@@ -170,7 +170,7 @@ public class PayService {
             String responseText = restTemplate.postForObject(unifiedOrderUrl, entity, String.class);
             // 2. 然后手动转换为 PhoneResponse
             ObjectMapper mapper = new ObjectMapper();
-            logger.info("接口返回:[{}]", responseText);
+            logger.info("text接口返回:[{}]", responseText);
             PayUnifiedOrderResponse payUnifiedOrderResponse = mapper.readValue(responseText,
                     PayUnifiedOrderResponse.class);
             logger.info("接口返回:[{}]", payUnifiedOrderResponse);
