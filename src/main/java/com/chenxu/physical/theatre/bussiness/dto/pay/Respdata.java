@@ -16,11 +16,9 @@ import lombok.ToString;
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Respdata {
-
     String returnCode;
     String returnMsg;
     String appid;
-
     String mchId;
     String subAppid;
     String subMchId;
