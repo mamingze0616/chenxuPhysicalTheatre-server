@@ -99,8 +99,8 @@ public class PayService {
             requestBody.put("nonce_str", tPayOrder.getPreJson().getRespdata().getPayment().getNonceStr());
             logger.info("接口请求:[{}]", requestBody);
 
-//            HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
-            String responseText = restTemplate.postForObject(queryOrderUrl, requestBody, String.class);
+            HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
+            String responseText = restTemplate.postForObject(unifiedOrderUrl, entity, String.class);
             // 2. 然后手动转换为 PhoneResponse
             logger.info("text接口返回:[{}]", responseText);
             ObjectMapper mapper = new ObjectMapper();
