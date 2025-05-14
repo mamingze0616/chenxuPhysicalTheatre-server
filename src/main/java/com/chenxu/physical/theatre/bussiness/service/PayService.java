@@ -104,11 +104,11 @@ public class PayService {
             HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
             String responseText = restTemplate.postForObject(queryOrderUrl, entity, String.class);
             // 2. 然后手动转换为 PhoneResponse
-            logger.info("text接口返回:[{}]", responseText);
+            logger.info("responseText接口返回:[{}]", responseText);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
             PayUnifiedOrderResponse payUnifiedOrderResponse = mapper.readValue(responseText, PayUnifiedOrderResponse.class);
-            logger.info("接口返回:[{}]", payUnifiedOrderResponse);
+            logger.info("payUnifiedOrderResponse接口返回:[{}]", payUnifiedOrderResponse);
             if (payUnifiedOrderResponse.getErrcode() == WEIXIN_RESPONSE_CODE_SUCCESS && WEIXIN_RESPONSE_RETURN_CODE_SUCCESS.equals(payUnifiedOrderResponse.getRespdata().getReturnCode()) && WEIXIN_RESPONSE_RESULT_CODE_SUCCESS.equals(payUnifiedOrderResponse.getRespdata().getResultCode())) {
                 //设置状态支付状态
                 tPayOrder.setStatus(TPayOrderStatus.valueOf("SUCCESS"));
