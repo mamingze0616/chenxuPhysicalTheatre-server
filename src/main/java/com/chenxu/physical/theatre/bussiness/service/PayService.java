@@ -97,8 +97,8 @@ public class PayService {
             requestBody.put("out_trade_no", tPayOrder.getOutTradeNo());
             logger.info("接口请求:[{}]", requestBody);
 
-            HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
-            String responseText = restTemplate.postForObject(queryOrderUrl, entity, String.class);
+//            HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
+            String responseText = restTemplate.postForObject(queryOrderUrl, requestBody, String.class);
             // 2. 然后手动转换为 PhoneResponse
             logger.info("text接口返回:[{}]", responseText);
             ObjectMapper mapper = new ObjectMapper();
