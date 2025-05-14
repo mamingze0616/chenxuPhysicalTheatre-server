@@ -95,6 +95,8 @@ public class PayService {
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("sub_mch_id", mch);
             requestBody.put("out_trade_no", tPayOrder.getOutTradeNo());
+            requestBody.put("transaction_id", tPayOrder.getTransactionId());
+            requestBody.put("nonce_str", tPayOrder.getPreJson().getRespdata().getPayment().getNonceStr());
             logger.info("接口请求:[{}]", requestBody);
 
 //            HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
