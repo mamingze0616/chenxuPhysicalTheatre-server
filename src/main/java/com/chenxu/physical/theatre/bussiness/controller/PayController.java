@@ -34,12 +34,20 @@ public class PayController {
         logger.info("callback:{}", apiPayCallbackRequest);
         JSONObject result = new JSONObject();
         try {
-            payService.finishedPayOrder(apiPayCallbackRequest);
-            result.put("return_code", "SUCCESS");
-            result.put("return_msg", "OK");
+            if (payService.finishedPayOrder(apiPayCallbackRequest)) {
+                result.put("return_code", "SUCCESS");
+                result.put("return_msg", "OK");
+            } else {
+                result.put("return_code", "FAIL");
+                result.put("return_msg", "update error");
+            }
+
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            logger.error(e.getMessage());
+            result.put("return_code", "FAIL");
+            result.put("return_msg", e.getMessage());
         } finally {
+            logger.info("callback result:{}", result);
             return result;
         }
     }

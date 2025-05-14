@@ -1,38 +1,38 @@
 package com.chenxu.physical.theatre.database.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
  * 系统参数
+ *
  * @TableName T_SYS_PARAMS
  */
-@TableName(value ="T_SYS_PARAMS")
+@TableName(value = "T_SYS_PARAMS")
 @Data
 public class TSysParams {
     /**
-     * 
+     *
      */
     @TableId(type = IdType.AUTO)
     private Integer id;
 
     /**
-     * 
+     *
      */
     private String paramName;
 
     /**
-     * 
+     *
      */
     private String paramValue;
 
     /**
-     * 
+     *
      */
-    private Integer paramChineseName;
+    private String paramChineseName;
 
     @Override
     public boolean equals(Object that) {
@@ -47,9 +47,9 @@ public class TSysParams {
         }
         TSysParams other = (TSysParams) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getParamName() == null ? other.getParamName() == null : this.getParamName().equals(other.getParamName()))
-            && (this.getParamValue() == null ? other.getParamValue() == null : this.getParamValue().equals(other.getParamValue()))
-            && (this.getParamChineseName() == null ? other.getParamChineseName() == null : this.getParamChineseName().equals(other.getParamChineseName()));
+                && (this.getParamName() == null ? other.getParamName() == null : this.getParamName().equals(other.getParamName()))
+                && (this.getParamValue() == null ? other.getParamValue() == null : this.getParamValue().equals(other.getParamValue()))
+                && (this.getParamChineseName() == null ? other.getParamChineseName() == null : this.getParamChineseName().equals(other.getParamChineseName()));
     }
 
     @Override

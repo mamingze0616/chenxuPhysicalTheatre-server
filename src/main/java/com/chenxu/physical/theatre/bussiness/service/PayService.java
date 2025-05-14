@@ -56,25 +56,25 @@ public class PayService {
     @Autowired
     TUserOrderService userOrderService;
 
-    public TPayOrder finishedPayOrder(ApiPayCallbackRequest apiPayCallbackRequest) {
-        TPayOrder tPayOrder = new TPayOrder();
+    public boolean finishedPayOrder(ApiPayCallbackRequest apiPayCallbackRequest) {
         try {
-            tPayOrder = payOrderService.getOne(new QueryWrapper<TPayOrder>()
-                    .eq("out_trade_no", apiPayCallbackRequest.getOutTradeNo()));
-            logger.info("支付回调tPayOrder:" + tPayOrder);
+            TPayOrder tPayOrder = payOrderService.getOne(new QueryWrapper<TPayOrder>().eq("out_trade_no", apiPayCallbackRequest.getOutTradeNo()));
+
             if (tPayOrder != null) {
                 tPayOrder.setStatus(TPayOrderStatus.PAID);
                 tPayOrder.setResultCode(apiPayCallbackRequest.getResultCode());
                 tPayOrder.setTimeEnd(apiPayCallbackRequest.getTimeEnd());
                 tPayOrder.setTransactionId(apiPayCallbackRequest.getTransactionId());
                 tPayOrder.setPayJson(apiPayCallbackRequest);
-                payOrderService.updateById(tPayOrder);
+                logger.info("支付回调tPayOrder:" + tPayOrder);
+                return payOrderService.updateById(tPayOrder);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            return tPayOrder;
+            logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
+        return false;
+
 
     }
 
@@ -114,15 +114,11 @@ public class PayService {
      * @param spbillCreateIp
      * @return
      */
-    public TPayOrder unifiedOrder(TPayOrder tPayOrder, int outTradeNo,
-                                  TPayOrderType type,
-                                  String spbillCreateIp) {
+    public TPayOrder unifiedOrder(TPayOrder tPayOrder, int outTradeNo, TPayOrderType type, String spbillCreateIp) {
         try {
             //绑定关联ip后组成的OutTradeNo
             bindOutTradeNo(tPayOrder, outTradeNo, type);
-            PayUnifiedOrderResponse payUnifiedOrderResponse = unifiedOrder(tPayOrder.getOpenid(),
-                    tPayOrder.getBody(), tPayOrder.getOutTradeNo(),
-                    tPayOrder.getTotalFee(), spbillCreateIp);
+            PayUnifiedOrderResponse payUnifiedOrderResponse = unifiedOrder(tPayOrder.getOpenid(), tPayOrder.getBody(), tPayOrder.getOutTradeNo(), tPayOrder.getTotalFee(), spbillCreateIp);
             //将预订单的返回结果存储
             tPayOrder.setPreJson(payUnifiedOrderResponse);
             tPayOrder.setTimeStamp(payUnifiedOrderResponse.getRespdata().getPayment().getTimeStamp());
@@ -172,8 +168,7 @@ public class PayService {
             // 2. 然后手动转换为 PhoneResponse
             ObjectMapper mapper = new ObjectMapper();
             logger.info("text接口返回:[{}]", responseText);
-            PayUnifiedOrderResponse payUnifiedOrderResponse = mapper.readValue(responseText,
-                    PayUnifiedOrderResponse.class);
+            PayUnifiedOrderResponse payUnifiedOrderResponse = mapper.readValue(responseText, PayUnifiedOrderResponse.class);
             logger.info("接口返回:[{}]", payUnifiedOrderResponse);
             return payUnifiedOrderResponse;
         } catch (Exception e) {
