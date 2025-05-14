@@ -61,6 +61,7 @@ public class PayService {
         try {
             tPayOrder = payOrderService.getOne(new QueryWrapper<TPayOrder>()
                     .eq("out_trade_no", apiPayCallbackRequest.getOutTradeNo()));
+            logger.info("支付回调tPayOrder:" + tPayOrder);
             if (tPayOrder != null) {
                 tPayOrder.setStatus(TPayOrderStatus.PAID);
                 tPayOrder.setResultCode(apiPayCallbackRequest.getResultCode());
