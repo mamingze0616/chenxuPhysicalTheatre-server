@@ -11,6 +11,7 @@ import com.chenxu.physical.theatre.database.domain.TUserOrder;
 import com.chenxu.physical.theatre.database.service.TPayOrderService;
 import com.chenxu.physical.theatre.database.service.TUserOrderService;
 import com.chenxu.physical.theatre.database.service.TUserService;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +34,15 @@ import java.util.*;
  */
 @Service
 public class PayService {
+    private static final int WEIXIN_RESPONSE_CODE_SUCCESS = 0;
+    private static final String WEIXIN_RESPONSE_RETURN_CODE_SUCCESS = "SUCCESS";
+    private static final String WEIXIN_RESPONSE_RESULT_CODE_SUCCESS = "SUCCESS";
+
     private static final Logger logger = LoggerFactory.getLogger(PayService.class);
     @Value("${pay.unifiedOrder.url}")
     private String unifiedOrderUrl;
+    @Value("${pay.queryorder.url}")
+    private String queryOrderUrl;
     @Value("${wx.env}")
     private String env;
     @Value("${wx.mch}")
@@ -61,7 +68,7 @@ public class PayService {
             TPayOrder tPayOrder = payOrderService.getOne(new QueryWrapper<TPayOrder>().eq("out_trade_no", apiPayCallbackRequest.getOutTradeNo()));
 
             if (tPayOrder != null) {
-                tPayOrder.setStatus(TPayOrderStatus.PAID);
+                tPayOrder.setStatus(TPayOrderStatus.SUCCESS);
                 tPayOrder.setResultCode(apiPayCallbackRequest.getResultCode());
                 tPayOrder.setTimeEnd(apiPayCallbackRequest.getTimeEnd());
                 tPayOrder.setTransactionId(apiPayCallbackRequest.getTransactionId());
@@ -76,6 +83,37 @@ public class PayService {
         return false;
 
 
+    }
+
+    //微信支付平台发送查询订单请求
+    public TPayOrder sendQueryOrderRequestToWeiXin(TPayOrder tPayOrder) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("sub_mch_id", mch);
+            requestBody.put("out_trade_no", tPayOrder.getOutTradeNo());
+            requestBody.put("nonce_str", tPayOrder.getPreJson().getRespdata().getNonceStr());
+            logger.info("接口请求:[{}]", requestBody);
+
+            HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
+            String responseText = restTemplate.postForObject(queryOrderUrl, entity, String.class);
+            // 2. 然后手动转换为 PhoneResponse
+            logger.info("text接口返回:[{}]", responseText);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+            PayUnifiedOrderResponse payUnifiedOrderResponse = mapper.readValue(responseText, PayUnifiedOrderResponse.class);
+            logger.info("接口返回:[{}]", payUnifiedOrderResponse);
+            if (payUnifiedOrderResponse.getErrcode() == WEIXIN_RESPONSE_CODE_SUCCESS && WEIXIN_RESPONSE_RETURN_CODE_SUCCESS.equals(payUnifiedOrderResponse.getRespdata().getReturnCode()) && WEIXIN_RESPONSE_RESULT_CODE_SUCCESS.equals(payUnifiedOrderResponse.getRespdata().getResultCode())) {
+                //设置状态支付状态
+                tPayOrder.setStatus(TPayOrderStatus.valueOf("SUCCESS"));
+
+            }
+            return payOrderService.updateById(tPayOrder) ? tPayOrder : tPayOrder;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -142,7 +180,6 @@ public class PayService {
      * @return
      */
     public PayUnifiedOrderResponse unifiedOrder(String openid, String body, String outTradeNo, int totalFee, String spbillCreateIp) {
-
         try {
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("body", body);

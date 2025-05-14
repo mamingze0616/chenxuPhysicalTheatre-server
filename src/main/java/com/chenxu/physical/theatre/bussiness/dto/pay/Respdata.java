@@ -26,6 +26,7 @@ public class Respdata {
     String sign;
     String resultCode;
     String tradeType;
+    String tradeState;
     String prepayId;
     Payment payment;
 }

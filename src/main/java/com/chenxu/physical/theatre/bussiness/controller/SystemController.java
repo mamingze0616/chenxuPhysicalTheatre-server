@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -42,7 +43,7 @@ public class SystemController {
             if (paramNames.length > 0) {
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(tSysParamsService.list(new QueryWrapper<TSysParams>()
-                        .in("param_name", paramNames)));
+                        .in("param_name", Arrays.stream(paramNames).toList())));
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
