@@ -9,6 +9,7 @@ import com.chenxu.physical.theatre.database.domain.TClothesOrder;
 import com.chenxu.physical.theatre.database.domain.TPayOrder;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.domain.TUserOrder;
+import com.chenxu.physical.theatre.database.service.TClothesOrderService;
 import com.chenxu.physical.theatre.database.service.TPayOrderService;
 import com.chenxu.physical.theatre.database.service.TUserOrderService;
 import com.chenxu.physical.theatre.database.service.TUserService;
@@ -63,6 +64,8 @@ public class PayService {
 
     @Autowired
     TUserOrderService userOrderService;
+    @Autowired
+    TClothesOrderService tClothesOrderService;
 
     public boolean finishedPayOrder(ApiPayCallbackRequest apiPayCallbackRequest) {
         try {
@@ -251,6 +254,8 @@ public class PayService {
                 String[] split = getOutTradeNo.split("_");
                 if (TPayOrderType.MEMBERSHIP.getCode().equals(Integer.parseInt(split[1]))) {
                     tPayOrder.setUserOrder(userOrderService.getById(Integer.parseInt(split[2])));
+                } else if (TPayOrderType.CLOTHES.getCode().equals(Integer.parseInt(split[1]))) {
+                    tPayOrder.setClothesOrder(tClothesOrderService.getById(Integer.parseInt(split[2])));
                 }
             });
 
