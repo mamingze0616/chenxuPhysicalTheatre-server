@@ -59,7 +59,6 @@ public class MemberShipService {
                     throw new RuntimeException("优惠券已经使用");
                 }
             }
-
             return true;
         } catch (Exception e) {
             logger.error(e.getMessage());
