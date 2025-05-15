@@ -4,7 +4,6 @@ import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiPayCallbackRequest;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.service.PayService;
-import com.chenxu.physical.theatre.database.domain.TPayOrder;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,25 +67,6 @@ public class PayController {
         }
         return apiResponse;
 
-    }
-
-    /**
-     * 查询订单的订单的支付状态
-     */
-    @PostMapping("/getPayOrderStatus")
-    public ApiResponse getPayOrderStatus(@RequestBody TPayOrder tPayOrder) {
-        logger.info("getPayOrderStatus:: tPayOrder = [{}]", tPayOrder);
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-        try {
-            apiResponse.setData(payService.sendQueryOrderRequestToWeiXin(tPayOrder));
-            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-            apiResponse.setErrorMsg(e.getMessage());
-        }
-        return apiResponse;
     }
 
 

@@ -3,11 +3,14 @@ package com.chenxu.physical.theatre.bussiness.service;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
 import com.chenxu.physical.theatre.database.constant.TUserCouponsStatus;
 import com.chenxu.physical.theatre.database.constant.TUserOrderStatus;
+import com.chenxu.physical.theatre.database.constant.TUserType;
 import com.chenxu.physical.theatre.database.domain.TPayOrder;
+import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.domain.TUserCoupons;
 import com.chenxu.physical.theatre.database.domain.TUserOrder;
 import com.chenxu.physical.theatre.database.service.TUserCouponsService;
 import com.chenxu.physical.theatre.database.service.TUserOrderService;
+import com.chenxu.physical.theatre.database.service.TUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +31,8 @@ public class MemberShipService {
     PayService payService;
     @Autowired
     TUserCouponsService tUserCouponsService;
-
-
+    @Autowired
+    TUserService tUserService;
     @Autowired
     TUserOrderService tUserOrderService;
 
@@ -56,6 +59,27 @@ public class MemberShipService {
             return payOrder;
         }
 
+    }
+
+
+    public TUserOrder successToUpgrade(TUserOrder tUserOrder) {
+        try {
+            //查询用户升级订单
+            TUserOrder userOrder = tUserOrderService.getById(tUserOrder.getId());
+            if (userOrder == null) {
+                throw new RuntimeException("用户升级订单不存在");
+            }
+            //更新订单状态为已支付
+            tUserOrderService.lambdaUpdate().eq(TUserOrder::getId, tUserOrder.getId())
+                    .set(TUserOrder::getStatus, TUserOrderStatus.PAID.getCode()).update();
+            //修改用户状态为会员用户
+            tUserService.lambdaUpdate().eq(TUser::getId, userOrder.getUserId())
+                    .set(TUser::getType, TUserType.MEMBER.getCode()).update();
+            return userOrder;
+            //查询用户升级订单
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

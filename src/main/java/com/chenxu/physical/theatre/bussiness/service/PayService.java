@@ -41,7 +41,7 @@ public class PayService {
     private static final Logger logger = LoggerFactory.getLogger(PayService.class);
     @Value("${pay.unifiedOrder.url}")
     private String unifiedOrderUrl;
-    @Value("${pay.queryorder.url}")
+    @Value("${pay.orderquery.url}")
     private String queryOrderUrl;
     @Value("${wx.env}")
     private String env;
@@ -103,7 +103,7 @@ public class PayService {
 
             HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
             String responseText = restTemplate.postForObject(queryOrderUrl, entity, String.class);
-            // 2. 然后手动转换为 PhoneResponse
+            // 2. 然后手动转换为 Response
             logger.info("responseText接口返回:[{}]", responseText);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);

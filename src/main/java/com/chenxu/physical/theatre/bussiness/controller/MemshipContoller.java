@@ -56,4 +56,23 @@ public class MemshipContoller {
 
     }
 
+    //付款成功升级为会员
+    @PostMapping("/successToUpgrade")
+    public ApiResponse successToUpgrade(@RequestBody TUserOrder tUserOrder) {
+        logger.info("payCallbackToUpgrade::tUserOrder = [{}]", tUserOrder);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            //默认没收到支付成功回调,但是收到了前端支付成功的回调
+            Optional.ofNullable(tUserOrder.getId()).orElseThrow(() -> new RuntimeException("id为空"));
+            apiResponse.setData(memberShipService.successToUpgrade(tUserOrder));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
 }

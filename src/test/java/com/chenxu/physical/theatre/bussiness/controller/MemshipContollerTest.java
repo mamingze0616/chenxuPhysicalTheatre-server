@@ -64,5 +64,13 @@ class MemshipContollerTest {
         logger.info("接口返回:[{}]", payUnifiedOrderResponse);
     }
 
+    @Test
+    void successToUpgrade() {
+        TUserOrder tUserOrder = new TUserOrder();
+        tUserOrder.setId(46);
+
+        logger.info("接口返回:[{}]", memshipContoller.successToUpgrade(tUserOrder).toString());
+    }
+
 
 }

@@ -24,7 +24,7 @@ wx:
 
 
 pay:
-  queryorder:
+  orderquery:
     url: http://api.weixin.qq.com/_/pay/orderquery
   unifiedOrder:
     url: http://api.weixin.qq.com/_/pay/unifiedOrder

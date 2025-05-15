@@ -127,21 +127,19 @@ public class UserController {
     }
 
     @PostMapping("/getUserById")
-    public ApiResponse getUserById(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TUser user) {
-        logger.info("getUserById::user = [{}], openid = [{}]", user, openid);
+    public ApiResponse getUserById(@RequestBody TUser user) {
+        logger.info("getUserById::user = [{}]", user);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
-            Optional.ofNullable(user.getId()).ifPresentOrElse(id -> {
-                Optional.ofNullable(tUserService.getById(id)).ifPresentOrElse(tUser -> {
-                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                    apiResponse.setData(tUser);
-                }, () -> {
-                    throw new RuntimeException("此id的数据为空");
-                });
+            Optional.ofNullable(user.getId()).orElseThrow(() -> new RuntimeException("id为空"));
+            Optional.ofNullable(tUserService.getById(user.getId())).ifPresentOrElse(tUser -> {
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(userService.getUserCardInfo(tUser));
             }, () -> {
-                throw new RuntimeException("id为空");
+                throw new RuntimeException("此id的数据为空");
             });
+
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setErrorMsg(e.getMessage());
