@@ -43,9 +43,12 @@ public class MemshipContoller {
         try {
             Optional.ofNullable(tUserOrder.getUserId()).orElseThrow(() -> new RuntimeException("用户id为空"));
             Optional.ofNullable(tUserOrder.getAmount()).orElseThrow(() -> new RuntimeException("金额不能为空"));
-            //要下一个会员升级订单的话要创建一个支付订单
-            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-            apiResponse.setData(memberShipService.preUpgrade(tUserOrder, IpUtils.getIp(request)));
+            //判断用户是否是会员,已经是会员则不用升级了,判断优惠卷是否有效
+            if (memberShipService.checkUserIsMemberAnd(tUserOrder)) {
+                //要下一个会员升级订单的话要创建一个支付订单
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(memberShipService.preUpgrade(tUserOrder, IpUtils.getIp(request)));
+            }
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);

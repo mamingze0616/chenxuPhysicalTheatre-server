@@ -31,13 +31,6 @@ class MemshipContollerTest {
     PayService payService;
 
     @Test
-    void callback() {
-//        JSONObject jsonObject = new JSONObject();
-//        logger.info(payController.callback(jsonObject).toString());
-//        ;
-    }
-
-    @Test
     @Disabled
     void tPayOrderService() {
         TUserOrder tUserOrder = new TUserOrder();
@@ -69,7 +62,7 @@ class MemshipContollerTest {
         TUserOrder tUserOrder = new TUserOrder();
         tUserOrder.setId(46);
 
-        logger.info("接口返回:[{}]", memshipContoller.successToUpgrade(tUserOrder).toString());
+//        logger.info("接口返回:[{}]", memshipContoller.successToUpgrade(tUserOrder).toString());
     }
 
 

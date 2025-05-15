@@ -76,8 +76,8 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    public ApiResponse updateNicknameAndAvatar(@RequestBody TUser user, @RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid) {
-        logger.info("updateNicknameAndAvatar::user = [{}], openid = [{}]", user, openid);
+    public ApiResponse updateNicknameAndAvatar(@RequestBody TUser user) {
+        logger.info("updateNicknameAndAvatar::user = [{}]", user);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         apiResponse.setErrorMsg("更新失败");
@@ -91,7 +91,7 @@ public class UserController {
                     if (tUserService.updateById(tUser)) {
                         apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                         apiResponse.setErrorMsg("更新成功");
-                        apiResponse.setData(tUser);
+                        apiResponse.setData(userService.getUserCardInfo(tUser));
                     }
                 }, () -> {
                     throw new RuntimeException("此id的数据为空");

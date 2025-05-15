@@ -36,6 +36,34 @@ public class MemberShipService {
     @Autowired
     TUserOrderService tUserOrderService;
 
+    //判断用户是否是会员以及优惠券是否有效
+    public boolean checkUserIsMemberAnd(TUserOrder tUserOrder) {
+        try {
+            //查询用户升级订单
+            TUser user = tUserService.getById(tUserOrder.getUserId());
+            if (user == null) {
+                throw new RuntimeException("用户不存在");
+            }
+            if (user.getType() == TUserType.MEMBER) {
+                throw new RuntimeException("已经是会员");
+            }
+            //查询用户优惠券,暂时只能使用一个
+            TUserCoupons userCoupons = tUserCouponsService.getById(tUserOrder.getCouponIds());
+            if (userCoupons == null) {
+                throw new RuntimeException("优惠券不存在");
+            }
+            //判断是否已经使用
+            if (userCoupons.getStatus() == TUserCouponsStatus.FINISHED) {
+                throw new RuntimeException("优惠券已经使用");
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public TPayOrder preUpgrade(TUserOrder tUserOrder, String spbillCreateIp) {
         //获取下单用户的openid
         TPayOrder payOrder = new TPayOrder();
