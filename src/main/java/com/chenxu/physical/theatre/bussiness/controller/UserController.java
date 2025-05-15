@@ -229,8 +229,10 @@ public class UserController {
                 tUser.setStatus(TUserStatus.NEW_ADDED.getCode());
                 tUser.setPhone(phoneNumber);
                 tUser.setType(TUserType.NON_MEMBER);
+
                 tUser.setNickname(openid.substring(22));
                 tUser.setAvatar("https://tdesign.gtimg.com/mobile/demos/avatar1.png");
+                logger.info("registerOrLogin::tUser = [{}]", tUser);
                 tUserService.save(tUser);
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(tUser);
