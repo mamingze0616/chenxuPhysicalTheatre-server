@@ -49,4 +49,21 @@ public class ClothesService {
         }
 
     }
+
+    public TClothesOrder successToBuyClothes(TClothesOrder tClothesOrder) {
+        try {
+            TClothesOrder clothesOrder = tClothesOrderService.getById(tClothesOrder.getId());
+            if (clothesOrder == null) {
+                throw new RuntimeException("用户形体服订单不存在");
+            }
+            //更新订单状态为已支付
+            tClothesOrderService.lambdaUpdate().eq(TClothesOrder::getId, tClothesOrder.getId())
+                    .set(TClothesOrder::getStatus, TUserOrderStatus.PAID.getCode()).update();
+            //修改用户状态为会员用户
+            return tClothesOrder;
+            //查询用户升级订单
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

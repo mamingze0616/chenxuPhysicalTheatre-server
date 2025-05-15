@@ -24,4 +24,9 @@ public enum TUserStatus {
         this.code = code;
         this.desc = desc;
     }
+
+    @Override
+    public String toString() {
+        return this.code.toString();
+    }
 }

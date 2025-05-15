@@ -12,11 +12,13 @@
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="amount" column="amount" jdbcType="INTEGER"/>
             <result property="couponIds" column="coupon_ids" jdbcType="VARCHAR"/>
+            <result property="size" column="size" jdbcType="INTEGER"/>
+            <result property="goodsStatus" column="goods_status" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,user_id,pay_order_id,
         status,create_time,amount,
-        coupon_ids
+        coupon_ids,size,goods_status
     </sql>
 </mapper>

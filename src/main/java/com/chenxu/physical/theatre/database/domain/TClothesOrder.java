@@ -52,6 +52,16 @@ public class TClothesOrder {
      */
     private String couponIds;
 
+    /**
+     * 衣服大小
+     */
+    private Integer size;
+
+    /**
+     * 1:已下发;2:未下发;3已发货;
+     */
+    private Integer goodsStatus;
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -70,7 +80,9 @@ public class TClothesOrder {
                 && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
                 && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
                 && (this.getAmount() == null ? other.getAmount() == null : this.getAmount().equals(other.getAmount()))
-                && (this.getCouponIds() == null ? other.getCouponIds() == null : this.getCouponIds().equals(other.getCouponIds()));
+                && (this.getCouponIds() == null ? other.getCouponIds() == null : this.getCouponIds().equals(other.getCouponIds()))
+                && (this.getSize() == null ? other.getSize() == null : this.getSize().equals(other.getSize()))
+                && (this.getGoodsStatus() == null ? other.getGoodsStatus() == null : this.getGoodsStatus().equals(other.getGoodsStatus()));
     }
 
     @Override
@@ -84,6 +96,8 @@ public class TClothesOrder {
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         result = prime * result + ((getAmount() == null) ? 0 : getAmount().hashCode());
         result = prime * result + ((getCouponIds() == null) ? 0 : getCouponIds().hashCode());
+        result = prime * result + ((getSize() == null) ? 0 : getSize().hashCode());
+        result = prime * result + ((getGoodsStatus() == null) ? 0 : getGoodsStatus().hashCode());
         return result;
     }
 
@@ -100,6 +114,8 @@ public class TClothesOrder {
         sb.append(", createTime=").append(createTime);
         sb.append(", amount=").append(amount);
         sb.append(", couponIds=").append(couponIds);
+        sb.append(", size=").append(size);
+        sb.append(", goodsStatus=").append(goodsStatus);
         sb.append("]");
         return sb.toString();
     }

@@ -79,7 +79,7 @@ public class PayService {
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            throw e;
         }
         return false;
 

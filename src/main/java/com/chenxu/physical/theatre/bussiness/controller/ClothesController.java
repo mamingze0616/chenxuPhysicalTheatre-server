@@ -60,5 +60,24 @@ public class ClothesController {
 
     }
 
+    @PostMapping("/successToBuyClothes")
+    public ApiResponse successToBuyClothes(@RequestBody TClothesOrder tClothesOrder) {
+        logger.info("successToBuyClothes::tClothesOrder = [{}]", tClothesOrder);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+//默认没收到支付成功回调,但是收到了前端支付成功的回调
+            Optional.ofNullable(tClothesOrder.getId()).orElseThrow(() -> new RuntimeException("id为空"));
+            apiResponse.setData(clothesService.successToBuyClothes(tClothesOrder));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+
+        return apiResponse;
+    }
+
 
 }

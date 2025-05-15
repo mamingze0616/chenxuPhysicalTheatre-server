@@ -2,31 +2,36 @@ package com.chenxu.physical.theatre.database.constant;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.Getter;
 
 /**
  * @author mamingze
  * @version 1.0
- * @title TUserType
+ * @title TClothesOrderGoodsStatusEnum
  * @description
- * @create 2025/3/4 17:22
+ * @create 2025/5/16 03:20
  */
-@Getter
-public enum TUserType {
-    ADMIN(1, "管理员"),
-    USER(2, "普通用户"),
-    TEACHER(3, "视频用户"),
-    NON_MEMBER(4, "非会员"),
-    MEMBER(5, "会员用户");
+public enum TClothesOrderGoodsStatusEnum {
+    //1:已下发;2:未下发;3已发货;
+    ISSUED(1, "已下发"),
+    NOT_ISSUED(2, "未下发"),
+    SHIPPED(3, "已发货");
+
     @EnumValue
     @JsonValue
     private final Integer code;
-
     private final String desc;
 
-    TUserType(Integer code, String desc) {
+    TClothesOrderGoodsStatusEnum(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public String getDesc() {
+        return desc;
     }
 
     @Override
