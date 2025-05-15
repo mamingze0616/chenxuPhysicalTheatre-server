@@ -51,6 +51,7 @@ public class MemberShipService {
             //第三步:给微信官网发送请求，获取预支付订单
             payOrder = payService.unifiedOrder(prePayOrder,
                     tUserOrder.getId(), TPayOrderType.MEMBERSHIP, spbillCreateIp);
+            payOrder.setTUserOrder(tUserOrder);
             tUserCouponsService.lambdaUpdate().eq(TUserCoupons::getId, tUserOrder.getCouponIds())
                     .set(TUserCoupons::getStatus, TUserCouponsStatus.FINISHED.getCode()).update();
         } catch (Exception e) {
