@@ -233,7 +233,7 @@ public class PayService {
                 //按照_分割
                 String[] split = getOutTradeNo.split("_");
                 if (TPayOrderType.MEMBERSHIP.getCode().equals(Integer.parseInt(split[1]))) {
-                    tPayOrder.setTUserOrder(userOrderService.getById(Integer.parseInt(split[2])));
+                    tPayOrder.setUserOrder(userOrderService.getById(Integer.parseInt(split[2])));
                 }
             });
 
