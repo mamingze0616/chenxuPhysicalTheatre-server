@@ -12,10 +12,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum TPayOrderType {
     /**
-     * 1:会员;2:课程
+     * 1:会员;2:课程;3:形体服
      */
     MEMBERSHIP(1, "会员"),
-    COURSE(2, "课程");
+    COURSE(2, "课程"),
+    CLOTHES(3, "形体服");
     @EnumValue
     @JsonValue
     private final Integer code;

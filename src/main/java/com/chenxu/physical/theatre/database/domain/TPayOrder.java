@@ -31,7 +31,7 @@ public class TPayOrder {
     private TPayOrderStatus status;
 
     /**
-     * 1:会员;2:课程
+     * 1:会员;2:课程;3:形体服
      */
     private TPayOrderType type;
 
@@ -88,7 +88,9 @@ public class TPayOrder {
     private ApiPayCallbackRequest payJson;
 
     @TableField(exist = false)
-    private TUserOrder UserOrder;
+    private TUserOrder userOrder;
+    @TableField(exist = false)
+    private TClothesOrder clothesOrder;
 
     @Override
     public boolean equals(Object that) {
