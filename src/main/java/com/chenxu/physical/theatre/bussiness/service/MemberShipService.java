@@ -49,6 +49,7 @@ public class MemberShipService {
                 throw new RuntimeException("已经是会员");
             }
             //查询用户优惠券,暂时只能使用一个
+            logger.info("查询用户优惠券:" + tUserOrder.getCouponIds());
             if (StringUtils.hasText(tUserOrder.getCouponIds())) {
                 TUserCoupons userCoupons = tUserCouponsService.getById(tUserOrder.getCouponIds());
                 if (userCoupons == null) {
