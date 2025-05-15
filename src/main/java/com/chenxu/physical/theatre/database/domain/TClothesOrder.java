@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.chenxu.physical.theatre.database.constant.TUserOrderStatus;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 衣服订单表
@@ -40,7 +40,7 @@ public class TClothesOrder {
     /**
      *
      */
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      *
