@@ -21,7 +21,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author mamingze
@@ -82,8 +84,24 @@ public class PayService {
                             .eq(TUser::getOpenid, tPayOrder.getOpenid())
                             .update();
                 } else if (TPayOrderType.COURSE.getCode().equals(Integer.parseInt(split[1]))) {
+
+
                     tCourseOrderService.lambdaUpdate().set(TCourseOrder::getStatus, TCourseOrderStatus.SUCCESS.getCode())
                             .eq(TCourseOrder::getId, Integer.parseInt(split[2]))
+                            .update();
+                    //查询有效的课程订单
+                    AtomicInteger totalCourseNumber = new AtomicInteger();
+                    totalCourseNumber.set(0);
+                    tCourseOrderService.list(new QueryWrapper<TCourseOrder>()
+                            .eq("status", TCourseOrderStatus.SUCCESS.getCode())).forEach(tCourseOrder -> {
+                        if (tCourseOrder.getValidityPeriod() != null) {
+                            if (LocalDate.now().isBefore(tCourseOrder.getStartTime().plusDays(tCourseOrder.getValidityPeriod()))) {
+                                totalCourseNumber.addAndGet(tCourseOrder.getCourseNumber());
+                            }
+                        }
+                    });
+                    tUserService.lambdaUpdate().set(TUser::getEffectiveCourseCount, totalCourseNumber.get())
+                            .eq(TUser::getOpenid, tPayOrder.getOpenid())
                             .update();
                 }
                 return payOrderService.updateById(tPayOrder);
