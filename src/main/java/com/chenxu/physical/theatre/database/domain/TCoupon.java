@@ -46,14 +46,14 @@ public class TCoupon {
     /**
      * 赠送的课程数量
      */
-    private TCouponAlgorithmEnum courseNumber;
+    private Integer courseNumber;
 
     /**
      *
      */
     private String title;
 
-    private String algorithm;
+    private TCouponAlgorithmEnum algorithm;
 
     @Override
     public boolean equals(Object that) {

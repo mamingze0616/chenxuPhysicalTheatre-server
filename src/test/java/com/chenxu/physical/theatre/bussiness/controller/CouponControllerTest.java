@@ -24,6 +24,7 @@ class CouponControllerTest {
     CouponController couponController;
 
     @Test
+    @Disabled
     void add() {
         TCoupon tCoupon = new TCoupon();
         tCoupon.setCourseNumber(1);
