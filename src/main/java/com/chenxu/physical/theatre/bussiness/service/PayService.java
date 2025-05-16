@@ -93,13 +93,14 @@ public class PayService {
                     AtomicInteger totalCourseNumber = new AtomicInteger();
                     totalCourseNumber.set(0);
                     tCourseOrderService.list(new QueryWrapper<TCourseOrder>()
-                            .eq("status", TCourseOrderStatus.SUCCESS.getCode())).forEach(tCourseOrder -> {
-                        if (tCourseOrder.getValidityPeriod() != null) {
-                            if (LocalDate.now().isBefore(tCourseOrder.getStartTime().plusDays(tCourseOrder.getValidityPeriod()))) {
-                                totalCourseNumber.addAndGet(tCourseOrder.getCourseNumber());
-                            }
-                        }
-                    });
+                                    .eq("status", TCourseOrderStatus.SUCCESS.getCode()).eq("openid", tPayOrder.getOpenid()))
+                            .forEach(tCourseOrder -> {
+                                if (tCourseOrder.getValidityPeriod() != null) {
+                                    if (LocalDate.now().isBefore(tCourseOrder.getStartTime().plusDays(tCourseOrder.getValidityPeriod()))) {
+                                        totalCourseNumber.addAndGet(tCourseOrder.getCourseNumber());
+                                    }
+                                }
+                            });
                     tUserService.lambdaUpdate().set(TUser::getEffectiveCourseCount, totalCourseNumber.get())
                             .eq(TUser::getOpenid, tPayOrder.getOpenid())
                             .update();
