@@ -3,6 +3,7 @@ package com.chenxu.physical.theatre.database.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chenxu.physical.theatre.database.constant.TCouponAlgorithmEnum;
 import com.chenxu.physical.theatre.database.constant.TCouponType;
 import lombok.Data;
 
@@ -45,12 +46,14 @@ public class TCoupon {
     /**
      * 赠送的课程数量
      */
-    private Integer courseNumber;
+    private TCouponAlgorithmEnum courseNumber;
 
     /**
      *
      */
     private String title;
+
+    private String algorithm;
 
     @Override
     public boolean equals(Object that) {
@@ -70,7 +73,8 @@ public class TCoupon {
                 && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
                 && (this.getDiscount() == null ? other.getDiscount() == null : this.getDiscount().equals(other.getDiscount()))
                 && (this.getCourseNumber() == null ? other.getCourseNumber() == null : this.getCourseNumber().equals(other.getCourseNumber()))
-                && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()));
+                && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
+                && (this.getAlgorithm() == null ? other.getAlgorithm() == null : this.getAlgorithm().equals(other.getAlgorithm()));
     }
 
     @Override
@@ -84,6 +88,7 @@ public class TCoupon {
         result = prime * result + ((getDiscount() == null) ? 0 : getDiscount().hashCode());
         result = prime * result + ((getCourseNumber() == null) ? 0 : getCourseNumber().hashCode());
         result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
+        result = prime * result + ((getAlgorithm() == null) ? 0 : getAlgorithm().hashCode());
         return result;
     }
 
@@ -100,6 +105,7 @@ public class TCoupon {
         sb.append(", discount=").append(discount);
         sb.append(", courseNumber=").append(courseNumber);
         sb.append(", title=").append(title);
+        sb.append(", algorithm=").append(algorithm);
         sb.append("]");
         return sb.toString();
     }

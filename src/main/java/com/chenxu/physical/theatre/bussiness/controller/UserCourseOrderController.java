@@ -8,6 +8,7 @@ import com.chenxu.physical.theatre.database.constant.TUserType;
 import com.chenxu.physical.theatre.database.domain.TCourseOrder;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.service.TCourseOrderService;
+import com.chenxu.physical.theatre.database.service.TSampleCourseOrderService;
 import com.chenxu.physical.theatre.database.service.TUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,24 @@ public class UserCourseOrderController {
     TCourseOrderService courseOrderService;
     @Autowired
     TUserService tUserService;
+    @Autowired
+    TSampleCourseOrderService tSampleCourseOrderService;
+
+    @PostMapping("/getSampleCourseOrderList")
+    public ApiResponse getSampleCourseOrderList() {
+        ApiResponse apiResponse = new ApiResponse();
+        try {
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(tSampleCourseOrderService.list());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+
+    }
+
 
     /**
      * 获取个人订单
