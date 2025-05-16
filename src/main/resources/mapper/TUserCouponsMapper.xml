@@ -19,6 +19,7 @@
             <result property="discount" column="discount" jdbcType="INTEGER"/>
             <result property="courseNumber" column="course_number" jdbcType="INTEGER"/>
             <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="algorithm" column="algorithm" jdbcType="INTEGER"/>
         </collection>
     </resultMap>
 
@@ -30,7 +31,7 @@
         select
         <include refid="Base_Column_List"/>,
         coupon.type,coupon.validity_period,
-        coupon.start_time,coupon.discount,coupon.course_number, coupon.title
+        coupon.start_time,coupon.discount,coupon.course_number, coupon.title,coupon.algorithm
         from T_USER_COUPONS left join T_COUPON coupon on T_USER_COUPONS.coupon_id = coupon.id
         where user_id = #{userId}
     </select>
