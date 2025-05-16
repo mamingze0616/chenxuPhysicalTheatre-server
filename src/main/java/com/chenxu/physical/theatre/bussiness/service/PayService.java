@@ -6,10 +6,7 @@ import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
 import com.chenxu.physical.theatre.database.domain.*;
-import com.chenxu.physical.theatre.database.service.TClothesOrderService;
-import com.chenxu.physical.theatre.database.service.TPayOrderService;
-import com.chenxu.physical.theatre.database.service.TUserOrderService;
-import com.chenxu.physical.theatre.database.service.TUserService;
+import com.chenxu.physical.theatre.database.service.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -63,6 +60,8 @@ public class PayService {
     TUserOrderService userOrderService;
     @Autowired
     TClothesOrderService tClothesOrderService;
+    @Autowired
+    TCourseOrderService tCourseOrderService;
 
     public boolean finishedPayOrder(ApiPayCallbackRequest apiPayCallbackRequest) {
         try {
@@ -272,6 +271,8 @@ public class PayService {
                     tPayOrder.setUserOrder(userOrderService.getById(Integer.parseInt(split[2])));
                 } else if (TPayOrderType.CLOTHES.getCode().equals(Integer.parseInt(split[1]))) {
                     tPayOrder.setClothesOrder(tClothesOrderService.getById(Integer.parseInt(split[2])));
+                } else if (TPayOrderType.COURSE.getCode().equals(Integer.parseInt(split[1]))) {
+                    tPayOrder.setCourseOrder(tCourseOrderService.getById(Integer.parseInt(split[2])));
                 }
             });
 
