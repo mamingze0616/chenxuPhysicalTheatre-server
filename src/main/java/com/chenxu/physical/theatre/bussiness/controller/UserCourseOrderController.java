@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -102,6 +103,18 @@ public class UserCourseOrderController {
         try {
             Optional.ofNullable(courseOrder.getUserId()).orElseThrow(() -> new RuntimeException("用户id为空"));
             Optional.ofNullable(courseOrder.getSampleCourseOrderId()).orElseThrow(() -> new RuntimeException("次卡id为空"));
+
+            logger.info("查询用户优惠券:" + courseOrder.getCouponIds());
+            if (StringUtils.hasText(courseOrder.getCouponIds())) {
+                TUserCoupons userCoupons = tUserCouponsService.getById(courseOrder.getCouponIds());
+                if (userCoupons == null) {
+                    throw new RuntimeException("优惠券不存在");
+                }
+                //判断是否已经使用
+                if (userCoupons.getStatus() == TUserCouponsStatus.FINISHED) {
+                    throw new RuntimeException("优惠券已经使用");
+                }
+            }
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
             apiResponse.setData(preBuyCourseOrder(courseOrder, IpUtils.getIp(request)));
         } catch (Exception e) {
@@ -121,7 +134,7 @@ public class UserCourseOrderController {
                     .orElseThrow(() -> new RuntimeException("课程订单不存在"));
             //第一步:预创建一个空白支付订单
             TPayOrder prePayOrder = payService.preCreateCourseOrder(courseOrder,
-                    "购买课程金额" + courseOrder.getAmount());
+                    "购买" + tSampleCourseOrder.getTitle());
             //创建一个用户升级订单,绑定预创建的支付订单
             courseOrder.setPayOrderId(prePayOrder.getId());
             courseOrder.setType(TCourseOrderType.PAY);
