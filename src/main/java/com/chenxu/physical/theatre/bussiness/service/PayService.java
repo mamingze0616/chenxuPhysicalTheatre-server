@@ -3,8 +3,10 @@ package com.chenxu.physical.theatre.bussiness.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.dto.ApiPayCallbackRequest;
 import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
+import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
+import com.chenxu.physical.theatre.database.constant.TUserType;
 import com.chenxu.physical.theatre.database.domain.*;
 import com.chenxu.physical.theatre.database.service.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -73,7 +75,17 @@ public class PayService {
                 tPayOrder.setTimeEnd(apiPayCallbackRequest.getTimeEnd());
                 tPayOrder.setTransactionId(apiPayCallbackRequest.getTransactionId());
                 tPayOrder.setPayJson(apiPayCallbackRequest);
-                logger.info("支付回调tPayOrder:" + tPayOrder);
+                //按照_分割
+                String[] split = tPayOrder.getOutTradeNo().split("_");
+                if (TPayOrderType.MEMBERSHIP.getCode().equals(Integer.parseInt(split[1]))) {
+                    tUserService.lambdaUpdate().set(TUser::getType, TUserType.MEMBER.getCode())
+                            .eq(TUser::getOpenid, tPayOrder.getOpenid())
+                            .update();
+                } else if (TPayOrderType.COURSE.getCode().equals(Integer.parseInt(split[1]))) {
+                    tCourseOrderService.lambdaUpdate().set(TCourseOrder::getStatus, TCourseOrderStatus.SUCCESS.getCode())
+                            .eq(TCourseOrder::getId, Integer.parseInt(split[2]))
+                            .update();
+                }
                 return payOrderService.updateById(tPayOrder);
             }
         } catch (Exception e) {
