@@ -7,6 +7,7 @@ import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TCourseOrderType;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -53,6 +54,36 @@ public class TCourseOrder {
      */
     private Integer operatorId;
 
+    /**
+     * 有效期长度
+     */
+    private Integer validityPeriod;
+
+    /**
+     * 有效期开始时间
+     */
+    private LocalDate startTime;
+
+    /**
+     *
+     */
+    private Integer sampleCourseOrderId;
+
+    /**
+     *
+     */
+    private Integer payOrderId;
+
+    /**
+     *
+     */
+    private String couponIds;
+
+    /**
+     *
+     */
+    private Integer amount;
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -71,7 +102,13 @@ public class TCourseOrder {
                 && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
                 && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
                 && (this.getCreateAt() == null ? other.getCreateAt() == null : this.getCreateAt().equals(other.getCreateAt()))
-                && (this.getOperatorId() == null ? other.getOperatorId() == null : this.getOperatorId().equals(other.getOperatorId()));
+                && (this.getOperatorId() == null ? other.getOperatorId() == null : this.getOperatorId().equals(other.getOperatorId()))
+                && (this.getValidityPeriod() == null ? other.getValidityPeriod() == null : this.getValidityPeriod().equals(other.getValidityPeriod()))
+                && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
+                && (this.getSampleCourseOrderId() == null ? other.getSampleCourseOrderId() == null : this.getSampleCourseOrderId().equals(other.getSampleCourseOrderId()))
+                && (this.getPayOrderId() == null ? other.getPayOrderId() == null : this.getPayOrderId().equals(other.getPayOrderId()))
+                && (this.getCouponIds() == null ? other.getCouponIds() == null : this.getCouponIds().equals(other.getCouponIds()))
+                && (this.getAmount() == null ? other.getAmount() == null : this.getAmount().equals(other.getAmount()));
     }
 
     @Override
@@ -85,6 +122,12 @@ public class TCourseOrder {
         result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
         result = prime * result + ((getCreateAt() == null) ? 0 : getCreateAt().hashCode());
         result = prime * result + ((getOperatorId() == null) ? 0 : getOperatorId().hashCode());
+        result = prime * result + ((getValidityPeriod() == null) ? 0 : getValidityPeriod().hashCode());
+        result = prime * result + ((getStartTime() == null) ? 0 : getStartTime().hashCode());
+        result = prime * result + ((getSampleCourseOrderId() == null) ? 0 : getSampleCourseOrderId().hashCode());
+        result = prime * result + ((getPayOrderId() == null) ? 0 : getPayOrderId().hashCode());
+        result = prime * result + ((getCouponIds() == null) ? 0 : getCouponIds().hashCode());
+        result = prime * result + ((getAmount() == null) ? 0 : getAmount().hashCode());
         return result;
     }
 
@@ -101,6 +144,12 @@ public class TCourseOrder {
         sb.append(", status=").append(status);
         sb.append(", createAt=").append(createAt);
         sb.append(", operatorId=").append(operatorId);
+        sb.append(", validityPeriod=").append(validityPeriod);
+        sb.append(", startTime=").append(startTime);
+        sb.append(", sampleCourseOrderId=").append(sampleCourseOrderId);
+        sb.append(", payOrderId=").append(payOrderId);
+        sb.append(", couponIds=").append(couponIds);
+        sb.append(", amount=").append(amount);
         sb.append("]");
         return sb.toString();
     }

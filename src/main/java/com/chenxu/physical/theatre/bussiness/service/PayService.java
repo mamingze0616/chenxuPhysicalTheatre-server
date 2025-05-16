@@ -5,10 +5,7 @@ import com.chenxu.physical.theatre.bussiness.dto.ApiPayCallbackRequest;
 import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
-import com.chenxu.physical.theatre.database.domain.TClothesOrder;
-import com.chenxu.physical.theatre.database.domain.TPayOrder;
-import com.chenxu.physical.theatre.database.domain.TUser;
-import com.chenxu.physical.theatre.database.domain.TUserOrder;
+import com.chenxu.physical.theatre.database.domain.*;
 import com.chenxu.physical.theatre.database.service.TClothesOrderService;
 import com.chenxu.physical.theatre.database.service.TPayOrderService;
 import com.chenxu.physical.theatre.database.service.TUserOrderService;
@@ -138,6 +135,7 @@ public class PayService {
             payOrderService.save(tPayOrder);
         } catch (Exception e) {
             logger.error(e.getMessage());
+            throw e;
         }
         return tPayOrder;
     }
@@ -154,6 +152,24 @@ public class PayService {
             payOrderService.save(tPayOrder);
         } catch (Exception e) {
             logger.error(e.getMessage());
+            throw e;
+        }
+        return tPayOrder;
+    }
+
+    public TPayOrder preCreateCourseOrder(TCourseOrder tCourseOrder, String body) {
+        TPayOrder tPayOrder = new TPayOrder();
+        try {
+            String openid = tUserService.getById(tCourseOrder.getUserId()).getOpenid();
+            tPayOrder.setType(TPayOrderType.COURSE);
+            tPayOrder.setOpenid(openid);
+            tPayOrder.setBody(body);
+            tPayOrder.setStatus(TPayOrderStatus.UNPAID);
+            tPayOrder.setTotalFee(tCourseOrder.getAmount());
+            payOrderService.save(tPayOrder);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw e;
         }
         return tPayOrder;
     }

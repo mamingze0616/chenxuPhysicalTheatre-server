@@ -3,18 +3,21 @@ package com.chenxu.physical.theatre.bussiness.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
-import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
-import com.chenxu.physical.theatre.database.constant.TUserType;
-import com.chenxu.physical.theatre.database.domain.TCourseOrder;
-import com.chenxu.physical.theatre.database.domain.TUser;
+import com.chenxu.physical.theatre.bussiness.service.PayService;
+import com.chenxu.physical.theatre.bussiness.util.IpUtils;
+import com.chenxu.physical.theatre.database.constant.*;
+import com.chenxu.physical.theatre.database.domain.*;
 import com.chenxu.physical.theatre.database.service.TCourseOrderService;
 import com.chenxu.physical.theatre.database.service.TSampleCourseOrderService;
+import com.chenxu.physical.theatre.database.service.TUserCouponsService;
 import com.chenxu.physical.theatre.database.service.TUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -29,8 +32,13 @@ import java.util.Optional;
 @RequestMapping("/order/course")
 public class UserCourseOrderController {
     private static final Logger logger = LoggerFactory.getLogger(UserCourseOrderController.class);
+
+    @Autowired
+    TUserCouponsService tUserCouponsService;
     @Autowired
     TCourseOrderService courseOrderService;
+    @Autowired
+    PayService payService;
     @Autowired
     TUserService tUserService;
     @Autowired
@@ -84,6 +92,59 @@ public class UserCourseOrderController {
         }
 
         return apiResponse;
+    }
+
+    @PostMapping("preCourseOrder")
+    public ApiResponse preCourseOrder(@RequestBody TCourseOrder courseOrder, HttpServletRequest request) {
+        logger.info("preCourseOrder:: courseOrder.userid = [{}]", courseOrder.getUserId());
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            Optional.ofNullable(courseOrder.getUserId()).orElseThrow(() -> new RuntimeException("用户id为空"));
+            Optional.ofNullable(courseOrder.getSampleCourseOrderId()).orElseThrow(() -> new RuntimeException("次卡id为空"));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(preBuyCourseOrder(courseOrder, IpUtils.getIp(request)));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+    }
+
+    private TPayOrder preBuyCourseOrder(TCourseOrder courseOrder, String spbillCreateIp) {
+        //获取下单用户的openid
+        TPayOrder payOrder = new TPayOrder();
+        try {
+            TSampleCourseOrder tSampleCourseOrder = tSampleCourseOrderService.getById(courseOrder.getSampleCourseOrderId());
+            Optional.ofNullable(tSampleCourseOrder)
+                    .orElseThrow(() -> new RuntimeException("课程订单不存在"));
+            //第一步:预创建一个空白支付订单
+            TPayOrder prePayOrder = payService.preCreateCourseOrder(courseOrder,
+                    "购买课程金额" + courseOrder.getAmount());
+            //创建一个用户升级订单,绑定预创建的支付订单
+            courseOrder.setPayOrderId(prePayOrder.getId());
+            courseOrder.setType(TCourseOrderType.PAY);
+            courseOrder.setCourseNumber(tSampleCourseOrder.getCourseNember());
+            courseOrder.setStatus(TCourseOrderStatus.UNPAID);
+            courseOrder.setCreateAt(LocalDateTime.now());
+            courseOrder.setValidityPeriod(tSampleCourseOrder.getValidity());
+            courseOrder.setStartTime(LocalDate.now());
+            //第二步:保存用户升级订单
+            courseOrderService.save(courseOrder);
+            //第三步:给微信官网发送请求，获取预支付订单
+            payOrder = payService.unifiedOrder(prePayOrder,
+                    courseOrder.getId(), TPayOrderType.COURSE, spbillCreateIp);
+            payOrder.setCourseOrder(courseOrder);
+            tUserCouponsService.lambdaUpdate().eq(TUserCoupons::getId, courseOrder.getCouponIds())
+                    .set(TUserCoupons::getStatus, TUserCouponsStatus.FINISHED.getCode()).update();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw e;
+        } finally {
+            return payOrder;
+        }
+
     }
 
     /**

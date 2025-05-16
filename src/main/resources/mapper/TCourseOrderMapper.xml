@@ -12,11 +12,19 @@
             <result property="status" column="status" jdbcType="TINYINT"/>
             <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
             <result property="operatorId" column="operator_id" jdbcType="INTEGER"/>
+            <result property="validityPeriod" column="validity_period" jdbcType="INTEGER"/>
+            <result property="startTime" column="start_time" jdbcType="DATE"/>
+            <result property="sampleCourseOrderId" column="sample_course_order_id" jdbcType="INTEGER"/>
+            <result property="payOrderId" column="pay_order_id" jdbcType="INTEGER"/>
+            <result property="couponIds" column="coupon_ids" jdbcType="VARCHAR"/>
+            <result property="amount" column="amount" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,user_id,course_number,
         type,status,create_at,
-        operator_id
+        operator_id,validity_period,start_time,
+        sample_course_order_id,pay_order_id,coupon_ids,
+        amount
     </sql>
 </mapper>

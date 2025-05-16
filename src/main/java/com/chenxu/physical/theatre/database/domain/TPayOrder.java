@@ -91,6 +91,8 @@ public class TPayOrder {
     private TUserOrder userOrder;
     @TableField(exist = false)
     private TClothesOrder clothesOrder;
+    @TableField(exist = false)
+    private TCourseOrder courseOrder;
 
     @Override
     public boolean equals(Object that) {

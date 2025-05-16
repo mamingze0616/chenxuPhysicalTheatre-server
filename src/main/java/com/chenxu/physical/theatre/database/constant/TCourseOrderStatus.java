@@ -14,7 +14,9 @@ import lombok.Getter;
 @Getter
 public enum TCourseOrderStatus {
     NORMAL(1, "正常"),
-    DELETED(2, "作废");
+    DELETED(2, "作废"),
+    UNPAID(3, "未支付"),
+    SUCCESS(4, "已支付");
     @EnumValue
     @JsonValue
     private final Integer code;
