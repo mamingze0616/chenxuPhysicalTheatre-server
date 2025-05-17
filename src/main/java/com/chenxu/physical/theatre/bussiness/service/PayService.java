@@ -88,7 +88,7 @@ public class PayService {
                             .eq(TCourseOrder::getId, tCourseOrder.getId())
                             .update();
                     //查询有效的课程订单
-                    userService.updateEffectiveCourseCountByOpenid(tCourseOrder.getId());
+                    userService.updateEffectiveCourseCountByOpenid(tCourseOrder.getUserId());
                 }
                 return payOrderService.updateById(tPayOrder);
             }
