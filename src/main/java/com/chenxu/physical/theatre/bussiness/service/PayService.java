@@ -3,10 +3,10 @@ package com.chenxu.physical.theatre.bussiness.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.dto.ApiPayCallbackRequest;
 import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
+import com.chenxu.physical.theatre.database.constant.TActivityBookedInfoStatusEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
-import com.chenxu.physical.theatre.database.constant.TUserOrderStatus;
 import com.chenxu.physical.theatre.database.domain.*;
 import com.chenxu.physical.theatre.database.service.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -66,6 +66,8 @@ public class PayService {
     TClothesOrderService tClothesOrderService;
     @Autowired
     TCourseOrderService tCourseOrderService;
+    @Autowired
+    TActivityBookedInfoService tActivityBookedInfoService;
 
     public boolean finishedPayOrder(ApiPayCallbackRequest apiPayCallbackRequest) {
         try {
@@ -90,10 +92,9 @@ public class PayService {
                             .update();
                     //查询有效的课程订单
                     userService.updateEffectiveCourseCountByOpenid(tCourseOrder.getUserId());
-                } else if (TPayOrderType.CLOTHES.getCode().equals(Integer.parseInt(split[1]))) {
-//                    TClothesOrder tClothesOrder = tClothesOrderService.getOne(new QueryWrapper<TClothesOrder>().eq("id", Integer.parseInt(split[2])));
-                    tClothesOrderService.lambdaUpdate().set(TClothesOrder::getStatus, TUserOrderStatus.PAID.getCode())
-                            .eq(TClothesOrder::getId, Integer.parseInt(split[2]))
+                } else if (TPayOrderType.ACTIVITY.getCode().equals(Integer.parseInt(split[1]))) {
+                    tActivityBookedInfoService.lambdaUpdate().set(TActivityBookedInfo::getStatus, TActivityBookedInfoStatusEnum.PAYED.getCode())
+                            .eq(TActivityBookedInfo::getId, Integer.parseInt(split[2]))
                             .update();
                 }
                 return payOrderService.updateById(tPayOrder);
@@ -312,6 +313,8 @@ public class PayService {
                     tPayOrder.setClothesOrder(tClothesOrderService.getById(Integer.parseInt(split[2])));
                 } else if (TPayOrderType.COURSE.getCode().equals(Integer.parseInt(split[1]))) {
                     tPayOrder.setCourseOrder(tCourseOrderService.getById(Integer.parseInt(split[2])));
+                } else if (TPayOrderType.ACTIVITY.getCode().equals(Integer.parseInt(split[1]))) {
+                    tPayOrder.setActivityBookedInfo(tActivityBookedInfoService.getById(Integer.parseInt(split[2])));
                 }
             });
 
