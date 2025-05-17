@@ -6,6 +6,7 @@ import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
 import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
+import com.chenxu.physical.theatre.database.constant.TUserOrderStatus;
 import com.chenxu.physical.theatre.database.domain.*;
 import com.chenxu.physical.theatre.database.service.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -89,6 +90,11 @@ public class PayService {
                             .update();
                     //查询有效的课程订单
                     userService.updateEffectiveCourseCountByOpenid(tCourseOrder.getUserId());
+                } else if (TPayOrderType.CLOTHES.getCode().equals(Integer.parseInt(split[1]))) {
+//                    TClothesOrder tClothesOrder = tClothesOrderService.getOne(new QueryWrapper<TClothesOrder>().eq("id", Integer.parseInt(split[2])));
+                    tClothesOrderService.lambdaUpdate().set(TClothesOrder::getStatus, TUserOrderStatus.PAID.getCode())
+                            .eq(TClothesOrder::getId, Integer.parseInt(split[2]))
+                            .update();
                 }
                 return payOrderService.updateById(tPayOrder);
             }
@@ -147,6 +153,23 @@ public class PayService {
             tPayOrder.setBody(body);
             tPayOrder.setStatus(TPayOrderStatus.UNPAID);
             tPayOrder.setTotalFee(tUserOrder.getAmount());
+            payOrderService.save(tPayOrder);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw e;
+        }
+        return tPayOrder;
+    }
+
+    public TPayOrder preBooked(TActivityBookedInfo tActivityBookedInfo, String body) {
+        TPayOrder tPayOrder = new TPayOrder();
+        try {
+            String openid = tUserService.getById(tActivityBookedInfo.getUserId()).getOpenid();
+            tPayOrder.setType(TPayOrderType.MEMBERSHIP);
+            tPayOrder.setOpenid(openid);
+            tPayOrder.setBody(body);
+            tPayOrder.setStatus(TPayOrderStatus.UNPAID);
+            tPayOrder.setTotalFee(tActivityBookedInfo.getAmount());
             payOrderService.save(tPayOrder);
         } catch (Exception e) {
             logger.error(e.getMessage());

@@ -16,7 +16,8 @@ public enum TPayOrderType {
      */
     MEMBERSHIP(1, "会员"),
     COURSE(2, "课程"),
-    CLOTHES(3, "形体服");
+    CLOTHES(3, "形体服"),
+    ACTIVITY(4, "活动");
     @EnumValue
     @JsonValue
     private final Integer code;
