@@ -1,21 +1,22 @@
 package com.chenxu.physical.theatre.database.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.util.Date;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 /**
  * 活动表
+ *
  * @TableName T_ACTIVITY
  */
-@TableName(value ="T_ACTIVITY")
+@TableName(value = "T_ACTIVITY")
 @Data
 public class TActivity {
     /**
-     * 
+     *
      */
     @TableId(type = IdType.AUTO)
     private Integer id;
@@ -26,9 +27,9 @@ public class TActivity {
     private Integer type;
 
     /**
-     * 
+     *
      */
-    private Date startTime;
+    private LocalDate startTime;
 
     /**
      * 有效期长度
@@ -56,7 +57,7 @@ public class TActivity {
     private Integer booked;
 
     /**
-     * 
+     *
      */
     private String title;
 
@@ -66,7 +67,7 @@ public class TActivity {
     private String descContent;
 
     /**
-     * 
+     *
      */
     private String picture;
 
@@ -93,18 +94,18 @@ public class TActivity {
         }
         TActivity other = (TActivity) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
-            && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
-            && (this.getValidity() == null ? other.getValidity() == null : this.getValidity().equals(other.getValidity()))
-            && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
-            && (this.getMax() == null ? other.getMax() == null : this.getMax().equals(other.getMax()))
-            && (this.getMin() == null ? other.getMin() == null : this.getMin().equals(other.getMin()))
-            && (this.getBooked() == null ? other.getBooked() == null : this.getBooked().equals(other.getBooked()))
-            && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
-            && (this.getDescContent() == null ? other.getDescContent() == null : this.getDescContent().equals(other.getDescContent()))
-            && (this.getPicture() == null ? other.getPicture() == null : this.getPicture().equals(other.getPicture()))
-            && (this.getPrice() == null ? other.getPrice() == null : this.getPrice().equals(other.getPrice()))
-            && (this.getCouponIds() == null ? other.getCouponIds() == null : this.getCouponIds().equals(other.getCouponIds()));
+                && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
+                && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
+                && (this.getValidity() == null ? other.getValidity() == null : this.getValidity().equals(other.getValidity()))
+                && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
+                && (this.getMax() == null ? other.getMax() == null : this.getMax().equals(other.getMax()))
+                && (this.getMin() == null ? other.getMin() == null : this.getMin().equals(other.getMin()))
+                && (this.getBooked() == null ? other.getBooked() == null : this.getBooked().equals(other.getBooked()))
+                && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
+                && (this.getDescContent() == null ? other.getDescContent() == null : this.getDescContent().equals(other.getDescContent()))
+                && (this.getPicture() == null ? other.getPicture() == null : this.getPicture().equals(other.getPicture()))
+                && (this.getPrice() == null ? other.getPrice() == null : this.getPrice().equals(other.getPrice()))
+                && (this.getCouponIds() == null ? other.getCouponIds() == null : this.getCouponIds().equals(other.getCouponIds()));
     }
 
     @Override
