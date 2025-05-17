@@ -38,10 +38,12 @@ public class ActivityBookedService {
         try {
             //查询用户优惠券,暂时只能使用一个
             logger.info("查询用户优惠券:" + tActivityBookedInfo.getCouponId());
-            TUserCoupons userCoupons = tUserCouponsService.getById(tActivityBookedInfo.getCouponId());
-            //判断是否已经使用,没查出来优惠券就跳过
-            if (userCoupons.getStatus() == TUserCouponsStatus.FINISHED) {
-                throw new RuntimeException("优惠券已经使用");
+            if (tActivityBookedInfo.getCouponId() != null) {
+                TUserCoupons userCoupons = tUserCouponsService.getById(tActivityBookedInfo.getCouponId());
+                //判断是否已经使用,没查出来优惠券就跳过
+                if (userCoupons.getStatus() == TUserCouponsStatus.FINISHED) {
+                    throw new RuntimeException("优惠券已经使用");
+                }
             }
             //判断是否已经预约过该活动
             List<TActivityBookedInfo> tActivityBookedInfoList = tActivityBookedInfoService.list(new QueryWrapper<TActivityBookedInfo>()
