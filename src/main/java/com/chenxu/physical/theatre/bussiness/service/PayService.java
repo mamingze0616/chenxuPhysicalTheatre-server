@@ -6,7 +6,6 @@ import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
 import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
-import com.chenxu.physical.theatre.database.constant.TUserType;
 import com.chenxu.physical.theatre.database.domain.*;
 import com.chenxu.physical.theatre.database.service.*;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -21,9 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author mamingze
@@ -59,6 +56,8 @@ public class PayService {
     RestTemplate restTemplate;
     @Autowired
     TUserService tUserService;
+    @Autowired
+    UserService userService;
 
     @Autowired
     TUserOrderService userOrderService;
@@ -80,30 +79,16 @@ public class PayService {
                 //按照_分割
                 String[] split = tPayOrder.getOutTradeNo().split("_");
                 if (TPayOrderType.MEMBERSHIP.getCode().equals(Integer.parseInt(split[1]))) {
-                    tUserService.lambdaUpdate().set(TUser::getType, TUserType.MEMBER.getCode())
-                            .eq(TUser::getOpenid, tPayOrder.getOpenid())
-                            .update();
+//                    tUserService.lambdaUpdate().set(TUser::getType, TUserType.MEMBER.getCode())
+//                            .eq(TUser::getOpenid, tPayOrder.getOpenid())
+//                            .update();
                 } else if (TPayOrderType.COURSE.getCode().equals(Integer.parseInt(split[1]))) {
-
-
+                    TCourseOrder tCourseOrder = tCourseOrderService.getOne(new QueryWrapper<TCourseOrder>().eq("id", Integer.parseInt(split[2])));
                     tCourseOrderService.lambdaUpdate().set(TCourseOrder::getStatus, TCourseOrderStatus.SUCCESS.getCode())
-                            .eq(TCourseOrder::getId, Integer.parseInt(split[2]))
+                            .eq(TCourseOrder::getId, tCourseOrder.getId())
                             .update();
                     //查询有效的课程订单
-                    AtomicInteger totalCourseNumber = new AtomicInteger();
-                    totalCourseNumber.set(0);
-                    tCourseOrderService.list(new QueryWrapper<TCourseOrder>()
-                                    .eq("status", TCourseOrderStatus.SUCCESS.getCode()).eq("openid", tPayOrder.getOpenid()))
-                            .forEach(tCourseOrder -> {
-                                if (tCourseOrder.getValidityPeriod() != null) {
-                                    if (LocalDate.now().isBefore(tCourseOrder.getStartTime().plusDays(tCourseOrder.getValidityPeriod()))) {
-                                        totalCourseNumber.addAndGet(tCourseOrder.getCourseNumber());
-                                    }
-                                }
-                            });
-                    tUserService.lambdaUpdate().set(TUser::getEffectiveCourseCount, totalCourseNumber.get())
-                            .eq(TUser::getOpenid, tPayOrder.getOpenid())
-                            .update();
+                    userService.updateEffectiveCourseCountByOpenid(tCourseOrder.getId());
                 }
                 return payOrderService.updateById(tPayOrder);
             }

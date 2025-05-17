@@ -17,12 +17,21 @@ class PayServiceTest {
     @Autowired
     PayService payService;
 
+    @Autowired
+    UserService userService;
+
     @Test
     void finishedPayOrder() {
         ApiPayCallbackRequest apiPayCallbackRequest = new ApiPayCallbackRequest();
         apiPayCallbackRequest.setOutTradeNo("34_1_31");
         apiPayCallbackRequest.setReturnCode("SUCCESS");
         payService.finishedPayOrder(apiPayCallbackRequest);
+
+    }
+
+    @Test
+    void updateEffectiveCourseCountByOpenid() {
+        userService.updateEffectiveCourseCountByOpenid(1);
 
     }
 }
