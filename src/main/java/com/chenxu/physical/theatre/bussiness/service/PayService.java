@@ -258,10 +258,10 @@ public class PayService {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
             String responseText = restTemplate.postForObject(unifiedOrderUrl, entity, String.class);
+            logger.info("接口返回:[{}]", responseText);
             // 2. 然后手动转换为 PhoneResponse
             ObjectMapper mapper = new ObjectMapper();
             PayUnifiedOrderResponse payUnifiedOrderResponse = mapper.readValue(responseText, PayUnifiedOrderResponse.class);
-            logger.info("接口返回:[{}]", payUnifiedOrderResponse);
             return payUnifiedOrderResponse;
         } catch (Exception e) {
             e.printStackTrace();
