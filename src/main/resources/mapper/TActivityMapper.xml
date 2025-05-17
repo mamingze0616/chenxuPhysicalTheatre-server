@@ -9,12 +9,12 @@
             <result property="type" column="type" jdbcType="INTEGER"/>
             <result property="startTime" column="start_time" jdbcType="DATE"/>
             <result property="validity" column="validity" jdbcType="INTEGER"/>
-            <result property="satus" column="satus" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
             <result property="max" column="max" jdbcType="INTEGER"/>
             <result property="min" column="min" jdbcType="INTEGER"/>
             <result property="booked" column="booked" jdbcType="INTEGER"/>
             <result property="title" column="title" jdbcType="VARCHAR"/>
-            <result property="desc" column="desc" jdbcType="VARCHAR"/>
+            <result property="descContent" column="desc_content" jdbcType="VARCHAR"/>
             <result property="picture" column="picture" jdbcType="VARCHAR"/>
             <result property="price" column="price" jdbcType="INTEGER"/>
             <result property="couponIds" column="coupon_ids" jdbcType="VARCHAR"/>
@@ -22,9 +22,9 @@
 
     <sql id="Base_Column_List">
         id,type,start_time,
-        validity,satus,max,
+        validity,status,max,
         min,booked,title,
-        desc,picture,price,
+        desc_content,picture,price,
         coupon_ids
     </sql>
 </mapper>
