@@ -1,6 +1,7 @@
 package com.chenxu.physical.theatre.database.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chenxu.physical.theatre.database.constant.TActivityBookedInfoStatusEnum;
@@ -56,6 +57,9 @@ public class TActivityBookedInfo {
      *
      */
     private Date createTime;
+    
+    @TableField(exist = false)
+    private TActivity activity;
 
     @Override
     public boolean equals(Object that) {

@@ -8,12 +8,14 @@ import com.chenxu.physical.theatre.database.domain.TActivityBookedInfo;
 import com.chenxu.physical.theatre.database.domain.TPayOrder;
 import com.chenxu.physical.theatre.database.domain.TUserCoupons;
 import com.chenxu.physical.theatre.database.service.TActivityBookedInfoService;
+import com.chenxu.physical.theatre.database.service.TActivityService;
 import com.chenxu.physical.theatre.database.service.TUserCouponsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +32,8 @@ public class ActivityBookedService {
     TUserCouponsService tUserCouponsService;
     @Autowired
     TActivityBookedInfoService tActivityBookedInfoService;
+    @Autowired
+    TActivityService tActivityService;
     @Autowired
     PayService payService;
 
@@ -84,6 +88,18 @@ public class ActivityBookedService {
         } finally {
             return payOrder;
         }
+    }
 
+    public List<TActivityBookedInfo> getActivityListByUserId(Integer id) {
+        List<TActivityBookedInfo> activityBookedInfoList = new ArrayList<>();
+        try {
+            activityBookedInfoList = tActivityBookedInfoService.list(new QueryWrapper<TActivityBookedInfo>().eq("user_id", id));
+            activityBookedInfoList.forEach(item -> {
+                item.setActivity(tActivityService.getById(item.getId()));
+            });
+        } catch (Exception e) {
+            throw e;
+        }
+        return activityBookedInfoList;
     }
 }

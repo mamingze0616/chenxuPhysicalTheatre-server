@@ -56,7 +56,25 @@ public class ActivityBookedController {
         }
         return apiResponse;
 
-
     }
+
+    @PostMapping("/getActivityListByUserId")
+    public ApiResponse getActivityListByUserId(@RequestBody TActivityBookedInfo tActivityBookedInfo) {
+        logger.info("getActivityListByUserId::tActivityBookedInfo = [{}]", tActivityBookedInfo);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            Optional.ofNullable(tActivityBookedInfo.getUserId()).orElseThrow(() -> new RuntimeException("用户id为空"));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(service.getActivityListByUserId(tActivityBookedInfo.getUserId()));
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
 
 }
