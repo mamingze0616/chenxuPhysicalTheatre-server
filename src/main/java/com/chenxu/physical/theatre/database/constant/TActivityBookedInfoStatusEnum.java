@@ -1,5 +1,8 @@
 package com.chenxu.physical.theatre.database.constant;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * @author mamingze
  * @version 1.0
@@ -13,7 +16,9 @@ public enum TActivityBookedInfoStatusEnum {
     UNPAYED(2, "未支付"),
     UNSIGNED(4, "未签到"),
     SIGNED(5, "已签到");
-
+    
+    @EnumValue
+    @JsonValue
     private final Integer code;
     private final String desc;
 
