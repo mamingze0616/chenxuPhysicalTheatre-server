@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.chenxu.physical.theatre.database.constant.TActivityBookedInfoStatusEnum;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * 活动预约信息表
@@ -56,8 +56,8 @@ public class TActivityBookedInfo {
     /**
      *
      */
-    private Date createTime;
-    
+    private LocalDate createTime;
+
     @TableField(exist = false)
     private TActivity activity;
 
