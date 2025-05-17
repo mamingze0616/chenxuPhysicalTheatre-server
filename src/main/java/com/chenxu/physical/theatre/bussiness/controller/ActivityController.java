@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @author mamingze
  * @version 1.0
@@ -36,6 +38,22 @@ public class ActivityController {
             tActivityService.save(activity);
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
             apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
+    @PostMapping("/getActivityList")
+    public ApiResponse getActivityList() {
+        ApiResponse apiResponse = new ApiResponse();
+        try {
+            List<TActivity> tActivityList = tActivityService.list();
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+            apiResponse.setData(tActivityList);
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
