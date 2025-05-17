@@ -52,7 +52,7 @@ public class ActivityController {
         try {
             List<TActivity> tActivityList = tActivityService.list();
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-            apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+//            apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
             apiResponse.setData(tActivityList);
         } catch (Exception e) {
             logger.error(e.getMessage());
