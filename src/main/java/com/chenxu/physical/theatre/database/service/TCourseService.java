@@ -25,5 +25,5 @@ public interface TCourseService extends IService<TCourse> {
     //将往期课程的type设置为已上,将签到的设置为已学,将已预约的设置为未签到
     void setCourseFinished(Integer courseId);
 
-    void updateCourseBookedNumber(Integer courseId);
+    boolean updateCourseBookedNumber(Integer courseId);
 }

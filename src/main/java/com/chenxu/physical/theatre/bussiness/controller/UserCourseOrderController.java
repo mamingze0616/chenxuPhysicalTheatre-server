@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.service.PayService;
+import com.chenxu.physical.theatre.bussiness.service.UserService;
 import com.chenxu.physical.theatre.bussiness.util.IpUtils;
 import com.chenxu.physical.theatre.database.constant.*;
 import com.chenxu.physical.theatre.database.domain.*;
@@ -44,6 +45,9 @@ public class UserCourseOrderController {
     TUserService tUserService;
     @Autowired
     TSampleCourseOrderService tSampleCourseOrderService;
+
+    @Autowired
+    UserService userService;
 
     @PostMapping("/getSampleCourseOrderList")
     public ApiResponse getSampleCourseOrderList() {
@@ -181,6 +185,7 @@ public class UserCourseOrderController {
                             courseOrder.setCreateAt(LocalDateTime.now());
                             courseOrder.setStatus(TCourseOrderStatus.NORMAL);
                             if (courseOrderService.save(courseOrder)) {
+                                userService.updateEffectiveCourseCount(userId);
                                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                                 apiResponse.setData(courseOrder);
                             }

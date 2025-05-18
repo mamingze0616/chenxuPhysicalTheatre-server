@@ -104,10 +104,10 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
     }
 
     @Override
-    public void updateCourseBookedNumber(Integer courseId) {
+    public boolean updateCourseBookedNumber(Integer courseId) {
         long count = tAppointmentInfoService.count(new QueryWrapper<TAppointmentInfo>().eq("course_id", courseId)
                 .in("type", TAppointmentInfoTypeEnum.APPOINTED.getCode(), TAppointmentInfoTypeEnum.LEARNED.getCode(), TAppointmentInfoTypeEnum.SIGNED.getCode()));
-        this.lambdaUpdate()
+        return this.lambdaUpdate()
                 .eq(TCourse::getId, courseId)
                 .set(TCourse::getBookedNum, Integer.valueOf((int) count))
                 .update();

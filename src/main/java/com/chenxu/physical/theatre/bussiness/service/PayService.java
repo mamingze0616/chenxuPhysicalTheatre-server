@@ -57,8 +57,7 @@ public class PayService {
     RestTemplate restTemplate;
     @Autowired
     TUserService tUserService;
-    @Autowired
-    UserService userService;
+
 
     @Autowired
     TUserOrderService userOrderService;
@@ -86,12 +85,13 @@ public class PayService {
 //                            .eq(TUser::getOpenid, tPayOrder.getOpenid())
 //                            .update();
                 } else if (TPayOrderType.COURSE.getCode().equals(Integer.parseInt(split[1]))) {
+                    //课程订单支付成功,更新课程订单状态为成功
                     TCourseOrder tCourseOrder = tCourseOrderService.getOne(new QueryWrapper<TCourseOrder>().eq("id", Integer.parseInt(split[2])));
                     tCourseOrderService.lambdaUpdate().set(TCourseOrder::getStatus, TCourseOrderStatus.SUCCESS.getCode())
                             .eq(TCourseOrder::getId, tCourseOrder.getId())
                             .update();
-                    //查询有效的课程订单
-                    userService.updateEffectiveCourseCountByOpenid(tCourseOrder.getUserId());
+                    //拆分课程订单
+
                 } else if (TPayOrderType.ACTIVITY.getCode().equals(Integer.parseInt(split[1]))) {
                     tActivityBookedInfoService.lambdaUpdate().set(TActivityBookedInfo::getStatus, TActivityBookedInfoStatusEnum.PAYED.getCode())
                             .eq(TActivityBookedInfo::getId, Integer.parseInt(split[2]))

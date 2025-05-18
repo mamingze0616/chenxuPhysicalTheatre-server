@@ -6,6 +6,7 @@ import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiOverviewOfCourseNumberModel;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
+import com.chenxu.physical.theatre.bussiness.service.BookedCourseService;
 import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
@@ -54,6 +55,8 @@ public class AppointmentController {
     TAppointmentInfoService appointmentInfoService;
     @Autowired
     TCourseOrderService courseOrderService;
+    @Autowired
+    BookedCourseService bookedCourseService;
 
     //获取全部可预约课程,去除已经预约过的课程,日期不传默认今天,查询七天的课程
     @PostMapping("/getBookableCoursesByUserid")
@@ -203,6 +206,8 @@ public class AppointmentController {
             apiOverviewOfCourseNumberModel.setAppointedCourseList(appointedCourseList);
             apiOverviewOfCourseNumberModel.setAppointedNumber(appointedCourseList.size());
             apiOverviewOfCourseNumberModel.setTotalCourseList(tAppointmentInfoList);
+
+
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
             apiResponse.setData(apiOverviewOfCourseNumberModel);
 
@@ -259,7 +264,7 @@ public class AppointmentController {
                     appointmentInfoService.remove(new QueryWrapper<TAppointmentInfo>().eq("course_id", appointmentInfo.getCourseId()).eq("user_id", appointmentInfo.getUserId()));
                     //新增预约信息
                     appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
-                    if (appointmentInfoService.save(appointmentInfo)) {
+                    if (bookedCourseService.doBookedCourse(appointmentInfo)) {
                         courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
                         apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                         apiResponse.setData(appointmentInfo);

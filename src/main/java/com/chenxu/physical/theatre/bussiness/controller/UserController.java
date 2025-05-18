@@ -212,9 +212,7 @@ public class UserController {
             Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("phone", phoneNumber))).ifPresentOrElse(tUser -> {
                 try {
                     //更新登陆时间
-                    tUser.setLoginAt(LocalDateTime.now());
-                    tUserService.updateById(tUser);
-
+                    userService.loginUpdateUserInfo(tUser);
                 } catch (Exception e) {
                     e.getMessage();
                     logger.error("更新用户登录时间失败,忽略本次错误");

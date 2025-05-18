@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chenxu.physical.theatre.database.mapper.TCourseOrderSpiltMapper">
+
+    <resultMap id="BaseResultMap" type="com.chenxu.physical.theatre.database.domain.TCourseOrderSpilt">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="courseOrderId" column="course_order_id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="appointmentId" column="appointment_id" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="writeOffDate" column="write_off_date" jdbcType="DATE"/>
+            <result property="splitIndex" column="split_index" jdbcType="INTEGER"/>
+            <result property="endTime" column="end_time" jdbcType="DATE"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,course_order_id,user_id,
+        appointment_id,status,write_off_date,
+        split_index,end_time
+    </sql>
+</mapper>

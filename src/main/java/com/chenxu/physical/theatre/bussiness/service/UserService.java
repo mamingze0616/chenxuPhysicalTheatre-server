@@ -2,11 +2,11 @@ package com.chenxu.physical.theatre.bussiness.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.dto.PhoneResponse;
-import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
-import com.chenxu.physical.theatre.database.domain.TCourseOrder;
+import com.chenxu.physical.theatre.database.constant.TCourseOrderSpiltStatusEnum;
+import com.chenxu.physical.theatre.database.domain.TCourseOrderSpilt;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.domain.TUserCoupons;
-import com.chenxu.physical.theatre.database.service.TCourseOrderService;
+import com.chenxu.physical.theatre.database.service.TCourseOrderSpiltService;
 import com.chenxu.physical.theatre.database.service.TUserCouponsService;
 import com.chenxu.physical.theatre.database.service.TUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,11 +20,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author mamingze
@@ -45,7 +44,7 @@ public class UserService {
     @Autowired
     TUserService tUserService;
     @Autowired
-    TCourseOrderService tCourseOrderService;
+    TCourseOrderSpiltService tCourseOrderSpiltService;
 
     public String getUserPhoneNumber(String code) {
         try {
@@ -84,29 +83,36 @@ public class UserService {
         return tUser;
     }
 
-    public void updateEffectiveCourseCountByOpenid(Integer id) {
+    public boolean updateEffectiveCourseCount(Integer userId) {
         try {
-            TUser tUser = tUserService.getById(id);
+            TUser user = tUserService.getById(userId);
             //查询有效的课程订单
-            AtomicInteger totalCourseNumber = new AtomicInteger();
-            totalCourseNumber.set(0);
-            tCourseOrderService.list(new QueryWrapper<TCourseOrder>()
-                            .eq("status", TCourseOrderStatus.SUCCESS.getCode()).eq("user_id", tUser.getId()))
-                    .forEach(tCourseOrder -> {
-                        if (tCourseOrder.getValidityPeriod() != null) {
-                            if (LocalDate.now().isBefore(tCourseOrder.getStartTime().plusDays(tCourseOrder.getValidityPeriod()))) {
-                                totalCourseNumber.addAndGet(tCourseOrder.getCourseNumber());
-                            }
-                        }
-                    });
-            tUserService.lambdaUpdate().set(TUser::getEffectiveCourseCount, totalCourseNumber.get())
-                    .eq(TUser::getId, id)
-                    .update();
+            long writeOFFnumber = tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>()
+                    .eq("status", TCourseOrderSpiltStatusEnum.UNWRITE_OFF.getCode())).stream().count();
+            user.setEffectiveCourseCount((int) writeOFFnumber);
+            return tUserService.updateById(user);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("获取用户卡信息失败:" + e.getMessage());
-            throw new RuntimeException("获取用户卡信息失败");
+            logger.error("更新用户有效课程数量失败:" + e.getMessage());
+            throw new RuntimeException("更新用户有效课程数量失败");
         }
+    }
+
+    public boolean loginUpdateUserInfo(TUser tUser) {
+        try {
+            tUser.setLoginAt(LocalDateTime.now());
+            //计算有效课程数量(包括未核销和已核销的课程,除去已过期的信息)
+            long writeOFFnumber = tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>()
+                    .in("status", TCourseOrderSpiltStatusEnum.UNWRITE_OFF.getCode()
+                            , TCourseOrderSpiltStatusEnum.WRITE_OFF.getCode())).stream().count();
+            tUser.setEffectiveCourseCount((int) writeOFFnumber);
+            return tUserService.updateById(tUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("更新用户信息失败:" + e.getMessage());
+            throw new RuntimeException("更新用户信息失败");
+        }
+
     }
 
 

@@ -29,9 +29,5 @@ class PayServiceTest {
 
     }
 
-    @Test
-    void updateEffectiveCourseCountByOpenid() {
-        userService.updateEffectiveCourseCountByOpenid(1);
-
-    }
+   
 }
