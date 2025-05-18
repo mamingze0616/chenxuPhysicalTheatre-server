@@ -95,7 +95,7 @@ public class ActivityBookedService {
         try {
             activityBookedInfoList = tActivityBookedInfoService.list(new QueryWrapper<TActivityBookedInfo>().eq("user_id", id));
             activityBookedInfoList.forEach(item -> {
-                item.setActivity(tActivityService.getById(item.getId()));
+                item.setActivity(tActivityService.getById(item.getActivityId()));
             });
         } catch (Exception e) {
             throw e;
