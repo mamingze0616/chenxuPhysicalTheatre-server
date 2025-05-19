@@ -1,6 +1,7 @@
 package com.chenxu.physical.theatre.database.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
@@ -83,6 +84,11 @@ public class TCourseOrder {
      *
      */
     private Integer amount;
+    /**
+     *
+     */
+    @TableField(exist = false)
+    private TUser user;
 
     @Override
     public boolean equals(Object that) {

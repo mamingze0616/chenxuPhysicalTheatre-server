@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -260,9 +261,13 @@ public class UserCourseOrderController {
         try {
 
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-            apiResponse.setData(courseOrderService
+            List<TCourseOrder> courseOrders = courseOrderService
                     .list(new QueryWrapper<TCourseOrder>()
-                            .eq("status", TCourseOrderStatus.UNCHECKED.getCode())));
+                            .eq("status", TCourseOrderStatus.UNCHECKED.getCode()));
+            courseOrders.forEach(courseOrder -> {
+                courseOrder.setUser(tUserService.getById(courseOrder.getUserId()));
+            });
+            apiResponse.setData(courseOrders);
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setErrorMsg(e.getMessage());
