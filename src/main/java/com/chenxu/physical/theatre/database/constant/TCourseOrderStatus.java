@@ -16,7 +16,9 @@ public enum TCourseOrderStatus {
     NORMAL(1, "正常"),
     DELETED(2, "作废"),
     UNPAID(3, "未支付"),
-    SUCCESS(4, "已支付");
+    SUCCESS(4, "已支付"),
+    //待审核
+    UNCHECKED(5, "待审核");
     @EnumValue
     @JsonValue
     private final Integer code;

@@ -9,13 +9,11 @@ import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import com.chenxu.physical.theatre.bussiness.service.BookedCourseService;
 import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
-import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.domain.TCourseOrder;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.service.TAppointmentInfoService;
-import com.chenxu.physical.theatre.database.service.TCourseOrderService;
 import com.chenxu.physical.theatre.database.service.TCourseService;
 import com.chenxu.physical.theatre.database.service.TUserService;
 import org.slf4j.Logger;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,8 +50,6 @@ public class AppointmentController {
     TUserService userService;
     @Autowired
     TAppointmentInfoService appointmentInfoService;
-    @Autowired
-    TCourseOrderService courseOrderService;
     @Autowired
     BookedCourseService bookedCourseService;
 
@@ -192,14 +187,15 @@ public class AppointmentController {
         apiResponse.setData(apiOverviewOfCourseNumberModel);
         try {
             Optional.ofNullable(courseOrder.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
+
             //查询该用户的所有订单状态为正常的订单
-            int totalCourseNumber = courseOrderService.getTotalCourseNumberByUserId(courseOrder.getUserId());
-            apiOverviewOfCourseNumberModel.setTotalCourseNumber(totalCourseNumber);
+            TUser user = Optional.ofNullable(userService.getById(courseOrder.getUserId())).orElseThrow(() -> new RuntimeException("userId为空"));
+            apiOverviewOfCourseNumberModel.setTotalCourseNumber(user.getEffectiveCourseCount());
             //查询该用户的所有预约信息
             List<TAppointmentInfo> tAppointmentInfoList = appointmentInfoService.getAllAppointmentInfosByUserId(courseOrder.getUserId());
             //过滤所有已学和已签到的预约信息
             List<TAppointmentInfo> learnedAppointmentInfoList = tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.LEARNED) || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.SIGNED)).collect(Collectors.toList());
-            apiOverviewOfCourseNumberModel.setLearnedNumber(learnedAppointmentInfoList.size());
+            apiOverviewOfCourseNumberModel.setLearnedNumber(user.getCompletedCourseCount());
             apiOverviewOfCourseNumberModel.setLearnedCourseList(learnedAppointmentInfoList);
             //过滤所有已预约和已预约未签到的预约信息
             List<TAppointmentInfo> appointedCourseList = tAppointmentInfoList.stream().filter(tAppointmentInfo -> tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.APPOINTED) || tAppointmentInfo.getType().equals(TAppointmentInfoTypeEnum.NOT_SIGNED)).collect(Collectors.toList());
@@ -235,48 +231,12 @@ public class AppointmentController {
             Optional.ofNullable(appointmentInfo.getCourseId()).orElseThrow(() -> new RuntimeException("课程Id为空"));
             Optional.ofNullable(appointmentInfo.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
             //查询当前用户购买的课时
-            int totalCourseNumber = courseOrderService.getTotalCourseNumberByUserId(appointmentInfo.getUserId());
-            if (totalCourseNumber <= 0) {
-                throw new RuntimeException("该用户可用课时为零");
-            }
             //到这里保证有可用课时,查询预约信息,
-            List<TAppointmentInfo> appointmentInfoList = appointmentInfoService.getAllAppointmentInfosByUserId(appointmentInfo.getUserId());
-            //有相关预约结果,在查询课程订单表
-            //遍历所有有效订单的CourseNumbe作为总数量
-            //判断有效的预约信息是否大于等于课程订单的课程数量
-            if (appointmentInfoList == null || appointmentInfoList.size() >= totalCourseNumber) {
-                //课时用完无法预约
-                throw new RuntimeException("课时用完无法预约");
-            } else {
-                //可以预约
-                Optional.ofNullable(courseService.getById(appointmentInfo.getCourseId())).ifPresentOrElse(tCourse -> {
-                    //课程状态判断
-                    if (tCourse.getType().equals(TCourseType.START_SIGNING_IN.getCode())) {
-                        throw new RuntimeException("课程已开课,无法预约");
-                    } else if (tCourse.getType().equals(TCourseType.FINISHED.getCode())) {
-                        throw new RuntimeException("课程已结束,无法预约");
-                    } else if (tCourse.getType().equals(TCourseType.DELETED.getCode())) {
-                        throw new RuntimeException("课程已取消,无法预约");
-                    }
-                    //先查询是否已经预约过,有取消预约状态的会把状态改为已预约,
-                    //可预约默认还没开课,所以不会是已学,只可能是已预约或者取消预约
-                    //已预约的情况的信息先删除,在增加预约信息(保证了预约信息的唯一性)
-                    appointmentInfoService.remove(new QueryWrapper<TAppointmentInfo>().eq("course_id", appointmentInfo.getCourseId()).eq("user_id", appointmentInfo.getUserId()));
-                    //新增预约信息
-                    appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
-                    if (bookedCourseService.doBookedCourse(appointmentInfo)) {
-                        courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
-                        apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                        apiResponse.setData(appointmentInfo);
-                    } else {
-                        throw new RuntimeException("预约信息写入表失败");
-                    }
-                }, () -> {
-                    throw new RuntimeException("课程不存在");
-                });
-
+            if (bookedCourseService.doBookedCourse(appointmentInfo)) {
+                courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(appointmentInfo);
             }
-
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
@@ -300,32 +260,15 @@ public class AppointmentController {
         try {
             Optional.ofNullable(appointmentInfo.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
             Optional.ofNullable(appointmentInfo.getCourseId()).orElseThrow(() -> new RuntimeException("courseId为空"));
-            Optional.ofNullable(appointmentInfoService.getOne(new QueryWrapper<TAppointmentInfo>().eq("course_id", appointmentInfo.getCourseId()).eq("user_id", appointmentInfo.getUserId()))).ifPresentOrElse(tempAppointment -> {
-                Optional.ofNullable(courseService.getById(appointmentInfo.getCourseId())).ifPresentOrElse(course -> {
-                    if (LocalDateTime.now().isAfter(course.getStartTime().minusHours(24))) {
-                        //如果不满24小时,则不能取消预约
-                        throw new RuntimeException("距离开始不满24小时,不能取消预约");
-                    } else {
-                        //如果大于24小时,则取消预约
-                        tempAppointment.setType(TAppointmentInfoTypeEnum.CANCELED);
-                        if (appointmentInfoService.updateById(tempAppointment)) {
-                            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                            apiResponse.setData(tempAppointment);
-                        }
-                    }
-                    courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
-                }, () -> {
-                    throw new RuntimeException("课程订单信息查询失败");
-                });
-            }, () -> {
-                throw new RuntimeException("该用户没有预约过该课程");
-            });
+            if (bookedCourseService.cancelCourseAppointment(appointmentInfo)) {
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setData(appointmentInfo);
+            }
         } catch (Exception e) {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
         }
         return apiResponse;
-
     }
 
     /**

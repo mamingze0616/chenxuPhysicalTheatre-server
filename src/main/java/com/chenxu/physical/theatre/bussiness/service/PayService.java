@@ -3,13 +3,10 @@ package com.chenxu.physical.theatre.bussiness.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.dto.ApiPayCallbackRequest;
 import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
-import com.chenxu.physical.theatre.database.constant.TActivityBookedInfoStatusEnum;
-import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
 import com.chenxu.physical.theatre.database.domain.*;
 import com.chenxu.physical.theatre.database.service.*;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +53,7 @@ public class PayService {
     @Autowired
     RestTemplate restTemplate;
     @Autowired
-    TUserService tUserService;
+    UserService userService;
 
 
     @Autowired
@@ -67,6 +64,8 @@ public class PayService {
     TCourseOrderService tCourseOrderService;
     @Autowired
     TActivityBookedInfoService tActivityBookedInfoService;
+    @Autowired
+    CourseOrderSplitService courseOrderSplitService;
 
     public boolean finishedPayOrder(ApiPayCallbackRequest apiPayCallbackRequest) {
         try {
@@ -85,17 +84,10 @@ public class PayService {
 //                            .eq(TUser::getOpenid, tPayOrder.getOpenid())
 //                            .update();
                 } else if (TPayOrderType.COURSE.getCode().equals(Integer.parseInt(split[1]))) {
-                    //课程订单支付成功,更新课程订单状态为成功
-                    TCourseOrder tCourseOrder = tCourseOrderService.getOne(new QueryWrapper<TCourseOrder>().eq("id", Integer.parseInt(split[2])));
-                    tCourseOrderService.lambdaUpdate().set(TCourseOrder::getStatus, TCourseOrderStatus.SUCCESS.getCode())
-                            .eq(TCourseOrder::getId, tCourseOrder.getId())
-                            .update();
-                    //拆分课程订单
-
+                    TCourseOrder courseOrder = courseOrderSplitService.payCallback(Integer.valueOf(split[2]));
+                    userService.updateEffectiveCourseCount(courseOrder.getUserId());
                 } else if (TPayOrderType.ACTIVITY.getCode().equals(Integer.parseInt(split[1]))) {
-                    tActivityBookedInfoService.lambdaUpdate().set(TActivityBookedInfo::getStatus, TActivityBookedInfoStatusEnum.PAYED.getCode())
-                            .eq(TActivityBookedInfo::getId, Integer.parseInt(split[2]))
-                            .update();
+
                 }
                 return payOrderService.updateById(tPayOrder);
             }
@@ -108,47 +100,11 @@ public class PayService {
 
     }
 
-    //微信支付平台发送查询订单请求
-    public TPayOrder sendQueryOrderRequestToWeiXin(TPayOrder tPayOrder) {
-        try {
-
-            tPayOrder = payOrderService.getById(tPayOrder.getId());
-            logger.info("开始查询订单");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("sub_mch_id", mch);
-            requestBody.put("out_trade_no", tPayOrder.getOutTradeNo());
-            requestBody.put("transaction_id", tPayOrder.getTransactionId());
-            requestBody.put("nonce_str", tPayOrder.getPreJson().getRespdata().getPayment().getNonceStr());
-            logger.info("接口请求:[{}]", requestBody);
-
-            HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
-            String responseText = restTemplate.postForObject(queryOrderUrl, entity, String.class);
-            // 2. 然后手动转换为 Response
-            logger.info("responseText接口返回:[{}]", responseText);
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
-            PayUnifiedOrderResponse payUnifiedOrderResponse = mapper.readValue(responseText, PayUnifiedOrderResponse.class);
-            logger.info("payUnifiedOrderResponse接口返回:[{}]", payUnifiedOrderResponse);
-            if (payUnifiedOrderResponse.getErrcode() == WEIXIN_RESPONSE_CODE_SUCCESS && WEIXIN_RESPONSE_RETURN_CODE_SUCCESS.equals(payUnifiedOrderResponse.getRespdata().getReturnCode()) && WEIXIN_RESPONSE_RESULT_CODE_SUCCESS.equals(payUnifiedOrderResponse.getRespdata().getResultCode())) {
-                //设置状态支付状态
-                tPayOrder.setStatus(TPayOrderStatus.valueOf("SUCCESS"));
-
-            }
-            return payOrderService.updateById(tPayOrder) ? tPayOrder : tPayOrder;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
 
     public TPayOrder preCreateMembershipPayOrder(TUserOrder tUserOrder, String body) {
         TPayOrder tPayOrder = new TPayOrder();
         try {
-            String openid = tUserService.getById(tUserOrder.getUserId()).getOpenid();
+            String openid = userService.getById(tUserOrder.getUserId()).getOpenid();
             tPayOrder.setType(TPayOrderType.MEMBERSHIP);
             tPayOrder.setOpenid(openid);
             tPayOrder.setBody(body);
@@ -165,7 +121,7 @@ public class PayService {
     public TPayOrder preBooked(TActivityBookedInfo tActivityBookedInfo, String body) {
         TPayOrder tPayOrder = new TPayOrder();
         try {
-            String openid = tUserService.getById(tActivityBookedInfo.getUserId()).getOpenid();
+            String openid = userService.getById(tActivityBookedInfo.getUserId()).getOpenid();
             tPayOrder.setType(TPayOrderType.MEMBERSHIP);
             tPayOrder.setOpenid(openid);
             tPayOrder.setBody(body);
@@ -182,7 +138,7 @@ public class PayService {
     public TPayOrder preCreateClothesPayOrder(TClothesOrder tClothesOrder, String body) {
         TPayOrder tPayOrder = new TPayOrder();
         try {
-            String openid = tUserService.getById(tClothesOrder.getUserId()).getOpenid();
+            String openid = userService.getById(tClothesOrder.getUserId()).getOpenid();
             tPayOrder.setType(TPayOrderType.CLOTHES);
             tPayOrder.setOpenid(openid);
             tPayOrder.setBody(body);
@@ -199,7 +155,7 @@ public class PayService {
     public TPayOrder preCreateCourseOrder(TCourseOrder tCourseOrder, String body) {
         TPayOrder tPayOrder = new TPayOrder();
         try {
-            String openid = tUserService.getById(tCourseOrder.getUserId()).getOpenid();
+            String openid = userService.getById(tCourseOrder.getUserId()).getOpenid();
             tPayOrder.setType(TPayOrderType.COURSE);
             tPayOrder.setOpenid(openid);
             tPayOrder.setBody(body);
@@ -300,7 +256,7 @@ public class PayService {
     public List<TPayOrder> getPayOrdersByUserId(TUser tUser) {
         List<TPayOrder> tPayOrders = new ArrayList<>();
         try {
-            String openid = tUserService.getById(tUser.getId()).getOpenid();
+            String openid = userService.getById(tUser.getId()).getOpenid();
             tPayOrders = payOrderService.list(new QueryWrapper<TPayOrder>().eq("openid", openid));
             tPayOrders.forEach(tPayOrder -> {
                 //

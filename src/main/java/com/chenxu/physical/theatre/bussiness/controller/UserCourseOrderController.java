@@ -3,6 +3,7 @@ package com.chenxu.physical.theatre.bussiness.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
+import com.chenxu.physical.theatre.bussiness.service.CourseOrderSplitService;
 import com.chenxu.physical.theatre.bussiness.service.PayService;
 import com.chenxu.physical.theatre.bussiness.service.UserService;
 import com.chenxu.physical.theatre.bussiness.util.IpUtils;
@@ -17,7 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,6 +52,8 @@ public class UserCourseOrderController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    CourseOrderSplitService courseOrderSplitService;
 
     @PostMapping("/getSampleCourseOrderList")
     public ApiResponse getSampleCourseOrderList() {
@@ -165,7 +171,7 @@ public class UserCourseOrderController {
     }
 
     /**
-     * 添加课程订单
+     * 赠送类课程订单添加
      *
      * @param courseOrder
      * @return
@@ -182,10 +188,12 @@ public class UserCourseOrderController {
                     Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("id", courseOrder.getOperatorId()))).ifPresentOrElse(tUser -> {
                         if (TUserType.ADMIN.equals(tUser.getType())) {
                             //是管理员,则增加课程订单
+                            //之后会新增超级管理员审核模式
                             courseOrder.setCreateAt(LocalDateTime.now());
-                            courseOrder.setStatus(TCourseOrderStatus.NORMAL);
+                            courseOrder.setType(TCourseOrderType.GIVE_AWAY);
+                            //将状态设置为待审核,超级管理员审核通过才可以发放
+                            courseOrder.setStatus(TCourseOrderStatus.UNCHECKED);
                             if (courseOrderService.save(courseOrder)) {
-                                userService.updateEffectiveCourseCount(userId);
                                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                                 apiResponse.setData(courseOrder);
                             }
@@ -212,8 +220,8 @@ public class UserCourseOrderController {
     }
 
     @PostMapping("update")
-    public ApiResponse updateCourseOrder(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid, @RequestBody TCourseOrder courseOrder) {
-        logger.info("updateCourseOrder::openid = [{}], courseOrder = [{}]", openid, courseOrder);
+    public ApiResponse updateCourseOrder(@RequestBody TCourseOrder courseOrder) {
+        logger.info("updateCourseOrder:: courseOrder = [{}]", courseOrder);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
@@ -244,5 +252,60 @@ public class UserCourseOrderController {
         return apiResponse;
     }
 
+    //获取待审批的课程订单
+    @PostMapping("getWaitCheckCourseOrderList")
+    public ApiResponse getWaitCheckCourseOrderList() {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(courseOrderService
+                    .list(new QueryWrapper<TCourseOrder>()
+                            .eq("status", TCourseOrderStatus.UNCHECKED.getCode())));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+    }
+
+    //审核通过某个课程订单
+    @PostMapping("successToCheck")
+    public ApiResponse successToCheck(@RequestBody TCourseOrder courseOrder) {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            Optional.ofNullable(courseOrder.getId()).ifPresentOrElse(id -> {
+                //存在则修改订单状态和数量
+                Optional.ofNullable(courseOrderService.getById(id)).ifPresentOrElse(tCourseOrder -> {
+                    if (tCourseOrder.getType().equals(TCourseOrderType.GIVE_AWAY) && tCourseOrder.getStatus().equals(TCourseOrderStatus.UNCHECKED)) {
+                        tCourseOrder.setStatus(TCourseOrderStatus.SUCCESS);
+                        if (courseOrderService.updateById(tCourseOrder)) {
+                            //拆分某个订单
+                            courseOrderSplitService.splitCourseOrder(tCourseOrder);
+                            //更新用户有效课程数量
+                            userService.updateEffectiveCourseCount(tCourseOrder.getUserId());
+                            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                            apiResponse.setData(tCourseOrder);
+                        }
+                    } else {
+                        throw new RuntimeException("此订单状态无法审核");
+                    }
+
+                }, () -> {
+                    throw new RuntimeException("此id的数据为空");
+                });
+            }, () -> {
+                throw new RuntimeException("id为空");
+            });
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+    }
 
 }

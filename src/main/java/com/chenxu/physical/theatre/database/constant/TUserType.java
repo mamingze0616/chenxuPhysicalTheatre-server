@@ -14,7 +14,7 @@ import lombok.Getter;
 @Getter
 public enum TUserType {
     ADMIN(1, "管理员"),
-    USER(2, "普通用户"),
+    SUPER_ADMIN(2, "超级管理员"),
     TEACHER(3, "视频用户"),
     NON_MEMBER(4, "非会员"),
     MEMBER(5, "会员用户");

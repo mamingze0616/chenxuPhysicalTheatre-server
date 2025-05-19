@@ -2,11 +2,8 @@ package com.chenxu.physical.theatre.bussiness.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.dto.PhoneResponse;
-import com.chenxu.physical.theatre.database.constant.TCourseOrderSpiltStatusEnum;
-import com.chenxu.physical.theatre.database.domain.TCourseOrderSpilt;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.domain.TUserCoupons;
-import com.chenxu.physical.theatre.database.service.TCourseOrderSpiltService;
 import com.chenxu.physical.theatre.database.service.TUserCouponsService;
 import com.chenxu.physical.theatre.database.service.TUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +41,11 @@ public class UserService {
     @Autowired
     TUserService tUserService;
     @Autowired
-    TCourseOrderSpiltService tCourseOrderSpiltService;
+    CourseOrderSplitService courseOrderSplitService;
+
+    public TUser getById(Integer id) {
+        return tUserService.getById(id);
+    }
 
     public String getUserPhoneNumber(String code) {
         try {
@@ -83,14 +84,13 @@ public class UserService {
         return tUser;
     }
 
+    //更新有效课程数量
     public boolean updateEffectiveCourseCount(Integer userId) {
         try {
-            TUser user = tUserService.getById(userId);
-            //查询有效的课程订单
-            long writeOFFnumber = tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>()
-                    .eq("status", TCourseOrderSpiltStatusEnum.UNWRITE_OFF.getCode())).stream().count();
-            user.setEffectiveCourseCount((int) writeOFFnumber);
-            return tUserService.updateById(user);
+
+            return tUserService.lambdaUpdate().set(TUser::getEffectiveCourseCount, (int) courseOrderSplitService.getEffectiveCourseCountCount(userId))
+                    .eq(TUser::getId, userId)
+                    .update();
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("更新用户有效课程数量失败:" + e.getMessage());
@@ -98,21 +98,34 @@ public class UserService {
         }
     }
 
-    public boolean loginUpdateUserInfo(TUser tUser) {
+    public TUser loginUpdateUserInfo(TUser tUser) {
         try {
             tUser.setLoginAt(LocalDateTime.now());
-            //计算有效课程数量(包括未核销和已核销的课程,除去已过期的信息)
-            long writeOFFnumber = tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>()
-                    .in("status", TCourseOrderSpiltStatusEnum.UNWRITE_OFF.getCode()
-                            , TCourseOrderSpiltStatusEnum.WRITE_OFF.getCode())).stream().count();
-            tUser.setEffectiveCourseCount((int) writeOFFnumber);
-            return tUserService.updateById(tUser);
+            //计算有效课程数量(包括未核销和已核销的课程,除去已过期的信息) 临时做法
+            tUser.setEffectiveCourseCount((int) courseOrderSplitService.getEffectiveCourseCountCount(tUser.getId()));
+            if (tUserService.updateById(tUser)) {
+                return getUserCardInfo(tUser);
+            }
+            return tUser;
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("更新用户信息失败:" + e.getMessage());
             throw new RuntimeException("更新用户信息失败");
         }
 
+    }
+
+    //更新用户已完成的课程数量(包括已预约课程和已预约未签到的课程)
+    public boolean updateCompleteCourseNumber(Integer userId) {
+        try {
+            
+            return tUserService.lambdaUpdate().set(TUser::getCompletedCourseCount, (int) courseOrderSplitService.getCompleteCourseNumber(userId))
+                    .eq(TUser::getId, userId)
+                    .update();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

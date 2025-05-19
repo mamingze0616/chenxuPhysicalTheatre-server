@@ -9,5 +9,4 @@ import com.chenxu.physical.theatre.database.domain.TCourseOrder;
  * @createDate 2025-03-28 17:19:58
  */
 public interface TCourseOrderService extends IService<TCourseOrder> {
-    int getTotalCourseNumberByUserId(Integer userId);
 }

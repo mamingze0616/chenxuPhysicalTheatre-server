@@ -62,8 +62,8 @@ class AppointmentControllerTest {
     void doAppointmentByCourseId() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
-            tAppointmentInfo.setCourseId(1049);
-            tAppointmentInfo.setUserId(9);
+            tAppointmentInfo.setCourseId(1266);
+            tAppointmentInfo.setUserId(1);
 
             logger.info(appointmentController.doAppointmentByCourseId(tAppointmentInfo).toString());
         } catch (Exception e) {
@@ -73,8 +73,6 @@ class AppointmentControllerTest {
 
     @Test
     void getAppointmentInfosByUserIdAndDate() {
-
-
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
             tAppointmentInfo.setCourseId(841);
@@ -107,7 +105,7 @@ class AppointmentControllerTest {
     void cancelCourseAppointment() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
-            tAppointmentInfo.setCourseId(1067);
+            tAppointmentInfo.setCourseId(1266);
             tAppointmentInfo.setUserId(1);
 
             logger.info(appointmentController.cancelCourseAppointment(tAppointmentInfo).toString());

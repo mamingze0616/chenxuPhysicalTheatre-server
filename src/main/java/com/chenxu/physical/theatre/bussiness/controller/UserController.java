@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -32,48 +31,6 @@ public class UserController {
     TUserService tUserService;
     @Autowired
     UserService userService;
-
-    @PostMapping("/login")
-    public ApiResponse login(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none") String openid) {
-        logger.info("login::openid = [{}]", openid);
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-        apiResponse.setErrorMsg("登陆失败");
-        // 先查询一次是不是包含该用户
-        try {
-            Optional.ofNullable(openid).orElseThrow(() -> new RuntimeException("openid为空"));
-            Optional<TUser> tUserOptions = Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("openid", openid), false));
-            tUserOptions.ifPresentOrElse(tUser -> {
-                //更新登陆时间
-                tUser.setLoginAt(LocalDateTime.now());
-                try {
-                    tUserService.updateById(tUser);
-                } catch (Exception e) {
-                    e.getMessage();
-                    logger.error("更新用户登录时间失败,忽略本次错误");
-                }
-                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setData(tUser);
-                apiResponse.setErrorMsg("登陆成功");
-            }, () -> {
-                TUser tUser = new TUser();
-                tUser.setOpenid(openid);
-                tUser.setStatus(TUserStatus.NEW_ADDED.getCode());
-                tUser.setType(TUserType.USER);
-                tUser.setNickname(openid.substring(22));
-                tUser.setAvatar("https://tdesign.gtimg.com/mobile/demos/avatar1.png");
-                tUserService.save(tUser);
-                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setData(tUser);
-                apiResponse.setErrorMsg("登陆成功");
-            });
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            apiResponse.setErrorMsg("登陆失败");
-            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
-        }
-        return apiResponse;
-    }
 
     @PostMapping("/update")
     public ApiResponse updateNicknameAndAvatar(@RequestBody TUser user) {
@@ -210,16 +167,9 @@ public class UserController {
         try {
             String phoneNumber = userService.getUserPhoneNumber(code);
             Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("phone", phoneNumber))).ifPresentOrElse(tUser -> {
-                try {
-                    //更新登陆时间
-                    userService.loginUpdateUserInfo(tUser);
-                } catch (Exception e) {
-                    e.getMessage();
-                    logger.error("更新用户登录时间失败,忽略本次错误");
-                }
-
+                userService.loginUpdateUserInfo(tUser);
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                apiResponse.setData(userService.getUserCardInfo(tUser));
+                apiResponse.setData(tUser);
                 apiResponse.setErrorMsg("登陆成功");
             }, () -> {
                 TUser tUser = new TUser();
@@ -227,7 +177,6 @@ public class UserController {
                 tUser.setStatus(TUserStatus.NEW_ADDED.getCode());
                 tUser.setPhone(phoneNumber);
                 tUser.setType(TUserType.NON_MEMBER);
-
                 tUser.setNickname(openid.substring(22));
                 tUser.setAvatar("https://tdesign.gtimg.com/mobile/demos/avatar1.png");
                 logger.info("registerOrLogin::tUser = [{}]", tUser);

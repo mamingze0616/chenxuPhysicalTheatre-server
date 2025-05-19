@@ -100,7 +100,8 @@ public class MemberShipService {
                 throw new RuntimeException("用户升级订单不存在");
             }
             //更新订单状态为已支付
-            tUserOrderService.lambdaUpdate().eq(TUserOrder::getId, tUserOrder.getId()).set(TUserOrder::getStatus, TUserOrderStatus.PAID.getCode()).update();
+            tUserOrderService.lambdaUpdate().eq(TUserOrder::getId, tUserOrder.getId()).
+                    set(TUserOrder::getStatus, TUserOrderStatus.PAID.getCode()).update();
             //修改用户状态为会员用户
             tUserService.lambdaUpdate().eq(TUser::getId, userOrder.getUserId()).set(TUser::getType, TUserType.MEMBER.getCode()).update();
             return userOrder;

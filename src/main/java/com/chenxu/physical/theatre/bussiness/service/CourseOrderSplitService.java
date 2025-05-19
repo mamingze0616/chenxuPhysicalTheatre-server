@@ -2,9 +2,10 @@ package com.chenxu.physical.theatre.bussiness.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.database.constant.TCourseOrderSpiltStatusEnum;
+import com.chenxu.physical.theatre.database.constant.TCourseOrderStatus;
+import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourseOrder;
 import com.chenxu.physical.theatre.database.domain.TCourseOrderSpilt;
-import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.service.TCourseOrderService;
 import com.chenxu.physical.theatre.database.service.TCourseOrderSpiltService;
 import org.slf4j.Logger;
@@ -33,11 +34,17 @@ public class CourseOrderSplitService {
     @Autowired
     TCourseOrderSpiltService tCourseOrderSpiltService;
 
-    @Autowired
-    UserService userService;
 
     public boolean updateById(TCourseOrderSpilt tCourseOrderSpilt) {
 
+        return tCourseOrderSpiltService.updateById(tCourseOrderSpilt);
+    }
+
+    public boolean setUnWriteOffByAppointmentInfoId(TAppointmentInfo appointmentInfo) {
+        TCourseOrderSpilt tCourseOrderSpilt = tCourseOrderSpiltService.getOne(new QueryWrapper<TCourseOrderSpilt>()
+                .eq("appointment_id", appointmentInfo.getId()));
+        tCourseOrderSpilt.setStatus(TCourseOrderSpiltStatusEnum.UNWRITE_OFF);
+        tCourseOrderSpilt.setWriteOffDate(LocalDate.now());
         return tCourseOrderSpiltService.updateById(tCourseOrderSpilt);
     }
 
@@ -62,12 +69,8 @@ public class CourseOrderSplitService {
                 tCourseOrderSpilt.setEndTime(startTime.plusDays(tCourseOrder.getValidityPeriod()));
                 spilts.add(tCourseOrderSpilt);
             }
-            if (tCourseOrderSpiltService.saveBatch(spilts)) {
-                logger.info("拆分成功");
-                //查询未核销的拆分课程数量
-                userService.updateEffectiveCourseCount(tCourseOrder.getUserId());
-            }
-
+            tCourseOrderSpiltService.saveBatch(spilts);
+            logger.info("拆分成功");
         } catch (Exception e) {
             throw e;
         }
@@ -75,6 +78,7 @@ public class CourseOrderSplitService {
 
     }
 
+    //获取一条最近日期的未核销的拆分课程订单
     public TCourseOrderSpilt getUnWriteOffCourseOrderSpilt(Integer userId) {
         logger.info("getUnWriteOffCourseOrderSpilt::userId = [{}]", userId);
         //支付类
@@ -89,24 +93,46 @@ public class CourseOrderSplitService {
         }
     }
 
-    public void splitCourseOrder(TUser user) {
-        logger.info("splitCourseOrder::user = [{}]", user);
-        //支付类
+    public boolean writeOffCourseOrderSpilt(TAppointmentInfo appointmentInfo) {
         try {
-            Optional.ofNullable(user.getId()).orElseThrow(() -> new RuntimeException("id为空"));
-            //查询出该用户的所有订单
-            tCourseOrderService.list(new QueryWrapper<TCourseOrder>().eq("user_id", user.getId()))
-                    .forEach(tCourseOrder -> {
-                        splitCourseOrder(tCourseOrder);
-                    });
-
-
+            TCourseOrderSpilt courseOrderSpilt = getUnWriteOffCourseOrderSpilt(appointmentInfo.getUserId());
+            courseOrderSpilt.setStatus(TCourseOrderSpiltStatusEnum.WRITE_OFF);
+            courseOrderSpilt.setAppointmentId(appointmentInfo.getId());
+            courseOrderSpilt.setWriteOffDate(LocalDate.now());
+            return updateById(courseOrderSpilt);
         } catch (Exception e) {
-            throw e;
+            throw new RuntimeException(e);
         }
-
-
     }
 
 
+    //支付成功之后该订单所关联的课程订单回调,设置为已支付
+    public TCourseOrder payCallback(Integer courseOrderId) {
+        try {
+            //更新该状态的课程订单为已支付
+            //将该订单拆分为拆分表中数据
+            TCourseOrder courseOrder = tCourseOrderService.getById(courseOrderId);
+            courseOrder.setStatus(TCourseOrderStatus.SUCCESS);
+            if (tCourseOrderService.updateById(courseOrder)) {
+                splitCourseOrder(courseOrder);
+            }
+            //更新用户有效课程数量
+            return courseOrder;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //获取某用户的有效课程数量(包括已核销和未核销)
+    public long getEffectiveCourseCountCount(Integer userId) {
+        return tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>()
+                .in("status", TCourseOrderSpiltStatusEnum.UNWRITE_OFF.getCode()
+                        , TCourseOrderSpiltStatusEnum.WRITE_OFF.getCode())).stream().count();
+    }
+
+    //获取某用户的已上的课程数量(包括已核销的课程)
+    public long getCompleteCourseNumber(Integer userId) {
+        return tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>()
+                .eq("status", TCourseOrderSpiltStatusEnum.WRITE_OFF.getCode())).stream().count();
+    }
 }

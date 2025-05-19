@@ -1,5 +1,6 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.chenxu.physical.theatre.database.domain.TCourseOrder;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,5 +57,12 @@ class UserCourseOrderControllerTest {
         TUser tUser = new TUser();
         tUser.setId(10);
         userCourseOrderController.queryOrderByUserId(tUser);
+    }
+
+    @Test
+    void successToCheck() {
+        TCourseOrder test = new TCourseOrder();
+        test.setId(1);
+        userCourseOrderController.successToCheck(test);
     }
 }
