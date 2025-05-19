@@ -282,29 +282,28 @@ public class UserCourseOrderController {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
-            Optional.ofNullable(courseOrder.getId()).ifPresentOrElse(id -> {
-                //存在则修改订单状态和数量
-                Optional.ofNullable(courseOrderService.getById(id)).ifPresentOrElse(tCourseOrder -> {
-                    if (tCourseOrder.getType().equals(TCourseOrderType.GIVE_AWAY) && tCourseOrder.getStatus().equals(TCourseOrderStatus.UNCHECKED)) {
-                        tCourseOrder.setStatus(TCourseOrderStatus.SUCCESS);
-                        if (courseOrderService.updateById(tCourseOrder)) {
-                            //拆分某个订单
-                            courseOrderSplitService.splitCourseOrder(tCourseOrder);
-                            //更新用户有效课程数量
-                            userService.updateEffectiveCourseCount(tCourseOrder.getUserId());
-                            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                            apiResponse.setData(tCourseOrder);
-                        }
-                    } else {
-                        throw new RuntimeException("此订单状态无法审核");
+            Optional.ofNullable(courseOrder.getOperatorId()).orElseThrow(() -> new RuntimeException("operatorId为空"));
+            Optional.ofNullable(courseOrder.getId()).orElseThrow(() -> new RuntimeException("id为空"));
+            //存在则修改订单状态和数量
+            Optional.ofNullable(courseOrderService.getById(courseOrder.getId())).ifPresentOrElse(tCourseOrder -> {
+                if (tCourseOrder.getType().equals(TCourseOrderType.GIVE_AWAY) && tCourseOrder.getStatus().equals(TCourseOrderStatus.UNCHECKED)) {
+                    tCourseOrder.setStatus(TCourseOrderStatus.SUCCESS);
+                    if (courseOrderService.updateById(tCourseOrder)) {
+                        //拆分某个订单
+                        courseOrderSplitService.splitCourseOrder(tCourseOrder);
+                        //更新用户有效课程数量
+                        userService.updateEffectiveCourseCount(tCourseOrder.getUserId());
+                        apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                        apiResponse.setData(tCourseOrder);
                     }
+                } else {
+                    throw new RuntimeException("此订单状态无法审核");
+                }
 
-                }, () -> {
-                    throw new RuntimeException("此id的数据为空");
-                });
             }, () -> {
-                throw new RuntimeException("id为空");
+                throw new RuntimeException("此id的数据为空");
             });
+
         } catch (Exception e) {
             logger.error(e.getMessage());
             apiResponse.setErrorMsg(e.getMessage());
