@@ -187,7 +187,7 @@ public class UserCourseOrderController {
                 //根据courseOrder传过来的operatorId查找用户
                 Optional.ofNullable(courseOrder.getOperatorId()).ifPresentOrElse(operatorId -> {
                     Optional.ofNullable(tUserService.getOne(new QueryWrapper<TUser>().eq("id", courseOrder.getOperatorId()))).ifPresentOrElse(tUser -> {
-                        if (TUserType.ADMIN.equals(tUser.getType())) {
+                        if (TUserType.ADMIN.equals(tUser.getType()) && TUserType.SUPER_ADMIN.equals(tUser.getType())) {
                             //是管理员,则增加课程订单
                             //之后会新增超级管理员审核模式
                             courseOrder.setCreateAt(LocalDateTime.now());
