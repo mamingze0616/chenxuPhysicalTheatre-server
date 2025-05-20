@@ -200,8 +200,8 @@ public class UserCourseOrderController {
                                 apiResponse.setData(courseOrder);
                             }
                         } else {
-                            logger.info("非管理员,无法操作");
-                            apiResponse.setErrorMsg("非管理员,无法操作");
+                            logger.info("非管理员无法操作");
+                            apiResponse.setErrorMsg("非管理员!");
                             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
                         }
                     }, () -> {
