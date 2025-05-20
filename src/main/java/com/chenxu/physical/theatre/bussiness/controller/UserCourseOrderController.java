@@ -196,6 +196,7 @@ public class UserCourseOrderController {
                             courseOrder.setStatus(TCourseOrderStatus.UNCHECKED);
                             if (courseOrderService.save(courseOrder)) {
                                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                                apiResponse.setErrorMsg("添加成功");
                                 apiResponse.setData(courseOrder);
                             }
                         } else {
@@ -294,6 +295,7 @@ public class UserCourseOrderController {
                         //更新用户有效课程数量
                         userService.updateEffectiveCourseCount(tCourseOrder.getUserId());
                         apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                        apiResponse.setErrorMsg("审核通过");
                         apiResponse.setData(tCourseOrder);
                     }
                 } else {
