@@ -137,7 +137,7 @@ public class UserCourseOrderController {
                     //判断是否在有效期内
                     LocalDate startTime = tCourseOrder.getStartTime();
                     LocalDate endTime = startTime.plusDays(tCourseOrder.getValidityPeriod());
-                    if (endTime.isBefore(LocalDate.now())) {
+                    if (endTime.isAfter(LocalDate.now())) {
                         throw new RuntimeException("不可重复下单");
                     }
 
