@@ -66,6 +66,7 @@ public class CourseOrderSplitService {
                 tCourseOrderSpilt.setStatus(TCourseOrderSpiltStatusEnum.UNWRITE_OFF);
                 tCourseOrderSpilt.setSplitIndex(i);
                 LocalDate startTime = tCourseOrder.getStartTime();
+                tCourseOrderSpilt.setStartTime(startTime);
                 tCourseOrderSpilt.setEndTime(startTime.plusDays(tCourseOrder.getValidityPeriod()));
                 spilts.add(tCourseOrderSpilt);
             }
@@ -78,16 +79,45 @@ public class CourseOrderSplitService {
 
     }
 
-    //获取一条最近日期的未核销的拆分课程订单
+    /**
+     * 获取一条最近的未核销的拆分课程订单,生效日期在今天以及之后的
+     *
+     * @param userId
+     * @return
+     */
     public TCourseOrderSpilt getUnWriteOffCourseOrderSpilt(Integer userId) {
         logger.info("getUnWriteOffCourseOrderSpilt::userId = [{}]", userId);
         //支付类
         try {
             Optional.ofNullable(userId).orElseThrow(() -> new RuntimeException("userId为空"));
+            updateAllUnWriteOffCourseOrderSpiltStatus();
             //获取最近日期的未核销的的拆分课程订单
-            return tCourseOrderSpiltService.getOne(new QueryWrapper<TCourseOrderSpilt>()
+            List<TCourseOrderSpilt> canWriteOffCourseOrderSpilt = tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>()
                     .eq("user_id", userId)
-                    .eq("status", TCourseOrderSpiltStatusEnum.UNWRITE_OFF).orderByDesc("end_time").last("limit 1"));
+                    .eq("status", TCourseOrderSpiltStatusEnum.UNWRITE_OFF)
+                    .le("start_time", LocalDate.now())
+                    .ge("end_time", LocalDate.now())
+                    .orderByAsc("end_time"));
+            return canWriteOffCourseOrderSpilt.size() > 0 ? canWriteOffCourseOrderSpilt.get(0) : null;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+
+    /**
+     * 更新所有的代核销的拆分课程订单状态,如果过期则先修改已过期
+     *
+     * @return
+     */
+    public boolean updateAllUnWriteOffCourseOrderSpiltStatus() {
+        try {
+            //获取所有未核销的拆分课程订单
+            return tCourseOrderSpiltService.lambdaUpdate()
+                    .eq(TCourseOrderSpilt::getStatus, TCourseOrderSpiltStatusEnum.UNWRITE_OFF.getCode())
+                    .lt(TCourseOrderSpilt::getEndTime, LocalDate.now())
+                    .set(TCourseOrderSpilt::getStatus, TCourseOrderSpiltStatusEnum.EXPIRED.getCode())
+                    .update();
         } catch (Exception e) {
             throw e;
         }

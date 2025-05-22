@@ -64,8 +64,13 @@ public class BookedCourseService {
             //先查询是否已经预约过,有取消预约状态的会把状态改为已预约,
             //可预约默认还没开课,所以不会是已学,只可能是已预约或者取消预约
             //已预约的情况的信息先删除,在增加预约信息(保证了预约信息的唯一性)
-            appointmentInfoService.remove(new QueryWrapper<TAppointmentInfo>()
-                    .eq("course_id", appointmentInfo.getCourseId()).eq("user_id", appointmentInfo.getUserId()));
+            TAppointmentInfo hasAppointmentInfo = appointmentInfoService.getOne(new QueryWrapper<TAppointmentInfo>()
+                    .eq("course_id", appointmentInfo.getCourseId())
+                    .eq("user_id", appointmentInfo.getUserId())
+                    .eq("type", TAppointmentInfoTypeEnum.APPOINTED));
+            if (hasAppointmentInfo != null) {
+                throw new RuntimeException("已预约该课程");
+            }
             //新增预约信息
             appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
             if (appointmentInfoService.save(appointmentInfo)) {
@@ -76,7 +81,7 @@ public class BookedCourseService {
                 //更新客户已学课程数量
                 courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
             } else {
-                throw new RuntimeException("预约信息写入表失败");
+                throw new RuntimeException("预约写入失败");
             }
             return true;
         } catch (Exception e) {

@@ -56,6 +56,10 @@ public class TCourseOrderSpilt {
      * 有效期截止时间结束当天+1
      */
     private LocalDate endTime;
+    /**
+     * 有效期截止时间结束当天+1
+     */
+    private LocalDate startTime;
 
     @Override
     public boolean equals(Object that) {
@@ -76,7 +80,8 @@ public class TCourseOrderSpilt {
                 && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
                 && (this.getWriteOffDate() == null ? other.getWriteOffDate() == null : this.getWriteOffDate().equals(other.getWriteOffDate()))
                 && (this.getSplitIndex() == null ? other.getSplitIndex() == null : this.getSplitIndex().equals(other.getSplitIndex()))
-                && (this.getEndTime() == null ? other.getEndTime() == null : this.getEndTime().equals(other.getEndTime()));
+                && (this.getEndTime() == null ? other.getEndTime() == null : this.getEndTime().equals(other.getEndTime()))
+                && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()));
     }
 
     @Override
@@ -91,6 +96,7 @@ public class TCourseOrderSpilt {
         result = prime * result + ((getWriteOffDate() == null) ? 0 : getWriteOffDate().hashCode());
         result = prime * result + ((getSplitIndex() == null) ? 0 : getSplitIndex().hashCode());
         result = prime * result + ((getEndTime() == null) ? 0 : getEndTime().hashCode());
+        result = prime * result + ((getStartTime() == null) ? 0 : getStartTime().hashCode());
         return result;
     }
 
@@ -108,6 +114,7 @@ public class TCourseOrderSpilt {
         sb.append(", writeOffDate=").append(writeOffDate);
         sb.append(", splitIndex=").append(splitIndex);
         sb.append(", endTime=").append(endTime);
+        sb.append(", startTime=").append(startTime);
         sb.append("]");
         return sb.toString();
     }

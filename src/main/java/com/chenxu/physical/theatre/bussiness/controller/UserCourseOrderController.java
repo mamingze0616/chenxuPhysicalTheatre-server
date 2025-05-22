@@ -126,6 +126,23 @@ public class UserCourseOrderController {
                     throw new RuntimeException("优惠券已经使用");
                 }
             }
+            //查询该用户的有效的支付类的订单
+            List<TCourseOrder> tCourseOrders = courseOrderService
+                    .list(new QueryWrapper<TCourseOrder>()
+                            .eq("user_id", courseOrder.getUserId())
+                            .eq("type", TCourseOrderType.PAY)
+                            .eq("status", TCourseOrderStatus.SUCCESS));
+            if (tCourseOrders != null) {
+                tCourseOrders.forEach(tCourseOrder -> {
+                    //判断是否在有效期内
+                    LocalDate startTime = tCourseOrder.getStartTime();
+                    LocalDate endTime = startTime.plusDays(tCourseOrder.getValidityPeriod());
+                    if (endTime.isAfter(LocalDate.now())) {
+                        throw new RuntimeException("不可重复下单");
+                    }
+
+                });
+            }
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
             apiResponse.setData(preBuyCourseOrder(courseOrder, IpUtils.getIp(request)));
         } catch (Exception e) {
@@ -179,7 +196,7 @@ public class UserCourseOrderController {
      */
     @PostMapping("addCourseOrder")
     public ApiResponse addCourseOrder(@RequestBody TCourseOrder courseOrder) {
-        logger.info("addCourseOrder::openid = [{}], courseOrder = [{}]", courseOrder);
+        logger.info("addCourseOrder:: courseOrder = [{}]", courseOrder);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
@@ -191,6 +208,9 @@ public class UserCourseOrderController {
                             //是管理员,则增加课程订单
                             //之后会新增超级管理员审核模式
                             courseOrder.setCreateAt(LocalDateTime.now());
+                            if (courseOrder.getStartTime() == null) {
+                                courseOrder.setStartTime(LocalDate.now());
+                            }
                             courseOrder.setType(TCourseOrderType.GIVE_AWAY);
                             //将状态设置为待审核,超级管理员审核通过才可以发放
                             courseOrder.setStatus(TCourseOrderStatus.UNCHECKED);
@@ -205,7 +225,7 @@ public class UserCourseOrderController {
                             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
                         }
                     }, () -> {
-                        throw new RuntimeException("此openid的数据为空");
+                        throw new RuntimeException("此id的数据为空");
                     });
                 }, () -> {
                     throw new RuntimeException("operatorId为空");
@@ -299,11 +319,11 @@ public class UserCourseOrderController {
                         apiResponse.setData(tCourseOrder);
                     }
                 } else {
-                    throw new RuntimeException("此订单状态无法审核");
+                    throw new RuntimeException("此订单无法审核");
                 }
 
             }, () -> {
-                throw new RuntimeException("此id的数据为空");
+                throw new RuntimeException("此id数据为空");
             });
 
         } catch (Exception e) {
