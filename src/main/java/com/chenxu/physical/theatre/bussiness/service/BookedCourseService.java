@@ -90,8 +90,7 @@ public class BookedCourseService {
                 subscribeMessageService.sendBookedSuccessMessage(currentUser.getOpenid(),
                         tCourse.getCourseName(),
                         tCourse.getStartTime(),
-                        appointmentInfo.getCreateAt()
-                );
+                        appointmentInfo.getCreateAt());
 
             } else {
                 throw new RuntimeException("预约写入失败");
@@ -119,6 +118,11 @@ public class BookedCourseService {
                 courseOrderSplitService.setUnWriteOffByAppointmentInfoId(currentAppointmentInfo);
                 //更新客户已学课程数量
                 userService.updateCompleteCourseNumber(appointmentInfo.getUserId());
+                TUser currentUser = userService.getById(appointmentInfo.getUserId());
+                subscribeMessageService.sendBookedCancelMessage(currentUser.getOpenid(),
+                        course.getCourseName(),
+                        course.getStartTime(),
+                        "用户自行取消预约", "用户自行取消预约");
                 return courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
             }
         } catch (Exception e) {

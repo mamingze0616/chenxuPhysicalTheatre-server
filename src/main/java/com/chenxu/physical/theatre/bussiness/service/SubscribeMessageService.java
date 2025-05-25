@@ -97,7 +97,9 @@ public class SubscribeMessageService {
         return sendSubscribeMessage(openid, bookedSuccessTemplateId, "pages/index/index", data);
     }
 
-    public boolean sendBookedCancelMessage(String openid, String courseName, LocalDateTime courseStartTime, String reason, String tips) {
+    public boolean sendBookedCancelMessage(String openid, String courseName,
+                                           LocalDateTime courseStartTime,
+                                           String reason, String tips) {
         Map<String, Object> data = new HashMap<>();
         //课程名称
         Map<String, Object> thing28 = new HashMap<>();
