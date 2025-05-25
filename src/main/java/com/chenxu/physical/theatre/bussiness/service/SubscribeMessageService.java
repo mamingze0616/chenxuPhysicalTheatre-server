@@ -79,12 +79,12 @@ public class SubscribeMessageService {
         data.put("thing41", thing41);
         //课程时间
         Map<String, Object> time43 = new HashMap<>();
-        thing41.put("value", courseStartTime);
+        time43.put("value", courseStartTime);
         data.put("time43", time43);
 
         //课程时间
         Map<String, Object> time73 = new HashMap<>();
-        thing41.put("value", orderTime);
+        time73.put("value", orderTime);
         data.put("time73", time73);
 
         return sendSubscribeMessage(openid, bookedSuccessTemplateId, "pages/index/index", data);

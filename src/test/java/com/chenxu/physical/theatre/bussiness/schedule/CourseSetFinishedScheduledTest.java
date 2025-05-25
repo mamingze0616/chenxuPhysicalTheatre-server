@@ -1,8 +1,9 @@
 package com.chenxu.physical.theatre.bussiness.schedule;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author mamingze
@@ -15,8 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class CourseSetFinishedScheduledTest {
 
     @Test
-    @Disabled
+//    @Disabled
     void checkeCourseTypeTask() throws InterruptedException {
-//        TimeUnit.SECONDS.sleep(600 * 1);
+        TimeUnit.SECONDS.sleep(600 * 1);
     }
 }

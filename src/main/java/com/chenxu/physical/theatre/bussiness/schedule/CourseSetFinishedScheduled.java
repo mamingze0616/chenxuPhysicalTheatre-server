@@ -57,13 +57,13 @@ public class CourseSetFinishedScheduled {
      * 检测该天的课程的预约人数,如果预约人数不满,则课程取消
      */
     @Scheduled(cron = "0 1 0 * * *")
-//    @Scheduled(cron = "0/5 * * * * *")
+//    @Scheduled(cron = "0/20 * * * * *")
     @SchedulerLock(name = "checkCourseBookedNumTask")
     public void updateCourseBookedNumber() {
         logger.info("定时任务开始执行,检查今天的所有课程的预约人数");
         List<TCourse> courseList = courseService.list(new QueryWrapper<TCourse>()
                 .eq("type", TCourseType.NOT_START.getCode())
-                .eq("date", LocalDate.now()));
+                .le("date", LocalDate.now()));
         logger.info("今天有{}个课程", courseList.size());
         courseList.forEach(course -> {
             logger.info("该课程的名称:{},该课程的预约人数:{},该课程的最小预约人数:{}", course.getCourseName(),
