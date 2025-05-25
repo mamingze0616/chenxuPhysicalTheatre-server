@@ -78,6 +78,7 @@ public class BookedCourseService {
             }
             //新增预约信息
             appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
+            appointmentInfo.setCreateAt(LocalDateTime.now());
             if (appointmentInfoService.save(appointmentInfo)) {
 
                 //核销
