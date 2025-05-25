@@ -22,8 +22,19 @@ public interface TCourseService extends IService<TCourse> {
 
     TCourse getCourserWithAppointmentInfoByCourseId(Integer courseId);
 
-    //将往期课程的type设置为已上,将签到的设置为已学,将已预约的设置为未签到
+    /**
+     * 将往期课程的type设置为已上,将签到的设置为已学,将已预约的设置为未签到
+     *
+     * @param courseId
+     */
     void setCourseFinished(Integer courseId);
 
     boolean updateCourseBookedNumber(Integer courseId);
+
+    /**
+     * 将课程设置为已取消(主要为未上的课程,从定时任务而来的
+     *
+     * @param courseId
+     */
+    void setCourseCanceled(Integer courseId);
 }

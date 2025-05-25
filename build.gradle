@@ -29,6 +29,8 @@ dependencies {
     api libs.org.springframework.boot.spring.boot.configuration.processor
     api libs.org.springframework.boot.spring.boot.starter.actuator
 //    api libs.com.fasterxml.jackson.dataformat.jackson.dataformat.xml
+    api libs.net.javacrumbs.shedlock.shedlock.spring
+    api libs.net.javacrumbs.shedlock.shedlock.provider.jdbc.template
     compileOnly libs.org.projectlombok.lombok
     annotationProcessor libs.org.projectlombok.lombok
     api libs.org.springframework.boot.spring.boot.starter.logging

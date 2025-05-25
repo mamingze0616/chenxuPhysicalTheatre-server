@@ -15,7 +15,9 @@ public enum TCourseType {
     FINISHED(2, "已上"),
     DELETED(3, "删除"),
     NOT_REGISTER(4, "未注册"),
-    START_SIGNING_IN(5, "开始签到");//开始签到之后才可以设为已上
+    START_SIGNING_IN(5, "开始签到"),
+    CANCELED(6, "课程取消");
+
 
     @EnumValue
     @JsonValue

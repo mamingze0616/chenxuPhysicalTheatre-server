@@ -3,15 +3,15 @@ package com.chenxu.physical.theatre.database.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.chenxu.physical.theatre.bussiness.service.CourseOrderSplitService;
+import com.chenxu.physical.theatre.bussiness.service.UserService;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
-import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.mapper.TCourseMapper;
 import com.chenxu.physical.theatre.database.service.TAppointmentInfoService;
 import com.chenxu.physical.theatre.database.service.TCourseService;
-import com.chenxu.physical.theatre.database.service.TUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +28,13 @@ import java.util.stream.Collectors;
  * @createDate 2025-03-27 10:14:18
  */
 @Service
-public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
-        implements TCourseService {
+public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> implements TCourseService {
     @Autowired
     private TAppointmentInfoService tAppointmentInfoService;
     @Autowired
-    private TUserService tUserService;
+    private UserService userService;
+    @Autowired
+    CourseOrderSplitService courseOrderSplitService;
 
     @Override
     public PageDTO<TCourse> selectPageTCourseList(PageDTO<TCourse> page, TCourse course) {
@@ -49,8 +50,7 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
         if (integerList.isEmpty()) {
             return pageDTO;
         }
-        Map<Integer, List<TAppointmentInfo>> subAppointmentInfoMap = tAppointmentInfoService.getAppointmentInfoByCourseIds(integerList)
-                .stream().collect(Collectors.groupingBy(TAppointmentInfo::getCourseId));
+        Map<Integer, List<TAppointmentInfo>> subAppointmentInfoMap = tAppointmentInfoService.getAppointmentInfoByCourseIds(integerList).stream().collect(Collectors.groupingBy(TAppointmentInfo::getCourseId));
         tCourseList.forEach(tCourse -> {
             if (subAppointmentInfoMap.containsKey(tCourse.getId())) {
                 tCourse.setAppointmentInfos(subAppointmentInfoMap.get(tCourse.getId()));
@@ -79,40 +79,38 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse>
 
     @Override
     public void setCourseFinished(Integer courseId) {
-        this.lambdaUpdate()
-                .eq(TCourse::getId, courseId).set(TCourse::getType, TCourseType.FINISHED.getCode()).update();
+        this.lambdaUpdate().eq(TCourse::getId, courseId).set(TCourse::getType, TCourseType.FINISHED.getCode()).update();
         //更新已签到的人为已学
-        tAppointmentInfoService.lambdaUpdate()
-                .eq(TAppointmentInfo::getCourseId, courseId)
-                .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.SIGNED.getCode())
-                .set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.LEARNED.getCode())
-                .update();
+        tAppointmentInfoService.lambdaUpdate().eq(TAppointmentInfo::getCourseId, courseId).eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.SIGNED.getCode()).set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.LEARNED.getCode()).update();
         //更新未签到的人为已预约未签到
-        tAppointmentInfoService.lambdaUpdate()
-                .eq(TAppointmentInfo::getCourseId, courseId)
-                .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.APPOINTED.getCode())
-                .set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.NOT_SIGNED.getCode())
-                .update();
-        //更新用户表的已学的课程信息
-        tAppointmentInfoService.list(new QueryWrapper<TAppointmentInfo>().eq("course_id", courseId))
-                .forEach(tAppointmentInfo -> {
-                    tUserService.lambdaUpdate()
-                            .eq(TUser::getId, tAppointmentInfo.getUserId())
-                            .setSql("completed_course_count = ( select count(*) from T_APPOINTMENT_INFO where T_APPOINTMENT_INFO.user_id = T_USER.id and T_APPOINTMENT_INFO.type in (3,4,5) )")
-                            .update();
-                });
+        tAppointmentInfoService.lambdaUpdate().eq(TAppointmentInfo::getCourseId, courseId).eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.APPOINTED.getCode()).set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.NOT_SIGNED.getCode()).update();
     }
 
     @Override
     public boolean updateCourseBookedNumber(Integer courseId) {
-        long count = tAppointmentInfoService.count(new QueryWrapper<TAppointmentInfo>().eq("course_id", courseId)
-                .in("type", TAppointmentInfoTypeEnum.APPOINTED.getCode(),
-                        TAppointmentInfoTypeEnum.LEARNED.getCode(),
-                        TAppointmentInfoTypeEnum.SIGNED.getCode()));
-        return this.lambdaUpdate()
-                .eq(TCourse::getId, courseId)
-                .set(TCourse::getBookedNum, Integer.valueOf((int) count))
+        long count = tAppointmentInfoService.count(new QueryWrapper<TAppointmentInfo>().eq("course_id", courseId).in("type", TAppointmentInfoTypeEnum.APPOINTED.getCode(), TAppointmentInfoTypeEnum.LEARNED.getCode(), TAppointmentInfoTypeEnum.SIGNED.getCode()));
+        return this.lambdaUpdate().eq(TCourse::getId, courseId).set(TCourse::getBookedNum, Integer.valueOf((int) count)).update();
+    }
+
+    @Override
+    public void setCourseCanceled(Integer courseId) {
+
+        lambdaUpdate().eq(TCourse::getId, courseId).set(TCourse::getType, TCourseType.CANCELED.getCode()).update();
+
+        //更新已预约的人设置为取消预约
+        tAppointmentInfoService.lambdaUpdate().eq(TAppointmentInfo::getCourseId, courseId)
+                .eq(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.APPOINTED.getCode())
+                .set(TAppointmentInfo::getType, TAppointmentInfoTypeEnum.CANCELED.getCode())
                 .update();
+        TCourse tCourse = getCourserWithAppointmentInfoByCourseId(courseId);
+        tCourse.getAppointmentInfos().stream().forEach(appointmentInfo -> {
+            // 取消预约更新拆分表数据
+            courseOrderSplitService.setUnWriteOffByAppointmentInfoId(appointmentInfo);
+            //更新客户已学课程数量
+            userService.updateCompleteCourseNumber(appointmentInfo.getUserId());
+
+        });
+        updateCourseBookedNumber(courseId);
     }
 }
 

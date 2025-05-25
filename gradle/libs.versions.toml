@@ -7,6 +7,7 @@ com-baomidou-mybatis-plus-boot-starter = "3.5.10.1"
 org-projectlombok-lombok = "1.18.32"
 org-springframework-boot-spring-boot-gradle-plugin = "3.4.4"
 #jackson-dataformat-xml = "2.18.3"
+shedlock-spring = "6.3.1"
 
 [libraries]
 mysql-mysql-connector-java = { module = "mysql:mysql-connector-java", version.ref = "mysql-mysql-connector-java" }
@@ -19,6 +20,8 @@ org-springframework-boot-spring-boot-starter-test = { module = "org.springframew
 org-springframework-boot-spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 org-springframework-boot-spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 #com-fasterxml-jackson-dataformat-jackson-dataformat-xml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml" , version.ref = "jackson-dataformat-xml"}
+net-javacrumbs-shedlock-shedlock-spring= { module = "net.javacrumbs.shedlock:shedlock-spring", version.ref = "shedlock-spring"}
+net-javacrumbs-shedlock-shedlock-provider-jdbc-template= { module = "net.javacrumbs.shedlock:shedlock-provider-jdbc-template", version.ref = "shedlock-spring"}
 
 junit-jupiter-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 com-baomidou-mybatis-plus-bom = { module = "com.baomidou:mybatis-plus-bom",version.ref = "com-baomidou-mybatis-plus-boot-starter"}

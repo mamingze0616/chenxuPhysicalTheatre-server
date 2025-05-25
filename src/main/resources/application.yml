@@ -19,6 +19,14 @@ mybatis:
 wx:
   url:
     getPhoneNumber: http://api.weixin.qq.com/wxa/business/getuserphonenumber
+    subscribeMessage: http://api.weixin.qq.com/cgi-bin/message/subscribe/send
+  message:
+    template:
+      bookedsuccess:
+        id: S8NGsSZ3iWDXUc-6xgS50SJNYeRbZ9p-03PjV_62dlU
+      bookedcancel:
+        id: yqdMTsUoHYEK6HuxHcmTx9xSY0sWGgJthQYCFPBFCDU
+
   env: ${ENV_ID}
   mch: ${MCH_ID}
 

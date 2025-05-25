@@ -34,6 +34,8 @@ public class BookedCourseService {
     CourseOrderSplitService courseOrderSplitService;
     @Autowired
     UserService userService;
+    @Autowired
+    SubscribeMessageService subscribeMessageService;
 
     //预约某个课程
     public boolean doBookedCourse(TAppointmentInfo appointmentInfo) {
@@ -74,12 +76,20 @@ public class BookedCourseService {
             //新增预约信息
             appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
             if (appointmentInfoService.save(appointmentInfo)) {
+
                 //核销
                 courseOrderSplitService.writeOffCourseOrderSpilt(appointmentInfo);
                 //更新用户已学课程数量
                 userService.updateCompleteCourseNumber(appointmentInfo.getUserId());
                 //更新客户已学课程数量
                 courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
+
+                subscribeMessageService.sendBookedSuccessMessage(currentUser.getOpenid(),
+                        tCourse.getCourseName(),
+                        appointmentInfo.getStartTime().toString(),
+                        appointmentInfo.getCreateAt().toString()
+                );
+
             } else {
                 throw new RuntimeException("预约写入失败");
             }
@@ -114,4 +124,5 @@ public class BookedCourseService {
 
 
     }
+
 }

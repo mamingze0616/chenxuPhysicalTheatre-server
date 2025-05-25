@@ -84,7 +84,12 @@ public class UserService {
         return tUser;
     }
 
-    //更新有效课程数量
+    /**
+     * 更新有效课程数量
+     *
+     * @param userId
+     * @return
+     */
     public boolean updateEffectiveCourseCount(Integer userId) {
         try {
 
@@ -116,10 +121,16 @@ public class UserService {
 
     }
 
-    //更新用户已完成的课程数量(包括已预约课程和已预约未签到的课程)
+
+    /**
+     * 更新用户已完成的课程数量(包括已预约课程和已预约未签到的课程)
+     *
+     * @param userId
+     * @return
+     */
     public boolean updateCompleteCourseNumber(Integer userId) {
         try {
-            
+
             return tUserService.lambdaUpdate().set(TUser::getCompletedCourseCount, (int) courseOrderSplitService.getCompleteCourseNumber(userId))
                     .eq(TUser::getId, userId)
                     .update();
