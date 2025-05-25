@@ -108,7 +108,7 @@ public class SubscribeMessageService {
         //课程时间
         Map<String, Object> time30 = new HashMap<>();
         time30.put("value", courseStartTime.format(formatter));
-        data.put("time43", time30);
+        data.put("time30", time30);
 
         //原因
         Map<String, Object> thing4 = new HashMap<>();
