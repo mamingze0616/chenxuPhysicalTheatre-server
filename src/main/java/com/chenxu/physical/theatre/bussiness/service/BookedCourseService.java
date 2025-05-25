@@ -71,10 +71,12 @@ public class BookedCourseService {
             //已预约的情况的信息先删除,在增加预约信息(保证了预约信息的唯一性)
             TAppointmentInfo hasAppointmentInfo = appointmentInfoService.getOne(new QueryWrapper<TAppointmentInfo>()
                     .eq("course_id", appointmentInfo.getCourseId())
-                    .eq("user_id", appointmentInfo.getUserId())
-                    .eq("type", TAppointmentInfoTypeEnum.APPOINTED));
-            if (hasAppointmentInfo != null) {
+                    .eq("user_id", appointmentInfo.getUserId()));
+            if (hasAppointmentInfo != null && hasAppointmentInfo.getType() == TAppointmentInfoTypeEnum.APPOINTED) {
                 throw new RuntimeException("已预约该课程");
+            } else {
+                //把之前预约信息删除
+                appointmentInfoService.removeById(hasAppointmentInfo);
             }
             //新增预约信息
             appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
