@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 /**
@@ -37,8 +36,6 @@ public class BookedCourseService {
     UserService userService;
     @Autowired
     SubscribeMessageService subscribeMessageService;
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
 
     //预约某个课程
     public boolean doBookedCourse(TAppointmentInfo appointmentInfo) {
@@ -92,8 +89,8 @@ public class BookedCourseService {
 
                 subscribeMessageService.sendBookedSuccessMessage(currentUser.getOpenid(),
                         tCourse.getCourseName(),
-                        tCourse.getStartTime().format(formatter),
-                        appointmentInfo.getCreateAt().format(formatter)
+                        tCourse.getStartTime(),
+                        appointmentInfo.getCreateAt()
                 );
 
             } else {

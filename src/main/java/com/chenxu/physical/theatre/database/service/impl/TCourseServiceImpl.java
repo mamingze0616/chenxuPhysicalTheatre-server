@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chenxu.physical.theatre.bussiness.service.CourseOrderSplitService;
+import com.chenxu.physical.theatre.bussiness.service.SubscribeMessageService;
 import com.chenxu.physical.theatre.bussiness.service.UserService;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
+import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.mapper.TCourseMapper;
 import com.chenxu.physical.theatre.database.service.TAppointmentInfoService;
 import com.chenxu.physical.theatre.database.service.TCourseService;
@@ -35,6 +37,9 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
     private UserService userService;
     @Autowired
     CourseOrderSplitService courseOrderSplitService;
+
+    @Autowired
+    SubscribeMessageService subscribeMessageService;
 
     @Override
     public PageDTO<TCourse> selectPageTCourseList(PageDTO<TCourse> page, TCourse course) {
@@ -104,6 +109,10 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
                 .update();
         TCourse tCourse = getCourserWithAppointmentInfoByCourseId(courseId);
         tCourse.getAppointmentInfos().stream().forEach(appointmentInfo -> {
+            TUser tUser = userService.getById(appointmentInfo.getUserId());
+            subscribeMessageService.sendBookedCancelMessage(tUser.getOpenid(), tCourse.getCourseName(),
+                    tCourse.getStartTime(),
+                    "开课前预约人员不足预约取消", "该课程未满足最低开课人数,无法开课");
             // 取消预约更新拆分表数据
             courseOrderSplitService.setUnWriteOffByAppointmentInfoId(appointmentInfo);
             //更新客户已学课程数量

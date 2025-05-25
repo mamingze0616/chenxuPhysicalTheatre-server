@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +32,13 @@ public class SubscribeMessageService {
     @Value("${wx.message.template.bookedsuccess.id}")
     private String bookedSuccessTemplateId;
 
+    @Value("${wx.message.template.bookedcancel.id}")
+    private String bookedCancelTemplateId;
+
     @Autowired
     RestTemplate restTemplate;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
 
     /**
      * 发送订阅消息
@@ -71,7 +78,7 @@ public class SubscribeMessageService {
      * @param orderTime
      * @return
      */
-    public boolean sendBookedSuccessMessage(String openid, String courseName, String courseStartTime, String orderTime) {
+    public boolean sendBookedSuccessMessage(String openid, String courseName, LocalDateTime courseStartTime, LocalDateTime orderTime) {
         Map<String, Object> data = new HashMap<>();
         //课程名称
         Map<String, Object> thing41 = new HashMap<>();
@@ -79,14 +86,37 @@ public class SubscribeMessageService {
         data.put("thing41", thing41);
         //课程时间
         Map<String, Object> time43 = new HashMap<>();
-        time43.put("value", courseStartTime);
+        time43.put("value", courseStartTime.format(formatter));
         data.put("time43", time43);
 
         //课程时间
         Map<String, Object> time73 = new HashMap<>();
-        time73.put("value", orderTime);
+        time73.put("value", orderTime.format(formatter));
         data.put("time73", time73);
 
         return sendSubscribeMessage(openid, bookedSuccessTemplateId, "pages/index/index", data);
+    }
+
+    public boolean sendBookedCancelMessage(String openid, String courseName, LocalDateTime courseStartTime, String reason, String tips) {
+        Map<String, Object> data = new HashMap<>();
+        //课程名称
+        Map<String, Object> thing28 = new HashMap<>();
+        thing28.put("value", courseName);
+        data.put("thing28", thing28);
+        //课程时间
+        Map<String, Object> time30 = new HashMap<>();
+        time30.put("value", courseStartTime.format(formatter));
+        data.put("time43", time30);
+
+        //原因
+        Map<String, Object> thing4 = new HashMap<>();
+        thing4.put("value", reason);
+        data.put("thing4", thing4);
+        //提示
+        Map<String, Object> thing9 = new HashMap<>();
+        thing9.put("value", tips);
+        data.put("thing9", thing9);
+
+        return sendSubscribeMessage(openid, bookedCancelTemplateId, "pages/index/index", data);
     }
 }
