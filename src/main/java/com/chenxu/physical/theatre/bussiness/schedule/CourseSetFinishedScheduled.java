@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class CourseSetFinishedScheduled {
      * 定时任务，每小时的第三分钟执行一次
      * 对于已经签到的课程,过了课程结束时间的话进行结束
      */
-    @Scheduled(cron = "0 3 * * * *")
+    @Scheduled(cron = "0 0/15 * * * *")
     @SchedulerLock(name = "checkCourseTypeTask")
     public void checkeCourseTypeTask() {
         logger.info("定时任务开始执行,检查课程状态");
@@ -57,7 +58,6 @@ public class CourseSetFinishedScheduled {
      * 检测该天的课程的预约人数,如果预约人数不满,则课程取消
      */
     @Scheduled(cron = "0 1 0 * * *")
-//    @Scheduled(cron = "0/20 * * * * *")
     @SchedulerLock(name = "checkCourseBookedNumTask")
     public void updateCourseBookedNumber() {
         logger.info("定时任务开始执行,检查今天的所有课程的预约人数");
@@ -73,6 +73,21 @@ public class CourseSetFinishedScheduled {
                 courseService.setCourseCanceled(course.getId());
             }
 
+        });
+    }
+
+    /**
+     * 定时任务十五分钟执行一次,检查课程是否可以开启签到
+     */
+    @Scheduled(cron = "0 0/15 * * * ?")
+    @SchedulerLock(name = "checkCourseSignInTask")
+    public void checkCourseSignInTask() {
+        List<TCourse> courseList = courseService.list(new QueryWrapper<TCourse>()
+                .eq("type", TCourseType.NOT_START.getCode())
+                .le("start_time", LocalDateTime.now())
+                .eq("date", LocalDate.now()));
+        courseList.forEach(course -> {
+            courseService.setStartSigningIn(course.getId());
         });
     }
 }

@@ -121,6 +121,20 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
         });
         updateCourseBookedNumber(courseId);
     }
+
+    @Override
+    public void setStartSigningIn(Integer courseId) {
+        TCourse tCourse = Optional.ofNullable(getById(courseId)).orElseThrow(() -> new RuntimeException("课程不存在"));
+        if (tCourse.getBookedNum() < tCourse.getMinimum()) {
+            throw new RuntimeException("人数不足,无法开始签到");
+        }
+
+        if (!lambdaUpdate().set(TCourse::getType, TCourseType.START_SIGNING_IN.getCode())
+                .eq(TCourse::getId, tCourse.getId())
+                .update()) {
+            throw new RuntimeException("更新失败");
+        }
+    }
 }
 
 

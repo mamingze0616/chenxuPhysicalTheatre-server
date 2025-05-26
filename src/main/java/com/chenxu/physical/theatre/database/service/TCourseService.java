@@ -37,4 +37,6 @@ public interface TCourseService extends IService<TCourse> {
      * @param courseId
      */
     void setCourseCanceled(Integer courseId);
+
+    void setStartSigningIn(Integer courseId);
 }
