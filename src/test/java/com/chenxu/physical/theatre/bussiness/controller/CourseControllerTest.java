@@ -76,4 +76,10 @@ class CourseControllerTest {
         course.setId(1239);
         logger.info("responseEntity: {}", courseController.setFinished(course));
     }
+
+    @Test
+    void getLatestCourse() {
+        courseController.getLatestCourse();
+    }
+
 }

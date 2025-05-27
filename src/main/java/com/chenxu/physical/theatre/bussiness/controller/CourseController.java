@@ -108,7 +108,26 @@ public class CourseController {
         return apiResponse;
     }
 
-    @PostMapping("/getCoursesByID")
+    @PostMapping("/getLatestCourse")
+    public ApiResponse getLatestCourse() {
+        ApiResponse apiResponse = new ApiResponse();
+        try {
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(courseService.getOne(new QueryWrapper<TCourse>()
+                    .eq("type", TCourseType.NOT_START.getCode())
+                    .ge("start_time", LocalDateTime.now())
+                    .orderByAsc("start_time")
+                    .last("limit 1")));
+
+
+        } catch (Exception e) {
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
+    @PostMapping("/getCourses")
     public ApiResponse getCoursesByID(@RequestBody TCourse course) {
         logger.info("getCoursesByID:: id = [{}]", course.getId());
         ApiResponse apiResponse = new ApiResponse();
