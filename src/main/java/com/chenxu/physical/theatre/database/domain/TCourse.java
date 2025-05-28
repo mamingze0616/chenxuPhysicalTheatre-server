@@ -67,6 +67,8 @@ public class TCourse extends ApiRequestPageDto {
     private LocalDateTime endTime;
 
     private Integer bookedNum;
+
+    private String qrCode;
     @TableField(exist = false)
     private List<TAppointmentInfo> appointmentInfos;
 
@@ -91,7 +93,8 @@ public class TCourse extends ApiRequestPageDto {
                 && (this.getStartTime() == null ? other.getStartTime() == null : this.getStartTime().equals(other.getStartTime()))
                 && (this.getEndTime() == null ? other.getEndTime() == null : this.getEndTime().equals(other.getEndTime()))
                 && (this.getMinimum() == null ? other.getMinimum() == null : this.getMinimum().equals(other.getMinimum()))
-                && (this.getBookedNum() == null ? other.getBookedNum() == null : this.getBookedNum().equals(other.getBookedNum()));
+                && (this.getBookedNum() == null ? other.getBookedNum() == null : this.getBookedNum().equals(other.getBookedNum()))
+                && (this.getQrCode() == null ? other.getQrCode() == null : this.getQrCode().equals(other.getQrCode()));
     }
 
     @Override
@@ -108,6 +111,7 @@ public class TCourse extends ApiRequestPageDto {
         result = prime * result + ((getEndTime() == null) ? 0 : getEndTime().hashCode());
         result = prime * result + ((getMinimum() == null) ? 0 : getMinimum().hashCode());
         result = prime * result + ((getBookedNum() == null) ? 0 : getBookedNum().hashCode());
+        result = prime * result + ((getQrCode() == null) ? 0 : getQrCode().hashCode());
         return result;
     }
 
@@ -127,6 +131,7 @@ public class TCourse extends ApiRequestPageDto {
         sb.append(", startTime=").append(startTime);
         sb.append(", endTime=").append(endTime);
         sb.append(", bookedNum=").append(bookedNum);
+        sb.append(", qrCode=").append(qrCode);
         sb.append(", appointmentInfos=").append(appointmentInfos);
         sb.append(",current=").append(getCurrent());
         sb.append(",size=").append(getSize());

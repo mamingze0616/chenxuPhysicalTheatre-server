@@ -8,6 +8,7 @@ org-projectlombok-lombok = "1.18.32"
 org-springframework-boot-spring-boot-gradle-plugin = "3.4.4"
 #jackson-dataformat-xml = "2.18.3"
 shedlock-spring = "6.3.1"
+zxing= "3.5.3"
 
 [libraries]
 mysql-mysql-connector-java = { module = "mysql:mysql-connector-java", version.ref = "mysql-mysql-connector-java" }
@@ -25,6 +26,8 @@ net-javacrumbs-shedlock-shedlock-provider-jdbc-template= { module = "net.javacru
 
 junit-jupiter-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 com-baomidou-mybatis-plus-bom = { module = "com.baomidou:mybatis-plus-bom",version.ref = "com-baomidou-mybatis-plus-boot-starter"}
+com-google-zxing-core = { module = "com.google.zxing:core", version.ref ="zxing" }
+com-google-zxing-javase = { module = "com.google.zxing:javase", version.ref ="zxing" }
 
 [plugins]
 springframework-boot = { id = "org.springframework.boot", version.ref = "org-springframework-boot-spring-boot-gradle-plugin" }

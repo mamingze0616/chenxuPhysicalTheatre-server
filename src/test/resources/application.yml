@@ -16,6 +16,7 @@ wx:
   url:
     getPhoneNumber: http://api.weixin.qq.com/wxa/business/getuserphonenumber
     subscribeMessage: http://api.weixin.qq.com/cgi-bin/message/subscribe/send
+    beforeUploadFile: https://api.weixin.qq.com/tcb/uploadfile
   message:
     template:
       bookedsuccess:

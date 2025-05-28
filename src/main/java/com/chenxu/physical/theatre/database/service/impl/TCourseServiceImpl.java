@@ -3,9 +3,12 @@ package com.chenxu.physical.theatre.database.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.chenxu.physical.theatre.bussiness.dto.UploadFile.BeforeUploadFileResponse;
 import com.chenxu.physical.theatre.bussiness.service.CourseOrderSplitService;
 import com.chenxu.physical.theatre.bussiness.service.SubscribeMessageService;
 import com.chenxu.physical.theatre.bussiness.service.UserService;
+import com.chenxu.physical.theatre.bussiness.service.WeiXinContainerServie;
+import com.chenxu.physical.theatre.bussiness.util.QRCodeUtils;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
@@ -14,6 +17,8 @@ import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.mapper.TCourseMapper;
 import com.chenxu.physical.theatre.database.service.TAppointmentInfoService;
 import com.chenxu.physical.theatre.database.service.TCourseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +36,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> implements TCourseService {
+    private static final Logger logger = LoggerFactory.getLogger(TCourseServiceImpl.class);
     @Autowired
     private TAppointmentInfoService tAppointmentInfoService;
     @Autowired
@@ -40,6 +46,9 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
 
     @Autowired
     SubscribeMessageService subscribeMessageService;
+
+    @Autowired
+    private WeiXinContainerServie weiXinContainerServie;
 
     @Override
     public PageDTO<TCourse> selectPageTCourseList(PageDTO<TCourse> page, TCourse course) {
@@ -129,6 +138,21 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
             throw new RuntimeException("人数不足,无法开始签到");
         }
 
+        try {
+            String filePath = new StringBuilder().append("course/").append(courseId).append(".png").toString();
+
+            BeforeUploadFileResponse beforeUploadFileResponse = weiXinContainerServie.beforeUploadFile(filePath);
+            if (beforeUploadFileResponse.getErrcode() == 0) {
+                //设置二维码链接
+                tCourse.setQrCode(beforeUploadFileResponse.getFileId());
+                //  二维码的字节
+                byte[] bytes = QRCodeUtils.generateQRCodeImage(filePath);
+                weiXinContainerServie.uploadFile(beforeUploadFileResponse, filePath, bytes);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("更新二维码失败");
+        }
         if (!lambdaUpdate().set(TCourse::getType, TCourseType.START_SIGNING_IN.getCode())
                 .eq(TCourse::getId, tCourse.getId())
                 .update()) {

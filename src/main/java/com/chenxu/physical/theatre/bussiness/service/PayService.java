@@ -7,18 +7,15 @@ import com.chenxu.physical.theatre.database.constant.TPayOrderStatus;
 import com.chenxu.physical.theatre.database.constant.TPayOrderType;
 import com.chenxu.physical.theatre.database.domain.*;
 import com.chenxu.physical.theatre.database.service.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author mamingze
@@ -29,15 +26,10 @@ import java.util.*;
  */
 @Service
 public class PayService {
-    private static final int WEIXIN_RESPONSE_CODE_SUCCESS = 0;
-    private static final String WEIXIN_RESPONSE_RETURN_CODE_SUCCESS = "SUCCESS";
-    private static final String WEIXIN_RESPONSE_RESULT_CODE_SUCCESS = "SUCCESS";
 
     private static final Logger logger = LoggerFactory.getLogger(PayService.class);
     @Value("${pay.unifiedOrder.url}")
     private String unifiedOrderUrl;
-    @Value("${pay.orderquery.url}")
-    private String queryOrderUrl;
     @Value("${wx.env}")
     private String env;
     @Value("${wx.mch}")
@@ -66,6 +58,9 @@ public class PayService {
     TActivityBookedInfoService tActivityBookedInfoService;
     @Autowired
     CourseOrderSplitService courseOrderSplitService;
+    @Autowired
+    WeiXinContainerServie weiXinContainerServie;
+
 
     public boolean finishedPayOrder(ApiPayCallbackRequest apiPayCallbackRequest) {
         try {
@@ -192,7 +187,7 @@ public class PayService {
         try {
             //绑定关联ip后组成的OutTradeNo
             bindOutTradeNo(tPayOrder, outTradeNo, type);
-            PayUnifiedOrderResponse payUnifiedOrderResponse = unifiedOrder(tPayOrder.getOpenid(), tPayOrder.getBody(), tPayOrder.getOutTradeNo(), tPayOrder.getTotalFee(), spbillCreateIp);
+            PayUnifiedOrderResponse payUnifiedOrderResponse = weiXinContainerServie.unifiedOrder(tPayOrder.getOpenid(), tPayOrder.getBody(), tPayOrder.getOutTradeNo(), tPayOrder.getTotalFee(), spbillCreateIp);
             //将预订单的返回结果存储
             tPayOrder.setPreJson(payUnifiedOrderResponse);
             tPayOrder.setTimeStamp(payUnifiedOrderResponse.getRespdata().getPayment().getTimeStamp());
@@ -206,51 +201,6 @@ public class PayService {
         }
 
     }
-
-
-    /**
-     * @param openid
-     * @param body
-     * @param outTradeNo 内部订单号
-     * @param totalFee
-     * @return
-     */
-    public PayUnifiedOrderResponse unifiedOrder(String openid, String body, String outTradeNo, int totalFee, String spbillCreateIp) {
-        try {
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("body", body);
-            requestBody.put("openid", openid);
-            requestBody.put("out_trade_no", outTradeNo);
-            requestBody.put("spbill_create_ip", spbillCreateIp);
-            requestBody.put("env_id", env);
-            requestBody.put("sub_mch_id", mch);
-            requestBody.put("total_fee", totalFee);
-            requestBody.put("callback_type", 2);//2是云托管callback类型
-            Map<String, String> container = new HashMap<>();
-            container.put("service", service);
-            container.put("path", path);
-            requestBody.put("container", container);
-            logger.info("接口请求:[{}]", requestBody);
-
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
-            String responseText = restTemplate.postForObject(unifiedOrderUrl, entity, String.class);
-            logger.info("接口返回:[{}]", responseText);
-            // 2. 然后手动转换为 PhoneResponse
-            ObjectMapper mapper = new ObjectMapper();
-            PayUnifiedOrderResponse payUnifiedOrderResponse = mapper.readValue(responseText, PayUnifiedOrderResponse.class);
-            return payUnifiedOrderResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("统一下单失败:" + e.getMessage());
-            throw new RuntimeException("统一下单失败");
-        }
-
-    }
-
 
     //获取该用户的所有类型的订单
     public List<TPayOrder> getPayOrdersByUserId(TUser tUser) {

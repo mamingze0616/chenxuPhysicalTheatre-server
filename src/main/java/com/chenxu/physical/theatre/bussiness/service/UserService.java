@@ -6,21 +6,12 @@ import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.domain.TUserCoupons;
 import com.chenxu.physical.theatre.database.service.TUserCouponsService;
 import com.chenxu.physical.theatre.database.service.TUserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author mamingze
@@ -33,15 +24,14 @@ import java.util.Map;
 public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
-    RestTemplate restTemplate;
-    @Value("${wx.url.getPhoneNumber}")
-    private String getPhoneNumber;
-    @Autowired
     TUserCouponsService tUserCouponsService;
     @Autowired
     TUserService tUserService;
     @Autowired
     CourseOrderSplitService courseOrderSplitService;
+
+    @Autowired
+    WeiXinContainerServie weiXinContainerServie;
 
     public TUser getById(Integer id) {
         return tUserService.getById(id);
@@ -49,17 +39,7 @@ public class UserService {
 
     public String getUserPhoneNumber(String code) {
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("code", code);
-            HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
-            String responseText = restTemplate.postForObject(getPhoneNumber, entity, String.class);
-            logger.info("接口返回:[{}]", responseText);
-            // 2. 然后手动转换为 PhoneResponse
-            ObjectMapper mapper = new ObjectMapper();
-            PhoneResponse phoneResponse = mapper.readValue(responseText, PhoneResponse.class);
+            PhoneResponse phoneResponse = weiXinContainerServie.getUserPhoneNumber(code);
             logger.info("接口返回:[{}]", phoneResponse);
             if (phoneResponse.getErrcode() == 0) {
                 return phoneResponse.getPhone_info().getPurePhoneNumber();
