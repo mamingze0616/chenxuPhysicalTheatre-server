@@ -159,14 +159,14 @@ public class WeiXinContainerServie {
             ByteArrayResource fileResource = new ByteArrayResource(fileBytes) {
                 @Override
                 public String getFilename() {
-                    return filePath; // 必须重写此方法，否则服务器可能无法获取文件名
+                    return "test.png"; // 必须重写此方法，否则服务器可能无法获取文件名
                 }
             };
             body.add("file", fileResource);
 
             HttpEntity<MultiValueMap> requestEntity = new HttpEntity(body, headers);
 
-            restTemplate.postForObject(beforeUploadFileResponse.getUrl(), requestEntity, String.class);
+            restTemplate.postForEntity(beforeUploadFileResponse.getUrl(), requestEntity, String.class);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("上传文件失败:" + e.getMessage());
