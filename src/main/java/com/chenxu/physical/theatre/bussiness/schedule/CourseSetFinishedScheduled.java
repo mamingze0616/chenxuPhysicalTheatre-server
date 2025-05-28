@@ -78,6 +78,7 @@ public class CourseSetFinishedScheduled {
     @Scheduled(cron = "0 0/15 * * * ?")
     @SchedulerLock(name = "checkCourseSignInTask")
     public void checkCourseSignInTask() {
+        logger.info("定时任务开始执行,检查今天可以开启签到的课程");
         List<TCourse> courseList = courseService.list(new QueryWrapper<TCourse>()
                 .eq("type", TCourseType.NOT_START.getCode())
                 .le("start_time", LocalDateTime.now())

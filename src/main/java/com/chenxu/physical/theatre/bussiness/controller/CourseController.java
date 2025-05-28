@@ -235,15 +235,11 @@ public class CourseController {
                     throw new RuntimeException("人数不足,无法开始签到");
                 }
 
-                if (courseService.lambdaUpdate().set(TCourse::getType, TCourseType.START_SIGNING_IN.getCode())
-                        .eq(TCourse::getId, course.getId())
-                        .update()) {
-                    apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-                    apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
-                    apiResponse.setData(tCourse);
-                } else {
-                    throw new RuntimeException("更新失败");
-                }
+                courseService.setStartSigningIn(course.getId());
+                apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+                apiResponse.setData(tCourse);
+
             }, () -> {
                 throw new RuntimeException("无相关课程");
             });
