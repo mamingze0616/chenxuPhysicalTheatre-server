@@ -127,7 +127,7 @@ public class CourseController {
         return apiResponse;
     }
 
-    @PostMapping("/getCourses")
+    @PostMapping("/getCoursesByID")
     public ApiResponse getCoursesByID(@RequestBody TCourse course) {
         logger.info("getCoursesByID:: id = [{}]", course.getId());
         ApiResponse apiResponse = new ApiResponse();
