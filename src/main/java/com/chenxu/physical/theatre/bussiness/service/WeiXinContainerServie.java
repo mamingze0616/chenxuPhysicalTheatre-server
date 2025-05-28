@@ -166,7 +166,7 @@ public class WeiXinContainerServie {
 
             HttpEntity<MultiValueMap> requestEntity = new HttpEntity(body, headers);
 
-            restTemplate.postForObject(beforeUploadFileResponse.getFileId(), requestEntity, String.class);
+            restTemplate.postForObject(beforeUploadFileResponse.getUrl(), requestEntity, String.class);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("上传文件失败:" + e.getMessage());
