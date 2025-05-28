@@ -13,8 +13,8 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
@@ -149,11 +149,11 @@ public class WeiXinContainerServie {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
-            multipartBodyBuilder.part("key", filePath);
-            multipartBodyBuilder.part("Signature", beforeUploadFileResponse.getAuthorization());
-            multipartBodyBuilder.part("x-cos-security-token", beforeUploadFileResponse.getToken());
-            multipartBodyBuilder.part("x-cos-meta-fileid", beforeUploadFileResponse.getCosFileId());
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("key", filePath);
+            body.add("Signature", beforeUploadFileResponse.getAuthorization());
+            body.add("x-cos-security-token", beforeUploadFileResponse.getToken());
+            body.add("x-cos-meta-fileid", beforeUploadFileResponse.getCosFileId());
 
             // 将字节数组包装为 ByteArrayResource，并设置文件名
             ByteArrayResource fileResource = new ByteArrayResource(fileBytes) {
@@ -162,11 +162,9 @@ public class WeiXinContainerServie {
                     return filePath; // 必须重写此方法，否则服务器可能无法获取文件名
                 }
             };
-            multipartBodyBuilder.part("file", fileResource);
+            body.add("file", fileResource);
 
-            // build完整的消息体
-            MultiValueMap<String, HttpEntity<?>> multipartBody = multipartBodyBuilder.build();
-            HttpEntity<MultiValueMap> requestEntity = new HttpEntity(multipartBody, headers);
+            HttpEntity<MultiValueMap> requestEntity = new HttpEntity(body, headers);
 
             restTemplate.postForObject(beforeUploadFileResponse.getFileId(), requestEntity, String.class);
         } catch (Exception e) {

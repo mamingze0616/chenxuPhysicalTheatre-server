@@ -148,15 +148,13 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
                 //  二维码的字节
                 byte[] bytes = QRCodeUtils.generateQRCodeImage(filePath);
                 weiXinContainerServie.uploadFile(beforeUploadFileResponse, filePath, bytes);
+
             }
+            tCourse.setType(TCourseType.START_SIGNING_IN);
+            updateById(tCourse);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("更新二维码失败");
-        }
-        if (!lambdaUpdate().set(TCourse::getType, TCourseType.START_SIGNING_IN.getCode())
-                .eq(TCourse::getId, tCourse.getId())
-                .update()) {
-            throw new RuntimeException("更新失败");
         }
     }
 }
