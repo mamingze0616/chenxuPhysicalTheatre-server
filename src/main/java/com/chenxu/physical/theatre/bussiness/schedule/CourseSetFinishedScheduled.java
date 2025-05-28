@@ -1,7 +1,6 @@
 package com.chenxu.physical.theatre.bussiness.schedule;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.chenxu.physical.theatre.bussiness.service.CourseOrderSplitService;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.service.TCourseService;
@@ -28,9 +27,6 @@ public class CourseSetFinishedScheduled {
     private static final Logger logger = LoggerFactory.getLogger(CourseSetFinishedScheduled.class);
     @Autowired
     private TCourseService courseService;
-
-    @Autowired
-    CourseOrderSplitService courseOrderSplitService;
 
     /**
      * 定时任务，每小时的第三分钟执行一次
@@ -87,7 +83,12 @@ public class CourseSetFinishedScheduled {
                 .le("start_time", LocalDateTime.now())
                 .eq("date", LocalDate.now()));
         courseList.forEach(course -> {
-            courseService.setStartSigningIn(course.getId());
+            try {
+                courseService.setStartSigningIn(course.getId());
+            } catch (Exception e) {
+                logger.error("设置课程{}为开始签到失败", course.getCourseName());
+            }
+
         });
     }
 }
