@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -47,6 +48,10 @@ public class WeiXinContainerServie {
     private String service;
     @Value("${pay.unifiedOrder.callback.path}")
     private String path;
+
+    @Autowired
+    RestClient restClient;
+
 
     /**
      * @param code
@@ -118,7 +123,7 @@ public class WeiXinContainerServie {
 
     private String post(Map<String, Object> requestBody, String url) {
 
-        String response = RestClient.create()
+        String response = restClient
                 .post()
                 .uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -171,7 +176,7 @@ public class WeiXinContainerServie {
             };
             body.add("file", fileResource);
 
-            String response = RestClient.create()
+            String response = restClient
                     .post()
                     .uri(beforeUploadFileResponse.getUrl())
                     .contentType(MediaType.MULTIPART_FORM_DATA)

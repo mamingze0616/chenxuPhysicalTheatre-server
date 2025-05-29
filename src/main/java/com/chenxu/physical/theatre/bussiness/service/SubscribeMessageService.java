@@ -8,7 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,7 +36,8 @@ public class SubscribeMessageService {
     private String bookedCancelTemplateId;
 
     @Autowired
-    RestTemplate restTemplate;
+    RestClient restClient;
+
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm");
 
@@ -64,7 +65,10 @@ public class SubscribeMessageService {
         requestBody.put("data", data);
         logger.info("发送订阅消息 data:{}", data);
         HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
-        String responseText = restTemplate.postForObject(subscribeMessageUrl, entity, String.class);
+
+        String responseText = restClient.post().uri(subscribeMessageUrl)
+                .body(requestBody)
+                .retrieve().body(String.class);
         logger.info("发送订阅消息接口返回:[{}]", responseText);
         return true;
     }

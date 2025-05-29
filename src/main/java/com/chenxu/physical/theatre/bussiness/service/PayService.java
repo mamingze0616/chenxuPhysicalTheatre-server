@@ -10,9 +10,7 @@ import com.chenxu.physical.theatre.database.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,22 +26,8 @@ import java.util.List;
 public class PayService {
 
     private static final Logger logger = LoggerFactory.getLogger(PayService.class);
-    @Value("${pay.unifiedOrder.url}")
-    private String unifiedOrderUrl;
-    @Value("${wx.env}")
-    private String env;
-    @Value("${wx.mch}")
-    private String mch;
-    @Value("${pay.unifiedOrder.callback.service}")
-    private String service;
-    @Value("${pay.unifiedOrder.callback.path}")
-    private String path;
-
     @Autowired
     TPayOrderService payOrderService;
-
-    @Autowired
-    RestTemplate restTemplate;
     @Autowired
     UserService userService;
 

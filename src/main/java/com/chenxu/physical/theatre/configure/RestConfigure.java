@@ -1,8 +1,11 @@
 package com.chenxu.physical.theatre.configure;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -12,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
  * @description
  * @create 2025/4/7 20:50
  */
-//@Configuration
+@Configuration
 public class RestConfigure {
     //    @Bean
     public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
@@ -30,4 +33,12 @@ public class RestConfigure {
         // 设置代理
         return factory;
     }
+
+    @Bean
+    RestClient restClient(RestClient.Builder builder) {
+        return builder
+                .baseUrl("http://api.weixin.qq.com/")
+                .build();
+    }
+
 }
