@@ -168,7 +168,7 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
         user = userService.getById(user.getId());
         if (user.getType() == TUserType.ADMIN || user.getType() == TUserType.SUPER_ADMIN) {
             return getOne(new QueryWrapper<TCourse>()
-                    .eq("type", TCourseType.NOT_START.getCode())
+                    .in("type", TCourseType.NOT_START.getCode(), TCourseType.START_SIGNING_IN.getCode())
                     .ge("start_time", LocalDateTime.now())
                     .orderByAsc("start_time")
                     .last("limit 1"));
