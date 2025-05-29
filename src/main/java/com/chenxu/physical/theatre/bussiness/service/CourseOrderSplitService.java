@@ -155,14 +155,14 @@ public class CourseOrderSplitService {
 
     //获取某用户的有效课程数量(包括已核销和未核销)
     public long getEffectiveCourseCountCount(Integer userId) {
-        return tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>()
+        return tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>().eq("user_id", userId)
                 .in("status", TCourseOrderSpiltStatusEnum.UNWRITE_OFF.getCode()
                         , TCourseOrderSpiltStatusEnum.WRITE_OFF.getCode())).stream().count();
     }
 
     //获取某用户的已上的课程数量(包括已核销的课程)
     public long getCompleteCourseNumber(Integer userId) {
-        return tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>()
+        return tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>().eq("user_id", userId)
                 .eq("status", TCourseOrderSpiltStatusEnum.WRITE_OFF.getCode())).stream().count();
     }
 }
