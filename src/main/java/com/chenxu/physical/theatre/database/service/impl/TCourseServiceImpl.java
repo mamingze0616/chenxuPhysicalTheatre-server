@@ -147,6 +147,7 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
                 tCourse.setQrCode(beforeUploadFileResponse.getFileId());
                 //  二维码的字节
                 byte[] bytes = QRCodeUtils.generateQRCodeImage(filePath);
+                logger.info("生成课程{}的二维码的字节码", bytes);
                 weiXinContainerServie.uploadFile(beforeUploadFileResponse, filePath, bytes);
 
             }

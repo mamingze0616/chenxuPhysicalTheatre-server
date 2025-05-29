@@ -43,3 +43,4 @@ pay:
 
 sercurity:
     algorithm: SHA256withRSA
+debug: true

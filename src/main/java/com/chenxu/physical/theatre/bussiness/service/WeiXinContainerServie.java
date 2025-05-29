@@ -168,7 +168,7 @@ public class WeiXinContainerServie {
             ByteArrayResource fileResource = new ByteArrayResource(fileBytes) {
                 @Override
                 public String getFilename() {
-                    return "test.png"; // 必须重写此方法，否则服务器可能无法获取文件名
+                    return filePath; // 必须重写此方法，否则服务器可能无法获取文件名
                 }
             };
             body.add("file", fileResource);
@@ -176,7 +176,7 @@ public class WeiXinContainerServie {
             String response = restClient
                     .post()
                     .uri(beforeUploadFileResponse.getUrl())
-//                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(body)
                     .retrieve()
                     .body(String.class);
