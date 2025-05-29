@@ -5,17 +5,26 @@ import com.chenxu.physical.theatre.bussiness.dto.UploadFile.BeforeUploadFileResp
 import com.chenxu.physical.theatre.bussiness.dto.pay.PayUnifiedOrderResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.mime.FileBody;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -159,27 +168,40 @@ public class WeiXinContainerServie {
     public void uploadFile(BeforeUploadFileResponse beforeUploadFileResponse, String filePath, byte[] fileBytes) {
         try {
 
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("key", filePath);
-            body.add("Signature", beforeUploadFileResponse.getAuthorization());
-            body.add("x-cos-security-token", beforeUploadFileResponse.getToken());
-            body.add("x-cos-meta-fileid", beforeUploadFileResponse.getCosFileId());
-            // 将字节数组包装为 ByteArrayResource，并设置文件名
-            ByteArrayResource fileResource = new ByteArrayResource(fileBytes) {
-                @Override
-                public String getFilename() {
-                    return filePath; // 必须重写此方法，否则服务器可能无法获取文件名
-                }
-            };
-            body.add("file", fileResource);
+            //创建临时文件
+            File tempFile = null;
+            try {
+                tempFile = File.createTempFile(filePath, ".tmp");
+                FileOutputStream fos = new FileOutputStream(tempFile);
+                fos.write(fileBytes);
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-            String response = restClient
-                    .post()
-                    .uri(beforeUploadFileResponse.getUrl())
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-                    .body(body)
-                    .retrieve()
-                    .body(String.class);
+
+            HttpPost uploadFilePost = new HttpPost(beforeUploadFileResponse.getUrl());
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            builder.addTextBody("key", filePath);
+            builder.addTextBody("Signature", beforeUploadFileResponse.getAuthorization());
+            builder.addTextBody("x-cos-security-token", beforeUploadFileResponse.getToken());
+            builder.addTextBody("x-cos-meta-fileid", beforeUploadFileResponse.getCosFileId());
+            builder.addPart("file", new FileBody(tempFile, ContentType.DEFAULT_BINARY));
+
+            HttpEntity multipart = builder.build();
+            uploadFilePost.setEntity(multipart);
+            try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+                try (CloseableHttpResponse response = httpclient.execute(uploadFilePost)) {
+                    // 获取状态码
+                    HttpEntity entity = response.getEntity();
+                    // 获取响应信息
+                    logger.info(EntityUtils.toString(entity));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("上传文件失败:" + e.getMessage());

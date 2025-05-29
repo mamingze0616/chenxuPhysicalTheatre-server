@@ -39,6 +39,8 @@ dependencies {
     runtimeOnly libs.mysql.mysql.connector.java
     testImplementation libs.org.springframework.boot.spring.boot.starter.test
     testRuntimeOnly libs.junit.jupiter.launcher
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.5'
 
 }
 
