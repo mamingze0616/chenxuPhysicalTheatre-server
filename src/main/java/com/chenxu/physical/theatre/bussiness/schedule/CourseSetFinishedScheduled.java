@@ -81,7 +81,7 @@ public class CourseSetFinishedScheduled {
         logger.info("定时任务开始执行,检查今天可以开启签到的课程");
         List<TCourse> courseList = courseService.list(new QueryWrapper<TCourse>()
                 .eq("type", TCourseType.NOT_START.getCode())
-                .le("start_time", LocalDateTime.now())
+                .le("start_time", LocalDateTime.now().plusHours(1))
                 .eq("date", LocalDate.now()));
         courseList.forEach(course -> {
             try {

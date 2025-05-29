@@ -39,7 +39,7 @@ public interface TCourseService extends IService<TCourse> {
      */
     void setCourseCanceled(Integer courseId);
 
-    void setStartSigningIn(Integer courseId);
+    TCourse setStartSigningIn(Integer courseId);
 
     /**
      * 根据类型获取最新课程,如果是管理员获取最近的课程,如果是普通用户获取最近一个已预约未签到的课程

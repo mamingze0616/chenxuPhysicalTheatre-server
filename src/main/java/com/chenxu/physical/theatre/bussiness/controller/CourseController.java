@@ -232,11 +232,9 @@ public class CourseController {
                 if (tCourse.getBookedNum() < tCourse.getMinimum()) {
                     throw new RuntimeException("人数不足,无法开始签到");
                 }
-
-                courseService.setStartSigningIn(course.getId());
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
-                apiResponse.setData(tCourse);
+                apiResponse.setData(courseService.setStartSigningIn(course.getId()));
 
             }, () -> {
                 throw new RuntimeException("无相关课程");

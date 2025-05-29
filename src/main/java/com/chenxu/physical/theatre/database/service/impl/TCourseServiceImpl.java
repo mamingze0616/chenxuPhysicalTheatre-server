@@ -134,7 +134,7 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
     }
 
     @Override
-    public void setStartSigningIn(Integer courseId) {
+    public TCourse setStartSigningIn(Integer courseId) {
         TCourse tCourse = Optional.ofNullable(getById(courseId)).orElseThrow(() -> new RuntimeException("课程不存在"));
         if (tCourse.getBookedNum() < tCourse.getMinimum()) {
             throw new RuntimeException("人数不足,无法开始签到");
@@ -155,10 +155,12 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
             }
             tCourse.setType(TCourseType.START_SIGNING_IN);
             updateById(tCourse);
+            return tCourse;
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("更新二维码失败");
         }
+        return tCourse;
     }
 
     @Override
