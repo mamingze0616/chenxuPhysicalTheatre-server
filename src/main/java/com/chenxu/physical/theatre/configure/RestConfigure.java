@@ -1,7 +1,5 @@
 package com.chenxu.physical.theatre.configure;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
@@ -14,9 +12,9 @@ import org.springframework.web.client.RestTemplate;
  * @description
  * @create 2025/4/7 20:50
  */
-@Configuration
+//@Configuration
 public class RestConfigure {
-    @Bean
+    //    @Bean
     public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
         RestTemplate restTemplate = new RestTemplate(factory);
         // 添加 multipart 支持
@@ -24,7 +22,7 @@ public class RestConfigure {
         return restTemplate;
     }
 
-    @Bean
+    //    @Bean
     public ClientHttpRequestFactory simpleClientHttpRequestFactory() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setReadTimeout(5000);

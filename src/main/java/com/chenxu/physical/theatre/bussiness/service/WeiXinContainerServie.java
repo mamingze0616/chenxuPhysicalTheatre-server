@@ -7,18 +7,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,8 +29,6 @@ import java.util.Map;
 @Service
 public class WeiXinContainerServie {
     private static final Logger logger = LoggerFactory.getLogger(WeiXinContainerServie.class);
-    @Autowired
-    RestTemplate restTemplate;
 
     @Value("${wx.url.getPhoneNumber}")
     private String getPhoneNumber;
@@ -112,14 +107,27 @@ public class WeiXinContainerServie {
     }
 
 
+//    private String post(Map<String, Object> requestBody, String url) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        logger.info("接口请求:[{}]", requestBody);
+//        HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
+//        return restTemplate.postForObject(url, entity, String.class);
+//    }
+
     private String post(Map<String, Object> requestBody, String url) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        logger.info("接口请求:[{}]", requestBody);
-        HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
-        return restTemplate.postForObject(url, entity, String.class);
+
+        String response = RestClient.create()
+                .post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(requestBody)
+                .retrieve()
+                .body(String.class);
+        return response;
     }
+
 
     /**
      * 预上传文件,上传文件之前要先调用此端口确定上传的目录和上传的url
@@ -149,11 +157,11 @@ public class WeiXinContainerServie {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            MultipartBodyBuilder builder = new MultipartBodyBuilder();
-            builder.part("key", filePath);
-            builder.part("Signature", beforeUploadFileResponse.getAuthorization());
-            builder.part("x-cos-security-token", beforeUploadFileResponse.getToken());
-            builder.part("x-cos-meta-fileid", beforeUploadFileResponse.getCosFileId());
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("key", filePath);
+            body.add("Signature", beforeUploadFileResponse.getAuthorization());
+            body.add("x-cos-security-token", beforeUploadFileResponse.getToken());
+            body.add("x-cos-meta-fileid", beforeUploadFileResponse.getCosFileId());
             // 将字节数组包装为 ByteArrayResource，并设置文件名
             ByteArrayResource fileResource = new ByteArrayResource(fileBytes) {
                 @Override
@@ -161,11 +169,15 @@ public class WeiXinContainerServie {
                     return "test.png"; // 必须重写此方法，否则服务器可能无法获取文件名
                 }
             };
-            builder.part("file", fileResource);
+            body.add("file", fileResource);
 
-            HttpEntity<MultiValueMap<String, HttpEntity<?>>> requestEntity = new HttpEntity(builder.build(), headers);
-
-            restTemplate.postForEntity(beforeUploadFileResponse.getUrl(), requestEntity, String.class);
+            String response = RestClient.create()
+                    .post()
+                    .uri(beforeUploadFileResponse.getUrl())
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .body(body)
+                    .retrieve()
+                    .body(String.class);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("上传文件失败:" + e.getMessage());
