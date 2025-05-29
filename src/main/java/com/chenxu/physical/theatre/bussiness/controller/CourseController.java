@@ -114,7 +114,7 @@ public class CourseController {
         try {
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
             apiResponse.setData(courseService.getOne(new QueryWrapper<TCourse>()
-                    .eq("type", TCourseType.NOT_START.getCode())
+//                    .eq("type", TCourseType.NOT_START.getCode())
                     .ge("start_time", LocalDateTime.now())
                     .orderByAsc("start_time")
                     .last("limit 1")));
