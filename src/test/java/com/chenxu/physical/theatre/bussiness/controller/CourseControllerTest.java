@@ -81,7 +81,7 @@ class CourseControllerTest {
     @Test
     void getLatestCourse() {
         TUser user = new TUser();
-        user.setId(1);
+        user.setId(12);
         courseController.getLatestCourse(user);
     }
 
