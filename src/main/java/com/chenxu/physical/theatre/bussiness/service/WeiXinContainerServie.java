@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -160,8 +159,6 @@ public class WeiXinContainerServie {
     public void uploadFile(BeforeUploadFileResponse beforeUploadFileResponse, String filePath, byte[] fileBytes) {
         try {
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("key", filePath);
             body.add("Signature", beforeUploadFileResponse.getAuthorization());
@@ -179,7 +176,7 @@ public class WeiXinContainerServie {
             String response = restClient
                     .post()
                     .uri(beforeUploadFileResponse.getUrl())
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
+//                    .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(body)
                     .retrieve()
                     .body(String.class);
