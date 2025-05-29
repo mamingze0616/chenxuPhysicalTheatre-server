@@ -2,6 +2,7 @@ package com.chenxu.physical.theatre.bussiness.controller;
 
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import com.chenxu.physical.theatre.database.domain.TCourse;
+import com.chenxu.physical.theatre.database.domain.TUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -79,7 +80,12 @@ class CourseControllerTest {
 
     @Test
     void getLatestCourse() {
-        courseController.getLatestCourse();
+        TUser user = new TUser();
+        user.setId(1);
+        courseController.getLatestCourse(user);
     }
 
+    @Test
+    void testGetLatestCourse() {
+    }
 }

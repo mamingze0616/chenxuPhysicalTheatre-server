@@ -3,6 +3,7 @@ package com.chenxu.physical.theatre.database.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chenxu.physical.theatre.database.domain.TCourse;
+import com.chenxu.physical.theatre.database.domain.TUser;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,4 +40,12 @@ public interface TCourseService extends IService<TCourse> {
     void setCourseCanceled(Integer courseId);
 
     void setStartSigningIn(Integer courseId);
+
+    /**
+     * 根据类型获取最新课程,如果是管理员获取最近的课程,如果是普通用户获取最近一个已预约未签到的课程
+     *
+     * @param user
+     * @return
+     */
+    TCourse getLatestCourse(TUser user);
 }

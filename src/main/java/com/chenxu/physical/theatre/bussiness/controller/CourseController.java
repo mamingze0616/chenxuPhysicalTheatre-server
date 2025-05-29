@@ -9,6 +9,7 @@ import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseStartTime;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TCourse;
+import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.service.TCourseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,15 +110,12 @@ public class CourseController {
     }
 
     @PostMapping("/getLatestCourse")
-    public ApiResponse getLatestCourse() {
+    public ApiResponse getLatestCourse(@RequestBody TUser user) {
+        logger.info("getLatestCourse:: used.id = [{}]", user.getId());
         ApiResponse apiResponse = new ApiResponse();
         try {
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
-            apiResponse.setData(courseService.getOne(new QueryWrapper<TCourse>()
-//                    .eq("type", TCourseType.NOT_START.getCode())
-                    .ge("start_time", LocalDateTime.now())
-                    .orderByAsc("start_time")
-                    .last("limit 1")));
+            apiResponse.setData(courseService.getLatestCourse(user));
 
 
         } catch (Exception e) {

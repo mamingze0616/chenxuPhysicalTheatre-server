@@ -11,6 +11,7 @@ import com.chenxu.physical.theatre.bussiness.service.WeiXinContainerServie;
 import com.chenxu.physical.theatre.bussiness.util.QRCodeUtils;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
+import com.chenxu.physical.theatre.database.constant.TUserType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.domain.TUser;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -157,6 +159,25 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
             e.printStackTrace();
             logger.error("更新二维码失败");
         }
+    }
+
+    @Override
+    public TCourse getLatestCourse(TUser user) {
+        user = userService.getById(user.getId());
+        if (user.getType() == TUserType.ADMIN || user.getType() == TUserType.SUPER_ADMIN) {
+            return getOne(new QueryWrapper<TCourse>()
+                    .ge("start_time", LocalDateTime.now())
+                    .orderByAsc("start_time")
+                    .last("limit 1"));
+        } else {
+            LocalDate tempDate = LocalDate.now();
+            List<TCourse> courseList = baseMapper.getAleardyBookedCoursersWithAppointmentInfoByUserid(user.getId(), tempDate, tempDate.plusDays(20));
+            return courseList.stream().filter(course -> course.getType() == TCourseType.NOT_START).findFirst().orElse(getOne(new QueryWrapper<TCourse>()
+                    .ge("start_time", LocalDateTime.now())
+                    .orderByAsc("start_time")
+                    .last("limit 1")));
+        }
+
     }
 }
 
