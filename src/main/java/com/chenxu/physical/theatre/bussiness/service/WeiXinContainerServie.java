@@ -13,8 +13,8 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
@@ -149,12 +149,11 @@ public class WeiXinContainerServie {
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("key", filePath);
-            body.add("Signature", beforeUploadFileResponse.getAuthorization());
-            body.add("x-cos-security-token", beforeUploadFileResponse.getToken());
-            body.add("x-cos-meta-fileid", beforeUploadFileResponse.getCosFileId());
-
+            MultipartBodyBuilder builder = new MultipartBodyBuilder();
+            builder.part("key", filePath);
+            builder.part("Signature", beforeUploadFileResponse.getAuthorization());
+            builder.part("x-cos-security-token", beforeUploadFileResponse.getToken());
+            builder.part("x-cos-meta-fileid", beforeUploadFileResponse.getCosFileId());
             // 将字节数组包装为 ByteArrayResource，并设置文件名
             ByteArrayResource fileResource = new ByteArrayResource(fileBytes) {
                 @Override
@@ -162,9 +161,9 @@ public class WeiXinContainerServie {
                     return "test.png"; // 必须重写此方法，否则服务器可能无法获取文件名
                 }
             };
-            body.add("file", fileResource);
+            builder.part("file", fileResource);
 
-            HttpEntity<MultiValueMap> requestEntity = new HttpEntity(body, headers);
+            HttpEntity<MultiValueMap<String, HttpEntity<?>>> requestEntity = new HttpEntity(builder.build(), headers);
 
             restTemplate.postForEntity(beforeUploadFileResponse.getUrl(), requestEntity, String.class);
         } catch (Exception e) {
