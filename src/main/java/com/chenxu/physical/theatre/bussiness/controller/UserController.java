@@ -158,6 +158,13 @@ public class UserController {
         return apiResponse;
     }
 
+    /**
+     * 注册登录接口,还没做状态判断
+     *
+     * @param openid
+     * @param code
+     * @return
+     */
     @PostMapping("/registerOrLogin")
     public ApiResponse registerOrLogin(@RequestHeader(value = "X-WX-OPENID", required = false, defaultValue = "none")
                                        String openid, @RequestParam String code) {
