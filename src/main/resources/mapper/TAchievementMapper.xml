@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chenxu.physical.theatre.database.mapper.TAchievementMapper">
+
+    <resultMap id="BaseResultMap" type="com.chenxu.physical.theatre.database.domain.TAchievement">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="skillType" column="skill_type" jdbcType="INTEGER"/>
+            <result property="skillTypeName" column="skill_type_name" jdbcType="VARCHAR"/>
+            <result property="specificName" column="specific_name" jdbcType="VARCHAR"/>
+            <result property="desction" column="desction" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,skill_type,skill_type_name,
+        specific_name,desction
+    </sql>
+</mapper>

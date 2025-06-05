@@ -90,7 +90,7 @@ public class CourseOrderSplitService {
         //支付类
         try {
             Optional.ofNullable(userId).orElseThrow(() -> new RuntimeException("userId为空"));
-            updateAllUnWriteOffCourseOrderSpiltStatus();
+//            updateAllUnWriteOffCourseOrderSpiltStatus();
             //获取最近日期的未核销的的拆分课程订单
             List<TCourseOrderSpilt> canWriteOffCourseOrderSpilt = tCourseOrderSpiltService.list(new QueryWrapper<TCourseOrderSpilt>()
                     .eq("user_id", userId)
@@ -126,6 +126,9 @@ public class CourseOrderSplitService {
     public boolean writeOffCourseOrderSpilt(TAppointmentInfo appointmentInfo) {
         try {
             TCourseOrderSpilt courseOrderSpilt = getUnWriteOffCourseOrderSpilt(appointmentInfo.getUserId());
+            if (courseOrderSpilt == null) {
+                return false;
+            }
             courseOrderSpilt.setStatus(TCourseOrderSpiltStatusEnum.WRITE_OFF);
             courseOrderSpilt.setAppointmentId(appointmentInfo.getId());
             courseOrderSpilt.setWriteOffDate(LocalDate.now());

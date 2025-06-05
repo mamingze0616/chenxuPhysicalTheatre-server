@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author mamingze
@@ -35,6 +36,10 @@ public class UserService {
 
     public TUser getById(Integer id) {
         return tUserService.getById(id);
+    }
+
+    public List<TUser> getAllUser() {
+        return tUserService.list();
     }
 
     public String getUserPhoneNumber(String code) {

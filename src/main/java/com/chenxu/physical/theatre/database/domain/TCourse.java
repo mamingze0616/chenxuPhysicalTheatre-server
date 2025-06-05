@@ -69,6 +69,8 @@ public class TCourse extends ApiRequestPageDto {
     private Integer bookedNum;
 
     private String qrCode;
+
+    private String achievementId;
     @TableField(exist = false)
     private List<TAppointmentInfo> appointmentInfos;
 
@@ -94,7 +96,8 @@ public class TCourse extends ApiRequestPageDto {
                 && (this.getEndTime() == null ? other.getEndTime() == null : this.getEndTime().equals(other.getEndTime()))
                 && (this.getMinimum() == null ? other.getMinimum() == null : this.getMinimum().equals(other.getMinimum()))
                 && (this.getBookedNum() == null ? other.getBookedNum() == null : this.getBookedNum().equals(other.getBookedNum()))
-                && (this.getQrCode() == null ? other.getQrCode() == null : this.getQrCode().equals(other.getQrCode()));
+                && (this.getQrCode() == null ? other.getQrCode() == null : this.getQrCode().equals(other.getQrCode()))
+                && (this.getAchievementId() == null ? other.getAchievementId() == null : this.getAchievementId().equals(other.getAchievementId()));
     }
 
     @Override
@@ -112,6 +115,7 @@ public class TCourse extends ApiRequestPageDto {
         result = prime * result + ((getMinimum() == null) ? 0 : getMinimum().hashCode());
         result = prime * result + ((getBookedNum() == null) ? 0 : getBookedNum().hashCode());
         result = prime * result + ((getQrCode() == null) ? 0 : getQrCode().hashCode());
+        result = prime * result + ((getAchievementId() == null) ? 0 : getAchievementId().hashCode());
         return result;
     }
 
@@ -132,6 +136,7 @@ public class TCourse extends ApiRequestPageDto {
         sb.append(", endTime=").append(endTime);
         sb.append(", bookedNum=").append(bookedNum);
         sb.append(", qrCode=").append(qrCode);
+        sb.append(", achievementId=").append(achievementId);
         sb.append(", appointmentInfos=").append(appointmentInfos);
         sb.append(",current=").append(getCurrent());
         sb.append(",size=").append(getSize());

@@ -88,4 +88,9 @@ class CourseControllerTest {
     @Test
     void testGetLatestCourse() {
     }
+
+    @Test
+    void getAchievementList() {
+        courseController.getAchievementList();
+    }
 }

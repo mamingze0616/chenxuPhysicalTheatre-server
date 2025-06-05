@@ -84,7 +84,7 @@ public class BookedCourseService {
                 courseOrderSplitService.writeOffCourseOrderSpilt(appointmentInfo);
                 //更新用户已学课程数量
                 userService.updateCompleteCourseNumber(appointmentInfo.getUserId());
-                //更新客户已学课程数量
+                //更新客户ke课程数量
                 courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
 
                 subscribeMessageService.sendBookedSuccessMessage(currentUser.getOpenid(),

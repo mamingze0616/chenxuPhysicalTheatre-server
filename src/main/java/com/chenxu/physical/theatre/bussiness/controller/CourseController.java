@@ -4,12 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
+import com.chenxu.physical.theatre.bussiness.dto.achievement.ApiAchievementModel;
+import com.chenxu.physical.theatre.bussiness.dto.achievement.ApiSkillTypeModel;
 import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import com.chenxu.physical.theatre.database.constant.TCourseStartTime;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
+import com.chenxu.physical.theatre.database.domain.TAchievement;
 import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.domain.TUser;
+import com.chenxu.physical.theatre.database.service.TAchievementService;
 import com.chenxu.physical.theatre.database.service.TCourseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +43,8 @@ public class CourseController {
     private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
     @Autowired
     private TCourseService courseService;
+    @Autowired
+    TAchievementService tAchievementService;
 
 
     @PostMapping("/addCourse")
@@ -242,6 +248,41 @@ public class CourseController {
 
         } catch (Exception e) {
             logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
+    /**
+     * 获取成就列表
+     *
+     * @return
+     */
+    @PostMapping("/getAchievementList")
+    public ApiResponse getAchievementList() {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            List<TAchievement> achievementList = tAchievementService.list();
+            //按照skillType分组
+            List<ApiSkillTypeModel> apiSkillTypeModels = new ArrayList<>();
+            achievementList.stream().collect(Collectors.groupingBy(TAchievement::getSkillType))
+                    .forEach((skillType, tAchievements) -> {
+                        ApiSkillTypeModel apiSkillTypeModel = new ApiSkillTypeModel();
+                        apiSkillTypeModel.setLabel(tAchievements.get(0).getSkillTypeName());
+                        apiSkillTypeModel.setValue(String.valueOf(skillType));
+                        apiSkillTypeModel.setChildren(tAchievements.stream().map(item -> {
+                            ApiAchievementModel apiAchievementModel = new ApiAchievementModel();
+                            apiAchievementModel.setLabel(item.getSpecificName());
+                            apiAchievementModel.setValue(String.valueOf(item.getId()));
+                            return apiAchievementModel;
+                        }).collect(Collectors.toList()));
+                        apiSkillTypeModels.add(apiSkillTypeModel);
+                    });
+            apiResponse.setData(apiSkillTypeModels);
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+        } catch (Exception e) {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
         }
