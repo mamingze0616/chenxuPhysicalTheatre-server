@@ -123,6 +123,12 @@ public class BookedCourseService {
                         course.getCourseName(),
                         course.getStartTime(),
                         "用户自行取消预约", "用户自行取消预约");
+                userService.getAdminAndSuperAdmin().forEach(admin -> {
+                    subscribeMessageService.sendBookedCancelMessage(admin.getOpenid(),
+                            course.getCourseName(),
+                            course.getStartTime(),
+                            "用户" + currentUser.getNickname() + "自行取消预约", "用户自行取消预约");
+                });
                 return courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
             }
         } catch (Exception e) {
