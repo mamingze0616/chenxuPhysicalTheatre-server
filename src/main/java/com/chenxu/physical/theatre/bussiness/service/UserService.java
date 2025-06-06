@@ -2,6 +2,7 @@ package com.chenxu.physical.theatre.bussiness.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.dto.PhoneResponse;
+import com.chenxu.physical.theatre.database.constant.TUserType;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.domain.TUserCoupons;
 import com.chenxu.physical.theatre.database.service.TUserCouponsService;
@@ -36,6 +37,17 @@ public class UserService {
 
     public TUser getById(Integer id) {
         return tUserService.getById(id);
+    }
+
+    public List<TUser> getAdminAndSuperAdmin() {
+        try {
+            return tUserService.list(new QueryWrapper<TUser>()
+                    .in("type", TUserType.ADMIN.getCode(), TUserType.SUPER_ADMIN.getCode()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("getAdminAndSuperAdmin:" + e.getMessage());
+            throw new RuntimeException("getAdminAndSuperAdmin");
+        }
     }
 
     public List<TUser> getAllUser() {

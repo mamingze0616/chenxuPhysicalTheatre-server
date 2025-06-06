@@ -126,7 +126,7 @@ public class BookedCourseService {
                 return courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw e;
         }
 
 

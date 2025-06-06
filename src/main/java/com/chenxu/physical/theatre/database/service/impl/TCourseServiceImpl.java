@@ -130,6 +130,11 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
             userService.updateCompleteCourseNumber(appointmentInfo.getUserId());
 
         });
+        //通知管理员
+        userService.getAdminAndSuperAdmin().forEach(tUser -> {
+            subscribeMessageService.sendBookedCancelMessage(tUser.getOpenid(),
+                    tCourse.getCourseName(), tCourse.getStartTime(), "开课前预约人员不足预约取消", "该课程未满足最低开课人数,无法开课");
+        });
         updateCourseBookedNumber(courseId);
     }
 
