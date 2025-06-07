@@ -421,8 +421,6 @@ public class AppointmentController {
                             if (appointmentInfosMap.containsKey(String.valueOf(item.getId()))) {
                                 apiAchievementModel.setAppointmentInfos(appointmentInfosMap.get(String.valueOf(item.getId())));
                             }
-
-
                             return apiAchievementModel;
                         }).collect(Collectors.toList()));
                         apiSkillTypeModels.add(apiSkillTypeModel);
