@@ -58,6 +58,8 @@ public class TAppointmentInfo {
     private LocalDate date;
     @TableField(exist = false)
     private String phone;
+    @TableField(exist = false)
+    private String achievementId;
 
     @Override
     public boolean equals(Object that) {
@@ -107,6 +109,8 @@ public class TAppointmentInfo {
         sb.append(", startTime=").append(startTime);
         sb.append(", endTime=").append(endTime);
         sb.append(", date=").append(date);
+        sb.append(", phone=").append(phone);
+        sb.append(", achievementId=").append(achievementId);
         sb.append("]");
         return sb.toString();
     }

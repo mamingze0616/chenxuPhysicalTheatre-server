@@ -1,20 +1,20 @@
 package com.chenxu.physical.theatre.database.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
  * 样例课程
- * @TableName T_ACHIEVEMENT
+ *
+ * @TableName t_achievement
  */
-@TableName(value ="T_ACHIEVEMENT")
+@TableName(value = "T_ACHIEVEMENT")
 @Data
 public class TAchievement {
     /**
-     * 
+     *
      */
     @TableId(type = IdType.AUTO)
     private Integer id;
@@ -35,7 +35,7 @@ public class TAchievement {
     private String specificName;
 
     /**
-     * 
+     *
      */
     private String desction;
 
@@ -52,10 +52,10 @@ public class TAchievement {
         }
         TAchievement other = (TAchievement) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getSkillType() == null ? other.getSkillType() == null : this.getSkillType().equals(other.getSkillType()))
-            && (this.getSkillTypeName() == null ? other.getSkillTypeName() == null : this.getSkillTypeName().equals(other.getSkillTypeName()))
-            && (this.getSpecificName() == null ? other.getSpecificName() == null : this.getSpecificName().equals(other.getSpecificName()))
-            && (this.getDesction() == null ? other.getDesction() == null : this.getDesction().equals(other.getDesction()));
+                && (this.getSkillType() == null ? other.getSkillType() == null : this.getSkillType().equals(other.getSkillType()))
+                && (this.getSkillTypeName() == null ? other.getSkillTypeName() == null : this.getSkillTypeName().equals(other.getSkillTypeName()))
+                && (this.getSpecificName() == null ? other.getSpecificName() == null : this.getSpecificName().equals(other.getSpecificName()))
+                && (this.getDesction() == null ? other.getDesction() == null : this.getDesction().equals(other.getDesction()));
     }
 
     @Override

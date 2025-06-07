@@ -35,7 +35,7 @@
     </select>
     <select id="getAllAppointmentInfosByUserId"
             resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
-        select T.*, T2.COURSE_NAME, T2.DATE, T2.START_TIME, T2.END_TIME
+        select T.*, T2.COURSE_NAME, T2.DATE, T2.START_TIME, T2.END_TIME,T2.ACHIEVEMENT_ID
         from T_APPOINTMENT_INFO T
                  left join T_COURSE T2 on T.course_id = T2.id
         where user_id = #{userId}

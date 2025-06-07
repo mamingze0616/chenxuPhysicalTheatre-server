@@ -155,4 +155,14 @@ class AppointmentControllerTest {
     }
 
 
+    @Test
+    void getAchievementListById() {
+        TUser tUser = new TUser();
+        tUser.setId(1);
+        tUser.setCurrent(1);
+        tUser.setSize(10);
+//            tUser.setType(TUser.TUserType.ADMIN);
+        logger.info(appointmentController.getAchievementListById(tUser).toString());
+
+    }
 }

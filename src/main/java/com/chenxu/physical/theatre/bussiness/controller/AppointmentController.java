@@ -6,13 +6,13 @@ import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiOverviewOfCourseNumberModel;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
+import com.chenxu.physical.theatre.bussiness.dto.achievement.ApiAchievementModel;
+import com.chenxu.physical.theatre.bussiness.dto.achievement.ApiSkillTypeModel;
 import com.chenxu.physical.theatre.bussiness.service.BookedCourseService;
 import com.chenxu.physical.theatre.database.constant.ChineseDayOfWeek;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
-import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
-import com.chenxu.physical.theatre.database.domain.TCourse;
-import com.chenxu.physical.theatre.database.domain.TCourseOrder;
-import com.chenxu.physical.theatre.database.domain.TUser;
+import com.chenxu.physical.theatre.database.domain.*;
+import com.chenxu.physical.theatre.database.service.TAchievementService;
 import com.chenxu.physical.theatre.database.service.TAppointmentInfoService;
 import com.chenxu.physical.theatre.database.service.TCourseService;
 import com.chenxu.physical.theatre.database.service.TUserService;
@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,8 @@ public class AppointmentController {
     TAppointmentInfoService appointmentInfoService;
     @Autowired
     BookedCourseService bookedCourseService;
+    @Autowired
+    TAchievementService tAchievementService;
 
     //获取全部可预约课程,去除已经预约过的课程,日期不传默认今天,查询七天的课程
     @PostMapping("/getBookableCoursesByUserid")
@@ -381,6 +384,52 @@ public class AppointmentController {
             });
         } catch (Exception e) {
             logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
+    /**
+     * 获取个人成就列表
+     *
+     * @return
+     */
+    @PostMapping("/getAchievementListById")
+    public ApiResponse getAchievementListById(@RequestBody TUser user) {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            Optional.ofNullable(user.getId()).orElseThrow(() -> new RuntimeException("id为空"));
+            List<TAppointmentInfo> appointmentInfos = appointmentInfoService.getAllAppointmentInfosByUserId(user.getId());
+            //按照achievementId分组
+            Map<String, List<TAppointmentInfo>> appointmentInfosMap =
+                    appointmentInfos.stream()
+                            .collect(Collectors.groupingBy(TAppointmentInfo::getAchievementId));
+            List<TAchievement> achievementList = tAchievementService.list();
+            //按照skillType分组
+            List<ApiSkillTypeModel> apiSkillTypeModels = new ArrayList<>();
+            achievementList.stream().collect(Collectors.groupingBy(TAchievement::getSkillType))
+                    .forEach((skillType, tAchievements) -> {
+                        ApiSkillTypeModel apiSkillTypeModel = new ApiSkillTypeModel();
+                        apiSkillTypeModel.setLabel(tAchievements.get(0).getSkillTypeName());
+                        apiSkillTypeModel.setValue(String.valueOf(skillType));
+                        apiSkillTypeModel.setChildren(tAchievements.stream().map(item -> {
+                            ApiAchievementModel apiAchievementModel = new ApiAchievementModel();
+                            apiAchievementModel.setLabel(item.getSpecificName());
+                            apiAchievementModel.setValue(String.valueOf(item.getId()));
+                            if (appointmentInfosMap.containsKey(String.valueOf(item.getId()))) {
+                                apiAchievementModel.setAppointmentInfos(appointmentInfosMap.get(String.valueOf(item.getId())));
+                            }
+
+
+                            return apiAchievementModel;
+                        }).collect(Collectors.toList()));
+                        apiSkillTypeModels.add(apiSkillTypeModel);
+                    });
+            apiResponse.setData(apiSkillTypeModels);
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+        } catch (Exception e) {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
         }

@@ -1,7 +1,10 @@
 package com.chenxu.physical.theatre.bussiness.dto.achievement;
 
+import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import lombok.Data;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * @author mamingze
@@ -15,4 +18,5 @@ import lombok.ToString;
 public class ApiAchievementModel {
     String label;
     String value;
+    List<TAppointmentInfo> appointmentInfos;
 }
