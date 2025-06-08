@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chenxu.physical.theatre.bussiness.dto.ApiRequestPageDto;
+import com.chenxu.physical.theatre.database.constant.TUserCardType;
 import com.chenxu.physical.theatre.database.constant.TUserType;
 import lombok.Data;
 
@@ -79,6 +80,10 @@ public class TUser extends ApiRequestPageDto {
 
     @TableField(exist = false)
     List<TUserCoupons> userCoupons;
+    /**
+     * 会员卡类型
+     */
+    TUserCardType cardType;
 
     @Override
     public boolean equals(Object that) {
@@ -102,7 +107,10 @@ public class TUser extends ApiRequestPageDto {
                 && (this.getCreatedAt() == null ? other.getCreatedAt() == null : this.getCreatedAt().equals(other.getCreatedAt()))
                 && (this.getLoginAt() == null ? other.getLoginAt() == null : this.getLoginAt().equals(other.getLoginAt()))
                 && (this.getEffectiveCourseCount() == null ? other.getEffectiveCourseCount() == null : this.getEffectiveCourseCount().equals(other.getEffectiveCourseCount()))
-                && (this.getCompletedCourseCount() == null ? other.getCompletedCourseCount() == null : this.getCompletedCourseCount().equals(other.getCompletedCourseCount()));
+                && (this.getCompletedCourseCount() == null ? other.getCompletedCourseCount() == null : this.getCompletedCourseCount().equals(other.getCompletedCourseCount()))
+                && (this.getAppointmentInfos() == null ? other.getAppointmentInfos() == null : this.getAppointmentInfos().equals(other.getAppointmentInfos()))
+                && (this.getUserCoupons() == null ? other.getUserCoupons() == null : this.getUserCoupons().equals(other.getUserCoupons()))
+                && (this.getCardType() == null ? other.getCardType() == null : this.getCardType().equals(other.getCardType()));
     }
 
     @Override
@@ -120,6 +128,9 @@ public class TUser extends ApiRequestPageDto {
         result = prime * result + ((getLoginAt() == null) ? 0 : getLoginAt().hashCode());
         result = prime * result + ((getEffectiveCourseCount() == null) ? 0 : getEffectiveCourseCount().hashCode());
         result = prime * result + ((getCompletedCourseCount() == null) ? 0 : getCompletedCourseCount().hashCode());
+        result = prime * result + ((getAppointmentInfos() == null) ? 0 : getAppointmentInfos().hashCode());
+        result = prime * result + ((getUserCoupons() == null) ? 0 : getUserCoupons().hashCode());
+        result = prime * result + ((getCardType() == null) ? 0 : getCardType().hashCode());
         return result;
     }
 
@@ -141,6 +152,7 @@ public class TUser extends ApiRequestPageDto {
         sb.append(", appointmentInfos=").append(appointmentInfos);
         sb.append(", effectiveCourseCount=").append(effectiveCourseCount);
         sb.append(", completedCourseCount=").append(completedCourseCount);
+        sb.append(", cardType=").append(cardType);
         sb.append("]");
         return sb.toString();
     }
