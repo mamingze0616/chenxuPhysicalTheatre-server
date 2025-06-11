@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -31,10 +30,14 @@ public class SubscribeMessageService {
 
     @Value("${wx.message.template.bookedsuccess.id}")
     private String bookedSuccessTemplateId;
+    @Value("${wx.message.template.toadminbookedsuccess.id}")
+    private String toadminBookedSuccessTemplateId;
 
     @Value("${wx.message.template.bookedcancel.id}")
     private String bookedCancelTemplateId;
 
+    @Value("${wx.message.template.toadminbookedcancel.id}")
+    private String toadminBookedCancelTemplateId;
     @Autowired
     RestClient restClient;
 
@@ -64,7 +67,6 @@ public class SubscribeMessageService {
         requestBody.put("page", page);
         requestBody.put("data", data);
         logger.info("发送订阅消息 data:{}", data);
-        HttpEntity<Map> entity = new HttpEntity<>(requestBody, headers);
 
         String responseText = restClient.post().uri(subscribeMessageUrl)
                 .body(requestBody)
@@ -130,4 +132,77 @@ public class SubscribeMessageService {
         return false;
 
     }
+
+    /**
+     * 给管理员发送预约取消消息
+     *
+     * @param adminOpenid
+     * @param courseName
+     * @param userNickname
+     * @param courseStartTime
+     * @param reason
+     * @param tips
+     * @return
+     */
+    public boolean sendToAdminBookedCancelMessage(String adminOpenid, String courseName, String userNickname,
+                                                  LocalDateTime courseStartTime,
+                                                  String reason) {
+        Map<String, Object> data = new HashMap<>();
+        //预约人
+        Map<String, Object> thing5 = new HashMap<>();
+        thing5.put("value", userNickname);
+        data.put("thing5", thing5);
+        //预约项目
+        Map<String, Object> thing1 = new HashMap<>();
+        thing1.put("value", courseName);
+        data.put("thing1", thing1);
+
+        //取消原因
+        Map<String, Object> thing7 = new HashMap<>();
+        thing7.put("value", reason);
+        data.put("thing7", thing7);
+        //提示
+        Map<String, Object> date2 = new HashMap<>();
+        date2.put("value", courseStartTime.format(formatter));
+        data.put("date2", date2);
+        try {
+            return sendSubscribeMessage(adminOpenid, toadminBookedCancelTemplateId, "pages/index/index", data);
+        } catch (Exception e) {
+            logger.error("发送预约取消消息失败:{}", e.getMessage());
+        }
+        return false;
+
+    }
+
+    /**
+     * 给管理员发送预约成功消息
+     *
+     * @param openid
+     * @param courseName
+     * @param courseStartTime
+     * @return
+     */
+    public boolean sendToAdminBookedSuccessMessage(String openid, String userNickname,
+                                                   String courseName, LocalDateTime courseStartTime) {
+        Map<String, Object> data = new HashMap<>();
+        //预约人
+        Map<String, Object> thing9 = new HashMap<>();
+        thing9.put("value", userNickname);
+        data.put("thing9", thing9);
+        //课程名称
+        Map<String, Object> thing3 = new HashMap<>();
+        thing3.put("value", courseName);
+        data.put("thing3", thing3);
+        //课程时间
+        Map<String, Object> date6 = new HashMap<>();
+        date6.put("value", courseStartTime.format(formatter));
+        data.put("date6", date6);
+        try {
+            return sendSubscribeMessage(openid, toadminBookedSuccessTemplateId, "pages/index/index", data);
+        } catch (Exception e) {
+            logger.error("发送预约成功消息失败:{}", e.getMessage());
+        }
+        return false;
+    }
+
 }

@@ -79,7 +79,6 @@ public class BookedCourseService {
             appointmentInfo.setType(TAppointmentInfoTypeEnum.APPOINTED);
             appointmentInfo.setCreateAt(LocalDateTime.now());
             if (appointmentInfoService.save(appointmentInfo)) {
-
                 //核销
                 courseOrderSplitService.writeOffCourseOrderSpilt(appointmentInfo);
                 //更新用户已学课程数量
@@ -91,6 +90,10 @@ public class BookedCourseService {
                         tCourse.getCourseName(),
                         tCourse.getStartTime(),
                         appointmentInfo.getCreateAt());
+                userService.getAdminAndSuperAdmin().forEach(admin -> {
+                    subscribeMessageService.sendToAdminBookedSuccessMessage(admin.getOpenid(),
+                            currentUser.getNickname(), tCourse.getCourseName(), tCourse.getStartTime());
+                });
 
             } else {
                 throw new RuntimeException("预约写入失败");
@@ -124,10 +127,8 @@ public class BookedCourseService {
                         course.getStartTime(),
                         "用户自行取消预约", "用户自行取消预约");
                 userService.getAdminAndSuperAdmin().forEach(admin -> {
-                    subscribeMessageService.sendBookedCancelMessage(admin.getOpenid(),
-                            course.getCourseName(),
-                            course.getStartTime(),
-                            "用户" + currentUser.getNickname() + "自行取消预约", "用户自行取消预约");
+                    subscribeMessageService.sendToAdminBookedCancelMessage(admin.getOpenid(),
+                            course.getCourseName(), currentUser.getNickname(), course.getStartTime(), "用户自行取消预约");
                 });
                 return courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
             }

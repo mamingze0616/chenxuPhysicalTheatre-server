@@ -21,8 +21,12 @@ wx:
     template:
       bookedsuccess:
         id: S8NGsSZ3iWDXUc-6xgS50SJNYeRbZ9p-03PjV_62dlU
+      toadminbookedsuccess:
+        id: kWxoc2Sd2X8vPfGl8A4yflqU5mnBebt_7OdRJC4TKx0
       bookedcancel:
         id: yqdMTsUoHYEK6HuxHcmTx9xSY0sWGgJthQYCFPBFCDU
+      toadminbookedcancel:
+        id: Xc1YYCzAZ2Brtm8GaoprsvEMDbAe8dy2Q__NjIELCrM
   env: '1'
   mch: '2'
 
