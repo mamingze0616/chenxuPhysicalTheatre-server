@@ -375,8 +375,11 @@ public class AppointmentController {
         try {
             Optional.ofNullable(appointmentInfo.getId()).orElseThrow(() -> new RuntimeException("id为空"));
             Optional.ofNullable(appointmentInfoService.getById(appointmentInfo.getId())).ifPresentOrElse(tmpAppointment -> {
-                appointmentInfoService.lambdaUpdate().set(TAppointmentInfo::getType, appointmentInfo.getType()).eq(TAppointmentInfo::getId, appointmentInfo.getId()).update();
-                courseService.updateCourseBookedNumber(tmpAppointment.getCourseId());
+                if (appointmentInfo.getType().equals(TAppointmentInfoTypeEnum.CANCELED)) {
+                    throw new RuntimeException("无法替用户取消预约");
+                }
+                appointmentInfoService.lambdaUpdate().set(TAppointmentInfo::getType, appointmentInfo.getType())
+                        .eq(TAppointmentInfo::getId, appointmentInfo.getId()).update();
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setErrorMsg(APIRESPONSE_SUCCESS_MSG);
             }, () -> {

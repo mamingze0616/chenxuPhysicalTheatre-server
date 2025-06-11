@@ -29,16 +29,16 @@ public class CourseSetFinishedScheduled {
     private TCourseService courseService;
 
     /**
-     * 定时任务，每小时的第三分钟执行一次
+     * 定时任务，每15分钟执行一次
      * 对于已经签到的课程,过了课程结束时间的话进行结束
      */
     @Scheduled(cron = "0 0/15 * * * *")
     @SchedulerLock(name = "checkCourseTypeTask")
     public void checkeCourseTypeTask() {
-        logger.info("定时任务开始执行,检查课程状态");
+        logger.info("定时任务开始执行,检查课程状态是否已完成");
         List<TCourse> courseList = courseService.list(new QueryWrapper<TCourse>()
                 .eq("type", TCourseType.START_SIGNING_IN.getCode())
-                .lt("END_TIME", LocalDate.now()));
+                .lt("END_TIME", LocalDateTime.now()));
         logger.info("检查到{}个课程已过结束时间", courseList.size());
         //对于已上的课程,
         courseList.stream().forEach(item -> {

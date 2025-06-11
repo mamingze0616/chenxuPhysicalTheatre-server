@@ -65,6 +65,7 @@ public class PayService {
                 } else if (TPayOrderType.COURSE.getCode().equals(Integer.parseInt(split[1]))) {
                     TCourseOrder courseOrder = courseOrderSplitService.payCallback(Integer.valueOf(split[2]));
                     userService.updateEffectiveCourseCount(courseOrder.getUserId());
+                    userService.updateCardTypeByCourseOrder(courseOrder);
                 } else if (TPayOrderType.ACTIVITY.getCode().equals(Integer.parseInt(split[1]))) {
 
                 }

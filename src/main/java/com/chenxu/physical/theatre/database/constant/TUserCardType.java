@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum TUserCardType {
     //1:月卡;2:季卡;3:年卡;4:初级委培卡;5:中级委培卡;6:高级委培卡
+    NO_CARD(0, "无效卡"),
     MONTH_CARD(1, "月卡"),
     QUARTER_CARD(2, "季卡"),
     YEAR_CARD(3, "年卡"),

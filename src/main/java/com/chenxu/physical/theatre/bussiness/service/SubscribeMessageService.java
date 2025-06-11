@@ -122,7 +122,12 @@ public class SubscribeMessageService {
         Map<String, Object> thing9 = new HashMap<>();
         thing9.put("value", tips);
         data.put("thing9", thing9);
+        try {
+            return sendSubscribeMessage(openid, bookedCancelTemplateId, "pages/index/index", data);
+        } catch (Exception e) {
+            logger.error("发送预约取消消息失败:{}", e.getMessage());
+        }
+        return false;
 
-        return sendSubscribeMessage(openid, bookedCancelTemplateId, "pages/index/index", data);
     }
 }

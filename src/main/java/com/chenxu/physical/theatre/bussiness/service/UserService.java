@@ -3,6 +3,7 @@ package com.chenxu.physical.theatre.bussiness.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chenxu.physical.theatre.bussiness.dto.PhoneResponse;
 import com.chenxu.physical.theatre.database.constant.TUserType;
+import com.chenxu.physical.theatre.database.domain.TCourseOrder;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import com.chenxu.physical.theatre.database.domain.TUserCoupons;
 import com.chenxu.physical.theatre.database.service.TUserCouponsService;
@@ -52,6 +53,22 @@ public class UserService {
 
     public List<TUser> getAllUser() {
         return tUserService.list();
+    }
+
+    /**
+     * 默认tCourseOrder.getSampleCourseOrderId()和cardtype一致
+     *
+     * @param tCourseOrder
+     * @return
+     */
+    public boolean updateCardTypeByCourseOrder(TCourseOrder tCourseOrder) {
+        try {
+            return tUserService.lambdaUpdate().set(TUser::getCardType, tCourseOrder.getSampleCourseOrderId())
+                    .eq(TUser::getId, tCourseOrder.getUserId())
+                    .update();
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     public String getUserPhoneNumber(String code) {
