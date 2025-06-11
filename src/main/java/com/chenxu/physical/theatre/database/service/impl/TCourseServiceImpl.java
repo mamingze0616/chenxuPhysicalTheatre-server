@@ -174,8 +174,8 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
         if (user.getType() == TUserType.ADMIN || user.getType() == TUserType.SUPER_ADMIN) {
             return getOne(new QueryWrapper<TCourse>()
                     .in("type", TCourseType.NOT_START.getCode(), TCourseType.START_SIGNING_IN.getCode())
-                    .ge("start_time", LocalDateTime.now())
-                    .orderByAsc("start_time")
+                    .ge("end_time", LocalDateTime.now())
+                    .orderByAsc("end_time")
                     .last("limit 1"));
         } else {
             LocalDate tempDate = LocalDate.now();
