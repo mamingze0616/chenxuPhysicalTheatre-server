@@ -68,8 +68,8 @@
     </select>
     <select id="getAppointmentInfoList"
             resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
-        select T.*, T2.COURSE_NAME, T2.DATE, T2.START_TIME, T2.END_TIME
+        select T.*, T2.COURSE_NAME, T2.DATE, T2.START_TIME, T2.END_TIME,T3.nickname, T3.avatar,T3.phone
         from T_APPOINTMENT_INFO T
-                 left join T_COURSE T2 on T.course_id = T2.id
+                 left join T_COURSE T2 on T.course_id = T2.id left join T_USER T3 on T3.id = T.user_id
     </select>
 </mapper>
