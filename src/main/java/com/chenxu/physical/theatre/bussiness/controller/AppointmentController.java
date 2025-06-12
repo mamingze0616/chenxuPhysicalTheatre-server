@@ -443,6 +443,7 @@ public class AppointmentController {
      *
      * @return
      */
+    @PostMapping("/getAppointmentList")
     public ApiResponse getAppointmentList(@RequestBody ApiRequestPageDto pageDto) {
         logger.info("getAppointmentList:: pageDto = [{}]", pageDto);
         ApiResponse apiResponse = new ApiResponse();
