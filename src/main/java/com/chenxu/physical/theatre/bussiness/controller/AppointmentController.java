@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.chenxu.physical.theatre.bussiness.constant.Constant;
 import com.chenxu.physical.theatre.bussiness.dto.ApiOverviewOfCourseNumberModel;
+import com.chenxu.physical.theatre.bussiness.dto.ApiRequestPageDto;
 import com.chenxu.physical.theatre.bussiness.dto.ApiResponse;
 import com.chenxu.physical.theatre.bussiness.dto.ApiWeekCourseModel;
 import com.chenxu.physical.theatre.bussiness.dto.achievement.ApiAchievementModel;
@@ -431,6 +432,29 @@ public class AppointmentController {
             apiResponse.setData(apiSkillTypeModels);
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
         } catch (Exception e) {
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
+    /**
+     * 获取个人成就列表
+     *
+     * @return
+     */
+    public ApiResponse getAppointmentList(@RequestBody ApiRequestPageDto pageDto) {
+        logger.info("getAppointmentList:: pageDto = [{}]", pageDto);
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            pageDto.setCurrent(Optional.ofNullable(pageDto.getCurrent()).orElse(1));
+            pageDto.setSize(Optional.ofNullable(pageDto.getSize()).orElse(20));
+            PageDTO<TAppointmentInfo> quertPage = new PageDTO<>(pageDto.getCurrent(), pageDto.getSize());
+            apiResponse.setData(appointmentInfoService.getAppointmentList(quertPage));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());
         }

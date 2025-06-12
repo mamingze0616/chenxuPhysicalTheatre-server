@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chenxu.physical.theatre.bussiness.dto.ApiRequestPageDto;
 import com.chenxu.physical.theatre.database.constant.TAppointmentInfoTypeEnum;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @TableName(value = "T_APPOINTMENT_INFO")
 @Data
-public class TAppointmentInfo {
+public class TAppointmentInfo extends ApiRequestPageDto {
     /**
      *
      */

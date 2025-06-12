@@ -1,5 +1,6 @@
 package com.chenxu.physical.theatre.bussiness.controller;
 
+import com.chenxu.physical.theatre.bussiness.dto.ApiRequestPageDto;
 import com.chenxu.physical.theatre.database.constant.TCourseType;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.domain.TCourse;
@@ -164,5 +165,13 @@ class AppointmentControllerTest {
 //            tUser.setType(TUser.TUserType.ADMIN);
         logger.info(appointmentController.getAchievementListById(tUser).toString());
 
+    }
+
+    @Test
+    void getAppointmentList() {
+        ApiRequestPageDto pageDto = new ApiRequestPageDto();
+        pageDto.setCurrent(2);
+        pageDto.setSize(10);
+        logger.info(appointmentController.getAppointmentList(pageDto).toString());
     }
 }

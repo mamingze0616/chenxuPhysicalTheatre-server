@@ -122,8 +122,6 @@ public class CourseController {
         try {
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
             apiResponse.setData(courseService.getLatestCourse(user));
-
-
         } catch (Exception e) {
             apiResponse.setCode(Constant.APIRESPONSE_FAIL);
             apiResponse.setErrorMsg(e.getMessage());

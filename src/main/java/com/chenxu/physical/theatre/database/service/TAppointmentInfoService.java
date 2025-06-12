@@ -1,5 +1,6 @@
 package com.chenxu.physical.theatre.database.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 
@@ -22,5 +23,7 @@ public interface TAppointmentInfoService extends IService<TAppointmentInfo> {
     List<TAppointmentInfo> getAllAppointmentInfosByUserId(Integer userId);
 
     List<TAppointmentInfo> getAllAppointmentInfosByUserIds(List<Integer> userIds);
+
+    Page<TAppointmentInfo> getAppointmentList(Page<TAppointmentInfo> pageDto);
 
 }

@@ -1,5 +1,6 @@
 package com.chenxu.physical.theatre.database.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.chenxu.physical.theatre.database.domain.TAppointmentInfo;
 import com.chenxu.physical.theatre.database.mapper.TAppointmentInfoMapper;
@@ -41,6 +42,11 @@ public class TAppointmentInfoServiceImpl extends ServiceImpl<TAppointmentInfoMap
     @Override
     public List<TAppointmentInfo> getAllAppointmentInfosByUserIds(List<Integer> userIds) {
         return baseMapper.getAllAppointmentInfosByUserIds(userIds);
+    }
+
+    @Override
+    public Page<TAppointmentInfo> getAppointmentList(Page<TAppointmentInfo> pageDto) {
+        return baseMapper.getAppointmentInfoList(pageDto);
     }
 }
 

@@ -66,4 +66,10 @@
             </foreach>
         </where>
     </select>
+    <select id="getAppointmentInfoList"
+            resultType="com.chenxu.physical.theatre.database.domain.TAppointmentInfo">
+        select T.*, T2.COURSE_NAME, T2.DATE, T2.START_TIME, T2.END_TIME
+        from T_APPOINTMENT_INFO T
+                 left join T_COURSE T2 on T.course_id = T2.id
+    </select>
 </mapper>
