@@ -237,7 +237,6 @@ public class AppointmentController {
             //查询当前用户购买的课时
             //到这里保证有可用课时,查询预约信息,
             if (bookedCourseService.doBookedCourse(appointmentInfo)) {
-                courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(appointmentInfo);
             }

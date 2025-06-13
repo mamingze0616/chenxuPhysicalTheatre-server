@@ -127,7 +127,7 @@ public class CourseOrderSplitService {
         try {
             TCourseOrderSpilt courseOrderSpilt = getUnWriteOffCourseOrderSpilt(appointmentInfo.getUserId());
             if (courseOrderSpilt == null) {
-                return false;
+                throw new RuntimeException("课时用尽,无法预约");
             }
             courseOrderSpilt.setStatus(TCourseOrderSpiltStatusEnum.WRITE_OFF);
             courseOrderSpilt.setAppointmentId(appointmentInfo.getId());

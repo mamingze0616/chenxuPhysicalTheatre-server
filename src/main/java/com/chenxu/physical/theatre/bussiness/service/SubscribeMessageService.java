@@ -58,20 +58,25 @@ public class SubscribeMessageService {
                                         String page,
                                         Map<String, Object> data) {
         logger.info("发送订阅消息 templateId:{},openid:{}", templateId, openid);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("touser", openid);
-        requestBody.put("template_id", templateId);
-        requestBody.put("page", page);
-        requestBody.put("data", data);
-        logger.info("发送订阅消息 data:{}", data);
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("touser", openid);
+            requestBody.put("template_id", templateId);
+            requestBody.put("page", page);
+            requestBody.put("data", data);
+            logger.info("发送订阅消息 data:{}", data);
 
-        String responseText = restClient.post().uri(subscribeMessageUrl)
-                .body(requestBody)
-                .retrieve().body(String.class);
-        logger.info("发送订阅消息接口返回:[{}]", responseText);
+            String responseText = restClient.post().uri(subscribeMessageUrl)
+                    .body(requestBody)
+                    .retrieve().body(String.class);
+            logger.info("发送订阅消息接口返回:[{}]", responseText);
+        } catch (Exception e) {
+            logger.error("发送订阅消息失败:{}", e.getMessage());
+        }
+
         return true;
     }
 

@@ -63,8 +63,8 @@ class AppointmentControllerTest {
     void doAppointmentByCourseId() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
-            tAppointmentInfo.setCourseId(1266);
-            tAppointmentInfo.setUserId(4);
+            tAppointmentInfo.setCourseId(1309);
+            tAppointmentInfo.setUserId(1);
 
             logger.info(appointmentController.doAppointmentByCourseId(tAppointmentInfo).toString());
         } catch (Exception e) {

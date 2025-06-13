@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,6 +39,12 @@ public class BookedCourseService {
     SubscribeMessageService subscribeMessageService;
 
     //预约某个课程
+
+    /**
+     * @param appointmentInfo
+     * @return
+     */
+    @Transactional
     public boolean doBookedCourse(TAppointmentInfo appointmentInfo) {
         try {
             TUser currentUser = userService.getById(appointmentInfo.getUserId());
@@ -85,7 +92,6 @@ public class BookedCourseService {
                 userService.updateCompleteCourseNumber(appointmentInfo.getUserId());
                 //更新客户ke课程数量
                 courseService.updateCourseBookedNumber(appointmentInfo.getCourseId());
-
                 subscribeMessageService.sendBookedSuccessMessage(currentUser.getOpenid(),
                         tCourse.getCourseName(),
                         tCourse.getStartTime(),
@@ -94,6 +100,7 @@ public class BookedCourseService {
                     subscribeMessageService.sendToAdminBookedSuccessMessage(admin.getOpenid(),
                             currentUser.getNickname(), tCourse.getCourseName(), tCourse.getStartTime());
                 });
+
 
             } else {
                 throw new RuntimeException("预约写入失败");
