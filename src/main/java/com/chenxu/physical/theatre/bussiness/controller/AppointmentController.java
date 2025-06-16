@@ -66,7 +66,7 @@ public class AppointmentController {
         try {
             LocalDate tempDate = Optional.ofNullable(appointmentInfo.getDate()).orElse(LocalDate.now());
             Optional.ofNullable(appointmentInfo.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
-            List<TCourse> courses = courseService.getBookableCoursesWithAppointmentInfoByUserid(appointmentInfo.getUserId(), tempDate, tempDate.plusDays(6));
+            List<TCourse> courses = courseService.getBookableCoursesWithAppointmentInfoByUserid(appointmentInfo.getUserId(), tempDate, tempDate.plusDays(31));
             if (courses.isEmpty()) {
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(resultList);
@@ -105,7 +105,7 @@ public class AppointmentController {
 
             LocalDate tempDate = Optional.ofNullable(appointmentInfo.getDate()).orElse(LocalDate.now());
             Optional.ofNullable(appointmentInfo.getUserId()).orElseThrow(() -> new RuntimeException("userId为空"));
-            List<TCourse> courses = courseService.getAleardyBookedCoursersWithAppointmentInfoByUserid(appointmentInfo.getUserId(), tempDate, tempDate.plusDays(6));
+            List<TCourse> courses = courseService.getAleardyBookedCoursersWithAppointmentInfoByUserid(appointmentInfo.getUserId(), tempDate, tempDate.plusDays(31));
             if (courses.isEmpty()) {
                 apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                 apiResponse.setData(resultList);
