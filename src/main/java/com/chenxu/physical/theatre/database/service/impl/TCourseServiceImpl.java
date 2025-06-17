@@ -92,6 +92,11 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
         return baseMapper.getCourserWithAppointmentInfoByCourseId(courseId);
     }
 
+    @Override
+    public List<TCourse> getCoursesWithAppointmentInfo(LocalDate startDate, LocalDate endDate) {
+        return baseMapper.getCoursesWithAppointmentInfo(startDate, endDate);
+    }
+
 
     @Override
     public void setCourseFinished(Integer courseId) {

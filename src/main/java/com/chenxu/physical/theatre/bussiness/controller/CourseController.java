@@ -115,6 +115,42 @@ public class CourseController {
         return apiResponse;
     }
 
+    /**
+     * 按照月份加载课程
+     *
+     * @param apiWeekCourseModel
+     * @return
+     */
+    @PostMapping("/getCourseListWithAppointment")
+    public ApiResponse getCourseListWithAppointment(@RequestBody ApiWeekCourseModel apiWeekCourseModel) {
+        logger.info("getCourseListWithAppointment::date = [{}]", apiWeekCourseModel.getDate());
+        ApiResponse apiResponse = new ApiResponse();
+        List<ApiWeekCourseModel> resultList = new ArrayList<>();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            //没有日期的话默认当前日期
+            LocalDate tempDate = Optional.ofNullable(apiWeekCourseModel.getDate()).orElse(LocalDate.now());
+            List<TCourse> courseList = courseService.getCoursesWithAppointmentInfo(tempDate, tempDate.plusDays(31));
+            courseList.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
+                ApiWeekCourseModel tempApiWeekCourseModel = new ApiWeekCourseModel();
+                tempApiWeekCourseModel.setDate(date);
+                tempApiWeekCourseModel.setWeekday(ChineseDayOfWeek.of(date.getDayOfWeek().getValue()).getDesc());
+                tempApiWeekCourseModel.setList(tCourses);
+                resultList.add(tempApiWeekCourseModel);
+            });
+            //排序
+            resultList.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
+            apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+            apiResponse.setData(resultList);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
     @PostMapping("/getLatestCourse")
     public ApiResponse getLatestCourse(@RequestBody TUser user) {
         logger.info("getLatestCourse:: used.id = [{}]", user.getId());

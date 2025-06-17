@@ -23,6 +23,8 @@ public interface TCourseService extends IService<TCourse> {
 
     TCourse getCourserWithAppointmentInfoByCourseId(Integer courseId);
 
+    List<TCourse> getCoursesWithAppointmentInfo(LocalDate startDate, LocalDate endDate);
+
     /**
      * 将往期课程的type设置为已上,将签到的设置为已学,将已预约的设置为未签到
      *

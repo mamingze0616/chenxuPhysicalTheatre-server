@@ -87,6 +87,9 @@ class CourseControllerTest {
 
     @Test
     void testGetLatestCourse() {
+        ApiWeekCourseModel apiWeekCourseModel = new ApiWeekCourseModel();
+        apiWeekCourseModel.setDate(LocalDate.now());
+        courseController.getCourseListWithAppointment(apiWeekCourseModel);
     }
 
     @Test
