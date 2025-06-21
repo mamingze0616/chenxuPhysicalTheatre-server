@@ -184,7 +184,8 @@ public class TCourseServiceImpl extends ServiceImpl<TCourseMapper, TCourse> impl
                     .last("limit 1"));
         } else {
             LocalDate tempDate = LocalDate.now();
-            List<TCourse> courseList = baseMapper.getAleardyBookedCoursersWithAppointmentInfoByUserid(user.getId(), tempDate, tempDate.plusDays(20));
+            List<TCourse> courseList = baseMapper
+                    .getAleardyBookedCoursersWithAppointmentInfoByUserid(user.getId(), tempDate, tempDate.plusDays(20));
             return courseList.stream().filter(course -> course.getType() == TCourseType.NOT_START || course.getType() == TCourseType.START_SIGNING_IN).findFirst().orElse(null);
         }
 
