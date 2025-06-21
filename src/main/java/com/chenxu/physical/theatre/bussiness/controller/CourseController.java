@@ -220,6 +220,36 @@ public class CourseController {
         return apiResponse;
     }
 
+    //删除课程信息
+    @PostMapping("/deleteCourse")
+    public ApiResponse deleteCourse(@RequestBody TCourse course) {
+        logger.info("deleteCourse:: course.id = [{}]", course.getId());
+        ApiResponse apiResponse = new ApiResponse();
+        try {
+            Optional.ofNullable(course.getId()).orElseThrow(() -> {
+                throw new RuntimeException("id为空");
+            });
+            Optional.ofNullable(courseService.getById(course.getId())).ifPresentOrElse(tCourse -> {
+                if (tCourse.getBookedNum() > 0) {
+                    apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+                    apiResponse.setErrorMsg("此课程有预约人员,不可删除");
+                } else {
+                    if (courseService.removeById(tCourse)) {
+                        apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                        apiResponse.setErrorMsg(Constant.APIRESPONSE_SUCCESS_MSG);
+                    }
+                }
+
+            }, () -> {
+                throw new RuntimeException("此id的数据为空");
+            });
+        } catch (Exception e) {
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+            apiResponse.setErrorMsg(e.getMessage());
+        }
+        return apiResponse;
+    }
+
     /**
      * 查询签到人数和未签到人数,
      *
