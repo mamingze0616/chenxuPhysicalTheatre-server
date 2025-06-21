@@ -93,7 +93,7 @@ public class CourseController {
             LocalDate tempDate = Optional.ofNullable(apiWeekCourseModel.getDate()).orElse(LocalDate.now());
             List<TCourse> courseList = courseService.list(new QueryWrapper<TCourse>()
                     //从date之日起七天的日期的数据
-                    .le("date", tempDate.plusDays(6))
+                    .le("date", tempDate.plusDays(31))
                     .ge("date", tempDate).ne("type", TCourseType.NOT_REGISTER.getCode()).orderByAsc("date", "lesson"));
             courseList.stream().collect(Collectors.groupingBy(TCourse::getDate)).forEach((date, tCourses) -> {
                 ApiWeekCourseModel tempApiWeekCourseModel = new ApiWeekCourseModel();
