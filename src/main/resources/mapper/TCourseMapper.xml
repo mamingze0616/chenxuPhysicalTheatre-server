@@ -63,9 +63,10 @@
     </select>
     <select id="getCourserWithAppointmentInfoByCourseId"
             resultMap="selectPageTCourseListWithAppointmentInfoListMap">
-        select tc.*, tai.id as APPOINTMENT_INFO_id, tai.user_id, tai.course_id, tai.type as APPOINTMENT_INFO_TYPE
+        select tc.*, tai.id as APPOINTMENT_INFO_id, tai.user_id,
+               tai.course_id, tai.type as APPOINTMENT_INFO_TYPE,T3.nickname, T3.avatar,T3.phone
         from T_COURSE tc
-                 left join T_APPOINTMENT_INFO tai on tc.id = tai.course_id
+                 left join T_APPOINTMENT_INFO tai on tc.id = tai.course_id left join T_USER T3 on T3.id = tai.user_id
         where tc.id = #{courseId}
     </select>
 
@@ -86,6 +87,9 @@
             <result property="userId" column="USER_ID"/>
             <result property="courseId" column="COURSE_ID"/>
             <result property="type" column="APPOINTMENT_INFO_TYPE"/>
+            <result property="nickname" column="NICKNAME"/>
+            <result property="avatar" column="AVATAR"/>
+            <result property="phone" column="PHONE"/>
         </collection>
     </resultMap>
 </mapper>
