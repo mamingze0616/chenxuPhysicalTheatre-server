@@ -171,7 +171,7 @@ public class CourseController {
         ApiResponse apiResponse = new ApiResponse();
         try {
             Optional.ofNullable(course.getId()).ifPresentOrElse(idInteger -> {
-                Optional.ofNullable(courseService.getById(idInteger)).ifPresentOrElse(tCourse -> {
+                Optional.ofNullable(courseService.getCourserWithAppointmentInfoByCourseId(idInteger)).ifPresentOrElse(tCourse -> {
                     apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
                     apiResponse.setData(tCourse);
                 }, () -> {
