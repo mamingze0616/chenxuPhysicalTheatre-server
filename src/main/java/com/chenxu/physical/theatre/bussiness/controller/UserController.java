@@ -150,7 +150,7 @@ public class UserController {
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
             QueryWrapper<TUser> queryWrapper = new QueryWrapper();
-            queryWrapper.eq("type", TUserType.ADMIN.getCode()).and(!StringUtils.isEmpty(search), wrapper ->
+            queryWrapper.eq("type", type).and(!StringUtils.isEmpty(search), wrapper ->
                     wrapper.like("nickname", search).or().like("phone", search));
             apiResponse.setData(tUserService.list(queryWrapper));
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
