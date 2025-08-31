@@ -170,8 +170,8 @@ class AppointmentControllerTest {
     @Test
     void getAppointmentList() {
         ApiRequestPageDto pageDto = new ApiRequestPageDto();
-        pageDto.setCurrent(2);
-        pageDto.setSize(10);
+//        pageDto.setCurrent(2);
+//        pageDto.setSize(10);
         logger.info(appointmentController.getAppointmentList(pageDto).toString());
     }
 }

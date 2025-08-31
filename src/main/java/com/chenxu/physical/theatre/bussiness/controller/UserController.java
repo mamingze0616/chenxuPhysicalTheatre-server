@@ -11,6 +11,7 @@ import com.chenxu.physical.theatre.database.service.TUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -143,12 +144,15 @@ public class UserController {
 
     //按照名称或者手机号搜索所有用户
     @PostMapping("/searchUser")
-    public ApiResponse searchUser(@RequestParam String search) {
-        logger.info("searchUser::search = [{}]", search);
+    public ApiResponse searchUser(@RequestParam String search, @RequestParam int type) {
+        logger.info("searchUser::search = [{}],type=[{}]", search, type);
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(Constant.APIRESPONSE_FAIL);
         try {
-            apiResponse.setData(tUserService.list(new QueryWrapper<TUser>().like("nickname", search).or().like("phone", search)));
+            QueryWrapper<TUser> queryWrapper = new QueryWrapper();
+            queryWrapper.eq("type", TUserType.ADMIN.getCode()).and(!StringUtils.isEmpty(search), wrapper ->
+                    wrapper.like("nickname", search).or().like("phone", search));
+            apiResponse.setData(tUserService.list(queryWrapper));
             apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
         } catch (Exception e) {
             logger.error(e.getMessage());

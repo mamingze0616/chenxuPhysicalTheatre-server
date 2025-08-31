@@ -34,6 +34,6 @@ class UserControllerTest {
 
     @Test
     void searchUser() {
-        userController.searchUser("");
+        userController.searchUser("156", 1);
     }
 }
