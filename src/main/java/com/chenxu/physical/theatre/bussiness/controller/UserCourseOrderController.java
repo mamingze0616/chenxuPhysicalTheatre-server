@@ -334,4 +334,37 @@ public class UserCourseOrderController {
         return apiResponse;
     }
 
+    //审核不通过某个课程订单
+    @PostMapping("failToCheck")
+    public ApiResponse failToCheck(@RequestBody TCourseOrder courseOrder) {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        try {
+            Optional.ofNullable(courseOrder.getOperatorId()).orElseThrow(() -> new RuntimeException("operatorId为空"));
+            Optional.ofNullable(courseOrder.getId()).orElseThrow(() -> new RuntimeException("id为空"));
+            //存在则修改订单状态和数量
+            Optional.ofNullable(courseOrderService.getById(courseOrder.getId())).ifPresentOrElse(tCourseOrder -> {
+                if (tCourseOrder.getType().equals(TCourseOrderType.GIVE_AWAY) && tCourseOrder.getStatus().equals(TCourseOrderStatus.UNCHECKED)) {
+                    tCourseOrder.setStatus(TCourseOrderStatus.DELETED);
+                    if (courseOrderService.updateById(tCourseOrder)) {
+
+                        apiResponse.setCode(Constant.APIRESPONSE_SUCCESS);
+                        apiResponse.setErrorMsg("审核不通过");
+                        apiResponse.setData(tCourseOrder);
+                    }
+                } else {
+                    throw new RuntimeException("此订单无法审核");
+                }
+
+            }, () -> {
+                throw new RuntimeException("此id数据为空");
+            });
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            apiResponse.setErrorMsg(e.getMessage());
+            apiResponse.setCode(Constant.APIRESPONSE_FAIL);
+        }
+        return apiResponse;
+    }
 }

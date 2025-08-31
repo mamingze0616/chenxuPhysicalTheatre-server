@@ -65,4 +65,12 @@ class UserCourseOrderControllerTest {
         test.setId(1);
         userCourseOrderController.successToCheck(test);
     }
+
+    @Test
+    void failToCheck() {
+        TCourseOrder test = new TCourseOrder();
+        test.setOperatorId(1);
+        test.setId(28);
+        userCourseOrderController.failToCheck(test);
+    }
 }
