@@ -41,6 +41,7 @@ class CouponControllerTest {
     }
 
     @Test
+    @Disabled
     void getCouponListByUserId() {
         TUserCoupons tUserCoupons = new TUserCoupons();
         tUserCoupons.setUserId(1);

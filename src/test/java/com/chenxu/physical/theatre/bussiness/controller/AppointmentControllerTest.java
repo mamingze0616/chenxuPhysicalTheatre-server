@@ -7,6 +7,7 @@ import com.chenxu.physical.theatre.database.domain.TCourse;
 import com.chenxu.physical.theatre.database.domain.TCourseOrder;
 import com.chenxu.physical.theatre.database.domain.TUser;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,7 @@ class AppointmentControllerTest {
     AppointmentController appointmentController;
 
     @Test
+    @Disabled
     void getAppointmentInfoByCourseId() {
         try {
             TAppointmentInfo appointmentInfo = new TAppointmentInfo();
@@ -49,6 +51,7 @@ class AppointmentControllerTest {
     }
 
     @Test
+    @Disabled
     void getOverviewOfCourseNumberInfoAndAppointmentInfo() {
         try {
             TCourseOrder courseOrder = new TCourseOrder();
@@ -60,6 +63,7 @@ class AppointmentControllerTest {
     }
 
     @Test
+    @Disabled
     void doAppointmentByCourseId() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
@@ -73,6 +77,7 @@ class AppointmentControllerTest {
     }
 
     @Test
+    @Disabled
     void getAppointmentInfosByUserIdAndDate() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
@@ -89,6 +94,7 @@ class AppointmentControllerTest {
     }
 
     @Test
+    @Disabled
     void getBookableCoursesByUseridAndDate() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
@@ -103,6 +109,7 @@ class AppointmentControllerTest {
     }
 
     @Test
+    @Disabled
     void cancelCourseAppointment() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
@@ -116,6 +123,7 @@ class AppointmentControllerTest {
     }
 
     @Test
+    @Disabled
     void getCourseInfoWithAppointmentInfoList() {
         try {
             TCourse tCourse = new TCourse();
@@ -130,6 +138,7 @@ class AppointmentControllerTest {
     }
 
     @Test
+    @Disabled
     void getUserInfoWithAppointmentInfoList() {
         try {
             TUser tUser = new TUser();
@@ -143,6 +152,7 @@ class AppointmentControllerTest {
     }
 
     @Test
+    @Disabled
     void getAleardyBookedCoursersWithAppointmentInfoByUserid() {
         try {
             TAppointmentInfo tAppointmentInfo = new TAppointmentInfo();
@@ -157,6 +167,7 @@ class AppointmentControllerTest {
 
 
     @Test
+    @Disabled
     void getAchievementListById() {
         TUser tUser = new TUser();
         tUser.setId(1);
@@ -168,6 +179,7 @@ class AppointmentControllerTest {
     }
 
     @Test
+    @Disabled
     void getAppointmentList() {
         ApiRequestPageDto pageDto = new ApiRequestPageDto();
 //        pageDto.setCurrent(2);

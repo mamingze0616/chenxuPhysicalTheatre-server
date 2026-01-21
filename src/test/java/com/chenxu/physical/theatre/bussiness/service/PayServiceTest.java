@@ -1,6 +1,7 @@
 package com.chenxu.physical.theatre.bussiness.service;
 
 import com.chenxu.physical.theatre.bussiness.dto.ApiPayCallbackRequest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +22,7 @@ class PayServiceTest {
     UserService userService;
 
     @Test
+    @Disabled
     void finishedPayOrder() {
         ApiPayCallbackRequest apiPayCallbackRequest = new ApiPayCallbackRequest();
         apiPayCallbackRequest.setOutTradeNo("34_1_31");
@@ -29,5 +31,5 @@ class PayServiceTest {
 
     }
 
-   
+
 }

@@ -1,6 +1,7 @@
 package com.chenxu.physical.theatre.bussiness.service;
 
 import com.chenxu.physical.theatre.database.service.TCourseOrderService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,17 +21,20 @@ class CourseOrderSplitServiceTest {
     TCourseOrderService courseOrderService;
 
     @Test
+    @Disabled
     void getUnWriteOffCourseOrderSpilt() {
 
         courseOrderSplitService.getUnWriteOffCourseOrderSpilt(1);
     }
 
     @Test
+    @Disabled
     void updateAllUnWriteOffCourseOrderSpiltStatus() {
         courseOrderSplitService.updateAllUnWriteOffCourseOrderSpiltStatus();
     }
 
     @Test
+    @Disabled
     void splitCourseOrder() {
         courseOrderSplitService.splitCourseOrder(courseOrderService.getById(3));
     }

@@ -10,8 +10,8 @@ plugins {
 repositories {
     mavenLocal()
     maven {
-        url = uri('https://maven.aliyun.com/repository/central')
-//        url = uri('https://mirrors.tencent.com/nexus/repository/maven-public/')
+//        url = uri('https://maven.aliyun.com/repository/central')
+        url = uri('https://mirrors.tencent.com/nexus/repository/maven-public/')
     }
 }
 configurations {
