@@ -15,7 +15,7 @@ COPY platform /app/platform
 COPY build.gradle settings.gradle /app/
 
 # 执行代码编译命令
-RUN gradle build
+RUN gradle build --stacktrace
 
 # 选择运行时基础镜像
 FROM alpine
