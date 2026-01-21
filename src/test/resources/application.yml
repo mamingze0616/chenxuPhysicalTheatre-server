@@ -5,13 +5,14 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://sh-cynosdbmysql-grp-8wf198t8.sql.tencentcdb.com:20112/${MYSQL_DATABASE:springboot_demo}
+    url: jdbc:mysql://sh-cynosdbmysql-grp-7syinize.sql.tencentcdb.com:20745/${MYSQL_DATABASE:springboot_demo}
     username: root
-    password: Hu83D9gQ
+    password: QkjYhSZ8
   mvc:
     view:
       suffix: .html
       prefix: /
+
 wx:
   url:
     getPhoneNumber: http://api.weixin.qq.com/wxa/business/getuserphonenumber
@@ -27,8 +28,9 @@ wx:
         id: yqdMTsUoHYEK6HuxHcmTx9xSY0sWGgJthQYCFPBFCDU
       toadminbookedcancel:
         id: Xc1YYCzAZ2Brtm8GaoprsvEMDbAe8dy2Q__NjIELCrM
-  env: '1'
-  mch: '2'
+
+  env: ${ENV_ID:2}
+  mch: ${MCH_ID:23}
 
 pay:
   orderquery:
